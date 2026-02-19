@@ -10,8 +10,8 @@ void main() async {
   // TODO: Add Firebase initialization when Firebase is configured
   // await Firebase.initializeApp();
 
-  // Initialize dependency injection
-  configureDependencies();
+  // Initialize dependency injection (async for SharedPreferences)
+  await configureDependencies();
 
   runApp(const App());
 }
