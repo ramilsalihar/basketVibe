@@ -7,9 +7,11 @@ class HomeFeedPage extends StatelessWidget {
   const HomeFeedPage({
     super.key,
     this.notificationCount = 0,
+    this.onNavigateToCourts,
   });
 
   final int notificationCount;
+  final VoidCallback? onNavigateToCourts;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +20,10 @@ class HomeFeedPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBg : AppColors.lightBg,
       body: SafeArea(
-        child: HomeFeedContent(notificationCount: notificationCount),
+        child: HomeFeedContent(
+          notificationCount: notificationCount,
+          onNavigateToCourts: onNavigateToCourts,
+        ),
       ),
     );
   }

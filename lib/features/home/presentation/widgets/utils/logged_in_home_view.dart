@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import 'package:basketvibe/core/constants/route_constants.dart';
 import 'package:basketvibe/core/styles/app_colors.dart';
 import 'package:basketvibe/core/styles/app_spacing.dart';
 import 'package:basketvibe/core/styles/app_text_styles.dart';
 import 'package:basketvibe/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:basketvibe/features/courts/presentation/pages/court_finder_page.dart';
 import 'package:basketvibe/features/home/presentation/pages/home_feed_page.dart';
 import 'package:basketvibe/features/home/presentation/widgets/utils/bottom_nav_bar.dart';
 
@@ -25,8 +24,11 @@ class _LoggedInHomeViewState extends State<LoggedInHomeView> {
       body: IndexedStack(
         index: _currentIndex,
         children: [
-          const HomeFeedPage(notificationCount: 2),
-          _CourtsTabPlaceholder(isDark: Theme.of(context).brightness == Brightness.dark),
+          HomeFeedPage(
+            notificationCount: 2,
+            onNavigateToCourts: () => setState(() => _currentIndex = 1),
+          ),
+          const CourtFinderPage(),
           _buildProfileTab(context),
         ],
       ),
@@ -69,56 +71,6 @@ class _LoggedInHomeViewState extends State<LoggedInHomeView> {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _CourtsTabPlaceholder extends StatelessWidget {
-  const _CourtsTabPlaceholder({required this.isDark});
-
-  final bool isDark;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: AppSpacing.pagePadding,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.map_outlined,
-              size: 64,
-              color: AppColors.primary,
-            ),
-            AppSpacing.gapLG,
-            Text(
-              'Площадки',
-              style: AppTextStyles.h1.copyWith(
-                color: isDark
-                    ? AppColors.darkTextPrimary
-                    : AppColors.lightTextPrimary,
-              ),
-            ),
-            AppSpacing.gapSM,
-            Text(
-              'Карта площадок, фильтры и список кортов',
-              style: AppTextStyles.bodyMD.copyWith(
-                color: isDark
-                    ? AppColors.darkTextSecondary
-                    : AppColors.lightTextSecondary,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            AppSpacing.gapXL,
-            ElevatedButton.icon(
-              onPressed: () => context.push(RouteConstants.courts),
-              icon: const Icon(Icons.map),
-              label: const Text('Открыть карту площадок'),
-            ),
-          ],
-        ),
       ),
     );
   }

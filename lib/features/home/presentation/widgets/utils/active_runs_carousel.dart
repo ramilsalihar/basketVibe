@@ -153,19 +153,26 @@ class _ActiveRunCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Мест: $spots',
-                style: AppTextStyles.labelSM.copyWith(
-                  color: isDark
-                      ? AppColors.darkTextSecondary
-                      : AppColors.lightTextSecondary,
+              Flexible(
+                child: Text(
+                  'Мест: $spots',
+                  style: AppTextStyles.labelSM.copyWith(
+                    color: isDark
+                        ? AppColors.darkTextSecondary
+                        : AppColors.lightTextSecondary,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
+              const SizedBox(width: 8),
               Text(
                 'Присоединиться',
                 style: AppTextStyles.labelSM.copyWith(
                   color: AppColors.primary,
                 ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),

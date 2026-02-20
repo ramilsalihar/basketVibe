@@ -14,9 +14,11 @@ class HomeFeedContent extends StatelessWidget {
   const HomeFeedContent({
     super.key,
     this.notificationCount = 2,
+    this.onNavigateToCourts,
   });
 
   final int notificationCount;
+  final VoidCallback? onNavigateToCourts;
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +51,7 @@ class HomeFeedContent extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 AppSpacing.gapXL,
-                const MiniMapPreview(),
+                MiniMapPreview(onTap: onNavigateToCourts),
                 AppSpacing.gapXL,
               ],
             ),
