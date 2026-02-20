@@ -1,13 +1,9 @@
-import 'package:basketvibe/features/onboarding/presentation/bloc/onboarding_event.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:basketvibe/core/constants/app_constants.dart';
 import 'package:basketvibe/core/constants/route_constants.dart';
 import 'package:basketvibe/core/styles/app_colors.dart';
 import 'package:basketvibe/core/styles/app_text_styles.dart';
-import 'package:basketvibe/features/onboarding/presentation/bloc/onboarding_bloc.dart';
-import 'package:basketvibe/features/onboarding/presentation/bloc/onboarding_state.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -20,10 +16,10 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    // Check onboarding status after a short delay
+    // After splash delay, navigate to home page (replaces splash in stack)
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted) {
-        context.read<OnboardingBloc>().add(const CheckOnboardingStatus());
+        context.go(RouteConstants.home); // '/' → HomePage
       }
     });
   }
@@ -32,76 +28,55 @@ class _SplashPageState extends State<SplashPage> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return BlocListener<OnboardingBloc, OnboardingState>(
-      listener: (context, state) {
-        if (state is OnboardingCompleted) {
-          // User has seen onboarding, go to login
-          context.go(RouteConstants.login);
-        } else if (state is OnboardingNotCompleted) {
-          // User hasn't seen onboarding, show it
-          context.go('/onboarding');
-        }
-      },
-      child: Scaffold(
-        backgroundColor: isDark ? AppColors.darkBg : AppColors.lightBg,
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // App Logo/Icon
-              Container(
-                width: 120,
-                height: 120,
-                decoration: BoxDecoration(
-                  gradient: AppColors.primaryButtonGradient,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primary.withOpacity(0.3),
-                      blurRadius: 24,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.sports_basketball,
-                  size: 64,
-                  color: Colors.white,
-                ),
+    return Scaffold(
+      backgroundColor: isDark ? AppColors.darkBg : AppColors.lightBg,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 120,
+              height: 120,
+              decoration: BoxDecoration(
+                gradient: AppColors.primaryButtonGradient,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withOpacity(0.3),
+                    blurRadius: 24,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
               ),
-
-              const SizedBox(height: 24),
-
-              // App Name
-              Text(
-                AppConstants.appName,
-                style: AppTextStyles.displayLG.copyWith(
-                  color: isDark
-                      ? AppColors.darkTextPrimary
-                      : AppColors.lightTextPrimary,
-                ),
+              child: const Icon(
+                Icons.sports_basketball,
+                size: 64,
+                color: Colors.white,
               ),
-
-              const SizedBox(height: 8),
-
-              // Tagline
-              Text(
-                'Run with your city',
-                style: AppTextStyles.bodyMD.copyWith(
-                  color: isDark
-                      ? AppColors.darkTextSecondary
-                      : AppColors.lightTextSecondary,
-                ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              AppConstants.appName,
+              style: AppTextStyles.displayLG.copyWith(
+                color: isDark
+                    ? AppColors.darkTextPrimary
+                    : AppColors.lightTextPrimary,
               ),
-
-              const SizedBox(height: 48),
-
-              // Loading indicator
-              const CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Run with your city',
+              style: AppTextStyles.bodyMD.copyWith(
+                color: isDark
+                    ? AppColors.darkTextSecondary
+                    : AppColors.lightTextSecondary,
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 48),
+            const CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+            ),
+          ],
         ),
       ),
     );

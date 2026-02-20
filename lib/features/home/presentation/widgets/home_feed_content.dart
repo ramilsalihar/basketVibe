@@ -1,0 +1,79 @@
+import 'package:flutter/material.dart';
+import 'package:basketvibe/core/styles/app_spacing.dart';
+import 'package:basketvibe/features/courts/presentation/widgets/mini_map_preview.dart';
+import 'package:basketvibe/features/home/presentation/widgets/active_runs_carousel.dart';
+import 'package:basketvibe/features/home/presentation/widgets/baseline_feed_section.dart';
+import 'package:basketvibe/features/home/presentation/widgets/home_quick_action_header.dart';
+import 'package:basketvibe/features/home/presentation/widgets/leaderboard_section.dart';
+import 'package:basketvibe/features/home/presentation/widgets/top_rated_courts_section.dart';
+import 'package:basketvibe/features/home/presentation/widgets/upcoming_events_section.dart';
+import 'package:basketvibe/features/home/presentation/widgets/whos_balling_ticker.dart';
+
+/// Main home feed: header, ticker, active runs, baseline, court finder, events, top courts, leaderboard.
+class HomeFeedContent extends StatelessWidget {
+  const HomeFeedContent({
+    super.key,
+    this.notificationCount = 2,
+  });
+
+  final int notificationCount;
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              HomeQuickActionHeader(notificationCount: notificationCount),
+              AppSpacing.gapSM,
+              const WhosBallingTicker(),
+              AppSpacing.gapLG,
+            ],
+          ),
+        ),
+        const SliverToBoxAdapter(
+          child: ActiveRunsCarousel(),
+        ),
+        SliverToBoxAdapter(
+          child: AppSpacing.gapXL,
+        ),
+        const SliverToBoxAdapter(
+          child: BaselineFeedSection(),
+        ),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: AppSpacing.pagePadding,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AppSpacing.gapXL,
+                const MiniMapPreview(),
+                AppSpacing.gapXL,
+              ],
+            ),
+          ),
+        ),
+        const SliverToBoxAdapter(
+          child: UpcomingEventsSection(),
+        ),
+        SliverToBoxAdapter(
+          child: AppSpacing.gapXL,
+        ),
+        const SliverToBoxAdapter(
+          child: TopRatedCourtsSection(),
+        ),
+        SliverToBoxAdapter(
+          child: AppSpacing.gapXL,
+        ),
+        const SliverToBoxAdapter(
+          child: LeaderboardSection(),
+        ),
+        const SliverToBoxAdapter(
+          child: SizedBox(height: 100),
+        ),
+      ],
+    );
+  }
+}

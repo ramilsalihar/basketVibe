@@ -42,15 +42,15 @@ class BottomNavBar extends StatelessWidget {
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.sports_basketball),
-            label: 'Games',
+            label: 'Игры',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.location_on),
-            label: 'Courts',
+            label: 'Площадки',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            label: 'Profile',
+            label: 'Профиль',
           ),
         ],
       ),

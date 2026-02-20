@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:basketvibe/core/constants/route_constants.dart';
 import 'package:basketvibe/core/styles/app_border_radius.dart';
 import 'package:basketvibe/core/styles/app_colors.dart';
 import 'package:basketvibe/core/styles/app_spacing.dart';
 import 'package:basketvibe/core/styles/app_text_styles.dart';
 import 'package:basketvibe/core/utils/helpers/validator_helper.dart';
+import 'package:basketvibe/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:basketvibe/features/auth/presentation/widgets/auth_text_field.dart';
 
 class LoginPage extends StatefulWidget {
@@ -33,15 +37,15 @@ class _LoginPageState extends State<LoginPage> {
         _isLoading = true;
       });
 
-      // TODO: Implement actual login logic
+      // TODO: Replace with actual auth (e.g. Firebase Phone OTP)
       await Future.delayed(const Duration(seconds: 1));
 
+      if (!mounted) return;
       setState(() {
         _isLoading = false;
       });
-
-      // TODO: Navigate to home after successful login
-      // context.go(RouteConstants.home);
+      context.read<AuthCubit>().login();
+      context.go(RouteConstants.home);
     }
   }
 
@@ -53,9 +57,12 @@ class _LoginPageState extends State<LoginPage> {
     // TODO: Implement Google login
     await Future.delayed(const Duration(seconds: 1));
 
+    if (!mounted) return;
     setState(() {
       _isLoading = false;
     });
+    context.read<AuthCubit>().login();
+    context.go(RouteConstants.home);
   }
 
   @override

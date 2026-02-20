@@ -13,6 +13,7 @@ import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 import 'package:shared_preferences/shared_preferences.dart' as _i460;
 
+import '../../../features/auth/presentation/cubit/auth_cubit.dart' as _i20;
 import '../../../features/onboarding/domain/di/onboarding_module.dart' as _i96;
 import '../../../features/onboarding/domain/usecases/check_onboarding_status_usecase.dart'
     as _i1057;
@@ -38,6 +39,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i189.LocalStorageService>(
       () => _i189.LocalStorageServiceImpl(gh<_i460.SharedPreferences>()),
+    );
+    gh.factory<_i20.AuthCubit>(
+      () => _i20.AuthCubit(gh<_i189.LocalStorageService>()),
     );
     gh.factory<_i1057.CheckOnboardingStatusUseCase>(
       () => onboardingModule.checkOnboardingStatusUseCase(

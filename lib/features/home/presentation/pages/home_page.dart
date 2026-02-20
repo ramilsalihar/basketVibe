@@ -1,58 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:basketvibe/core/styles/app_spacing.dart';
-import 'package:basketvibe/core/styles/app_text_styles.dart';
-import 'package:basketvibe/features/home/presentation/widgets/bottom_nav_bar.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:basketvibe/core/styles/app_colors.dart';
+import 'package:basketvibe/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:basketvibe/features/auth/presentation/cubit/auth_state.dart';
+import 'package:basketvibe/features/home/presentation/widgets/guest_home_view.dart';
+import 'package:basketvibe/features/home/presentation/widgets/logged_in_home_view.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({super.key});
-
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  int _currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: [
-          // TODO: Add actual pages for each tab
-          _buildPlaceholder('Games'),
-          _buildPlaceholder('Courts'),
-          _buildPlaceholder('Profile'),
-        ],
-      ),
-      bottomNavigationBar: BottomNavBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
+      backgroundColor: isDark ? AppColors.darkBg : AppColors.lightBg,
+      body: BlocBuilder<AuthCubit, AuthState>(
+        builder: (context, state) {
+          return switch (state) {
+            AuthInitial() => const Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+                ),
+              ),
+            AuthUnauthenticated() => const GuestHomeView(),
+            AuthAuthenticated() => const LoggedInHomeView(),
+          };
         },
-      ),
-    );
-  }
-
-  Widget _buildPlaceholder(String title) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            title,
-            style: AppTextStyles.h1,
-          ),
-          AppSpacing.gapMD,
-          Text(
-            'Coming soon...',
-            style: AppTextStyles.bodyMD,
-          ),
-        ],
       ),
     );
   }
