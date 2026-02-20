@@ -35,10 +35,13 @@ class BottomNavBar extends StatelessWidget {
         type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.transparent,
         elevation: 0,
+        iconSize: 24,
         selectedItemColor: AppColors.primary,
         unselectedItemColor: isDark
             ? AppColors.darkTextSecondary
             : AppColors.lightTextSecondary,
+        selectedFontSize: 12,
+        unselectedFontSize: 12,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.sports_basketball),
