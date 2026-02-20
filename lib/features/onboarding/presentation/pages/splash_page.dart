@@ -16,10 +16,9 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    // After splash delay, navigate to home page (replaces splash in stack)
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted) {
-        context.go(RouteConstants.home); // '/' → HomePage
+        context.go(RouteConstants.home); 
       }
     });
   }

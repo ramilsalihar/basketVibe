@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:basketvibe/core/styles/app_colors.dart';
-import 'package:basketvibe/core/styles/app_spacing.dart';
 import 'package:basketvibe/core/styles/app_text_styles.dart';
 
 /// FOMO ticker: "12 players just checked into Vostok-5... 3 spots left at Bishkek Arena 19:00"

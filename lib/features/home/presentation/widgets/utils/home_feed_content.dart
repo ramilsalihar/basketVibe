@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:basketvibe/core/styles/app_spacing.dart';
-import 'package:basketvibe/features/courts/presentation/widgets/mini_map_preview.dart';
-import 'package:basketvibe/features/home/presentation/widgets/active_runs_carousel.dart';
-import 'package:basketvibe/features/home/presentation/widgets/baseline_feed_section.dart';
-import 'package:basketvibe/features/home/presentation/widgets/home_quick_action_header.dart';
-import 'package:basketvibe/features/home/presentation/widgets/leaderboard_section.dart';
-import 'package:basketvibe/features/home/presentation/widgets/top_rated_courts_section.dart';
-import 'package:basketvibe/features/home/presentation/widgets/upcoming_events_section.dart';
-import 'package:basketvibe/features/home/presentation/widgets/whos_balling_ticker.dart';
+import 'package:basketvibe/features/courts/presentation/widgets/utils/mini_map_preview.dart';
+import 'package:basketvibe/features/home/presentation/widgets/utils/active_runs_carousel.dart';
+import 'package:basketvibe/features/home/presentation/widgets/utils/baseline_feed_section.dart';
+import 'package:basketvibe/features/home/presentation/widgets/utils/home_quick_action_header.dart';
+import 'package:basketvibe/features/home/presentation/widgets/utils/leaderboard_section.dart';
+import 'package:basketvibe/features/home/presentation/widgets/utils/top_rated_courts_section.dart';
+import 'package:basketvibe/features/home/presentation/widgets/utils/upcoming_events_section.dart';
+import 'package:basketvibe/features/home/presentation/widgets/utils/whos_balling_ticker.dart';
 
 /// Main home feed: header, ticker, active runs, baseline, court finder, events, top courts, leaderboard.
 class HomeFeedContent extends StatelessWidget {

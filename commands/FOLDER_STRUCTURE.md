@@ -92,18 +92,22 @@ lib/
     │   │       ├── sign_up_usecase.dart
     │   │       ├── sign_out_usecase.dart
     │   │       └── get_current_user_usecase.dart
-    │   └── presentation/
-    │       ├── bloc/
-    │       │   ├── auth_bloc.dart
-    │       │   ├── auth_event.dart
-    │       │   └── auth_state.dart
-    │       ├── pages/
-    │       │   ├── login_page.dart
-    │       │   ├── register_page.dart
-    │       │   └── forgot_password_page.dart
-    │       └── widgets/
-    │           ├── auth_form.dart
-    │           └── social_login_button.dart
+│   └── presentation/
+│       ├── cubit/                  ← or bloc/ for BLoC
+│       │   ├── auth_cubit.dart
+│       │   └── auth_state.dart
+│       ├── pages/
+│       │   ├── login_page.dart
+│       │   ├── register_page.dart
+│       │   └── forgot_password_page.dart
+│       └── widgets/
+│           ├── buttons/            ← widget files: *_button.dart
+│           │   └── social_login_button.dart
+│           ├── fields/             ← widget files: *_field.dart
+│           │   └── auth_text_field.dart
+│           ├── utils/               ← small helpers, loaders, etc.
+│           │   └── auth_form.dart
+│           └── (other divisions as needed)
     │
     ├── games/
     │   ├── data/
@@ -123,19 +127,22 @@ lib/
     │   │       ├── create_game_usecase.dart
     │   │       ├── join_game_usecase.dart
     │   │       └── leave_game_usecase.dart
-    │   └── presentation/
-    │       ├── bloc/
-    │       │   ├── games_bloc.dart
-    │       │   ├── games_event.dart
-    │       │   └── games_state.dart
-    │       ├── pages/
-    │       │   ├── games_page.dart
-    │       │   ├── game_detail_page.dart
-    │       │   └── create_game_page.dart
-    │       └── widgets/
-    │           ├── games_list.dart
-    │           ├── game_map_view.dart
-    │           └── game_filter_sheet.dart
+│   └── presentation/
+│       ├── cubit/
+│       │   ├── games_cubit.dart
+│       │   └── games_state.dart
+│       ├── pages/
+│       │   ├── games_page.dart
+│       │   ├── game_detail_page.dart
+│       │   └── create_game_page.dart
+│       └── widgets/
+│           ├── buttons/
+│           │   └── join_game_button.dart
+│           ├── cards/
+│           │   └── game_card.dart
+│           └── utils/
+│               ├── games_list.dart
+│               └── game_filter_sheet.dart
     │
     ├── courts/
     │   └── ... (same data/domain/presentation structure)
@@ -148,11 +155,30 @@ lib/
     │
     └── home/
         └── presentation/
+            ├── cubit/
             ├── pages/
             │   └── home_page.dart    ← Bottom nav shell
             └── widgets/
+                ├── buttons/
+                ├── utils/
                 └── bottom_nav_bar.dart
 ```
+
+## Presentation Layer Structure (per feature)
+
+Every feature’s **presentation** folder must follow:
+
+- **`cubit/`** — Cubits (or **`bloc/`** if using BLoC: bloc, events, states)
+- **`pages/`** — Full screens; files: `*_page.dart`
+- **`widgets/`** — Reusable UI; may be split into subfolders for easier navigation:
+  - **`buttons/`** — e.g. `primary_button.dart`, `social_login_button.dart` (suffix `_button.dart`)
+  - **`fields/`** — e.g. `auth_text_field.dart`, `search_field.dart` (suffix `_field.dart`)
+  - **`utils/`** — form wrappers, loaders, small helpers
+  - **`cards/`**, **`dialogs/`**, etc. as needed
+
+**Widget file naming in subfolders:**  
+If a widget lives in a subfolder, its name must include the folder type.  
+Examples: `buttons/` → `*_button.dart`, `fields/` → `*_field.dart`, `cards/` → `*_card.dart`.
 
 ## Key Rules
 1. Features never import from other features directly — use shared entities via core

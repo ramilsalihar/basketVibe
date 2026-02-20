@@ -3,8 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:basketvibe/core/styles/app_colors.dart';
 import 'package:basketvibe/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:basketvibe/features/auth/presentation/cubit/auth_state.dart';
-import 'package:basketvibe/features/home/presentation/widgets/guest_home_view.dart';
-import 'package:basketvibe/features/home/presentation/widgets/logged_in_home_view.dart';
+import 'package:basketvibe/features/home/presentation/widgets/utils/logged_in_home_view.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -23,7 +22,7 @@ class HomePage extends StatelessWidget {
                   valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
                 ),
               ),
-            AuthUnauthenticated() => const GuestHomeView(),
+            AuthUnauthenticated() => const LoggedInHomeView(),
             AuthAuthenticated() => const LoggedInHomeView(),
           };
         },

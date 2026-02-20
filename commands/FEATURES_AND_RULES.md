@@ -33,6 +33,14 @@
 - Variables/methods: `camelCase`
 - Constants: `camelCase` (avoid SCREAMING_SNAKE)
 
+### Presentation Folder Structure
+- **`presentation/`** contains exactly: **`cubit/`** (or **`bloc/`**), **`pages/`**, **`widgets/`**.
+- **`widgets/`** may be divided into subfolders for navigation: **`buttons/`**, **`fields/`**, **`utils/`**, **`cards/`**, **`dialogs/`**, etc.
+- **Widget file naming in subfolders:** the filename must reflect the folder type:
+  - In **`buttons/`** → name like **`example_button.dart`** (suffix `_button`).
+  - In **`fields/`** → **`example_field.dart`** (suffix `_field`).
+  - In **`cards/`** → **`example_card.dart`**, in **`utils/`** no strict suffix (e.g. `auth_form.dart`, `shimmer_loader.dart`).
+
 ### BLoC Conventions
 - One BLoC per feature screen/flow
 - Events are actions (verbs): `LoadGames`, `JoinGame`, `CreateGame`

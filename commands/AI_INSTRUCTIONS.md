@@ -47,11 +47,12 @@ Create in `lib/features/{feature}/data/`:
 
 ### Step 3 — Presentation Layer
 Create in `lib/features/{feature}/presentation/`:
-- `bloc/{name}_bloc.dart` — BLoC with events/states
-- `bloc/{name}_event.dart` — sealed class events
-- `bloc/{name}_state.dart` — sealed class states
-- `pages/{name}_page.dart` — BlocProvider + BlocConsumer
-- `widgets/` — extracted UI components
+- **`cubit/`** (or **`bloc/`**) — `{name}_cubit.dart`, `{name}_state.dart` (and for BLoC: `{name}_event.dart`)
+- **`pages/`** — `{name}_page.dart` (BlocProvider + BlocConsumer where needed)
+- **`widgets/`** — extracted UI; use subfolders for clarity:
+  - **`buttons/`** → files named **`*_button.dart`** (e.g. `social_login_button.dart`)
+  - **`fields/`** → **`*_field.dart`** (e.g. `auth_text_field.dart`)
+  - **`utils/`**, **`cards/`**, **`dialogs/`** as needed (suffix match folder: `*_card.dart`, etc.)
 
 ### Step 4 — DI Registration
 Add to injection module or `core/app/di/injection.dart`

@@ -38,10 +38,11 @@ This file helps route tasks to the appropriate documentation files in the `comma
 - `FOLDER_STRUCTURE.md` - File organization, where files should be placed
 
 **Keywords to trigger:**
-- architecture, clean architecture, BLoC, bloc
+- architecture, clean architecture, BLoC, bloc, cubit
 - domain layer, data layer, presentation layer
 - use case, repository, data source, entity, model
 - folder structure, file organization, where to put files
+- presentation widgets, buttons, fields, *_button.dart
 
 ---
 

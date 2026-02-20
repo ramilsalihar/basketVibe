@@ -10,7 +10,7 @@ import 'package:basketvibe/features/onboarding/presentation/bloc/onboarding_bloc
 import 'package:basketvibe/features/onboarding/presentation/bloc/onboarding_event.dart';
 import 'package:basketvibe/features/onboarding/presentation/bloc/onboarding_state.dart';
 import 'package:basketvibe/features/onboarding/presentation/models/onboarding_content_data.dart';
-import 'package:basketvibe/features/onboarding/presentation/widgets/onboarding_content.dart';
+import 'package:basketvibe/features/onboarding/presentation/widgets/utils/onboarding_content.dart';
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});

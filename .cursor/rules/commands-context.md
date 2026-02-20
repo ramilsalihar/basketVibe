@@ -42,3 +42,8 @@ This ensures consistent code quality and adherence to project standards.
 ## Code Style (from FEATURES_AND_RULES / AI_INSTRUCTIONS)
 - **Imports:** Use absolute paths only. Project: `package:basketvibe/...`. No relative imports (`../`, `./`).
 - **SOLID:** Single responsibility, depend on abstractions (interfaces), small interfaces, extend via new classes.
+
+## Presentation Structure (from FOLDER_STRUCTURE)
+- **presentation/** contains: **cubit/** (or **bloc/**), **pages/**, **widgets/**.
+- **widgets/** can have subfolders: **buttons/**, **fields/**, **utils/**, **cards/**, **dialogs/**, etc.
+- Widgets in a subfolder must be named with the folder type: e.g. `buttons/` → **`*_button.dart`**, `fields/` → **`*_field.dart`**, `cards/` → **`*_card.dart`**.

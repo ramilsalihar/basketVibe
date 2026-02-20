@@ -9,7 +9,7 @@ import 'package:basketvibe/features/games/presentation/pages/create_game_placeho
 import 'package:basketvibe/features/home/presentation/pages/home_page.dart';
 import 'package:basketvibe/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:basketvibe/features/onboarding/presentation/pages/onboarding_page.dart';
-import 'package:basketvibe/features/splash/presentation/pages/splash_page.dart';
+import 'package:basketvibe/features/onboarding/presentation/pages/splash_page.dart';
 
 class AppRouter {
   AppRouter._();

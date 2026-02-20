@@ -1,4 +1,3 @@
-import 'package:basketvibe/features/home/presentation/widgets/utils/bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -8,6 +7,7 @@ import 'package:basketvibe/core/styles/app_spacing.dart';
 import 'package:basketvibe/core/styles/app_text_styles.dart';
 import 'package:basketvibe/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:basketvibe/features/home/presentation/pages/home_feed_page.dart';
+import 'package:basketvibe/features/home/presentation/widgets/utils/bottom_nav_bar.dart';
 
 class LoggedInHomeView extends StatefulWidget {
   const LoggedInHomeView({super.key});

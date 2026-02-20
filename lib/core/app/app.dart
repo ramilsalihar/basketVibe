@@ -13,8 +13,12 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     Bloc.observer = AppBlocObserver();
 
-    return BlocProvider<AuthCubit>(
-      create: (_) => getIt<AuthCubit>(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<AuthCubit>(
+          create: (_) => getIt<AuthCubit>(),
+        ),
+      ],
       child: MaterialApp.router(
         title: 'BasketVibe',
         debugShowCheckedModeBanner: false,
