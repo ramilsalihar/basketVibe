@@ -55,6 +55,5 @@ extension FailureMessage on Failure {
     ValidationFailure(:final message) => message.isNotEmpty ? message : 'Please check your input and try again.',
     PermissionFailure(:final message) => message.isNotEmpty ? message : 'Permission denied. Please enable in settings.',
     CacheFailure(:final message) => message.isNotEmpty ? message : 'Storage error occurred.',
-    _ => 'An unexpected error occurred.',
   };
 }

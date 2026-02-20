@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../../../core/styles/app_colors.dart';
-import '../../../../core/styles/app_text_styles.dart';
-import '../../../../core/styles/app_spacing.dart';
-import '../models/onboarding_content_data.dart';
+import 'package:basketvibe/core/styles/app_colors.dart';
+import 'package:basketvibe/core/styles/app_spacing.dart';
+import 'package:basketvibe/core/styles/app_text_styles.dart';
+import 'package:basketvibe/features/onboarding/presentation/models/onboarding_content_data.dart';
 
 class OnboardingContent extends StatelessWidget {
   final OnboardingContentData data;

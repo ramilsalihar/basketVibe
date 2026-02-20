@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/styles/app_colors.dart';
-import '../../../../core/styles/app_text_styles.dart';
-import '../../../../core/styles/app_spacing.dart';
-import '../../../../core/styles/app_border_radius.dart';
-import '../../../../core/constants/route_constants.dart';
-import '../bloc/onboarding_bloc.dart';
-import '../bloc/onboarding_event.dart';
-import '../bloc/onboarding_state.dart';
-import '../widgets/onboarding_content.dart';
-import '../models/onboarding_content_data.dart';
+import 'package:basketvibe/core/constants/route_constants.dart';
+import 'package:basketvibe/core/styles/app_border_radius.dart';
+import 'package:basketvibe/core/styles/app_colors.dart';
+import 'package:basketvibe/core/styles/app_spacing.dart';
+import 'package:basketvibe/core/styles/app_text_styles.dart';
+import 'package:basketvibe/features/onboarding/presentation/bloc/onboarding_bloc.dart';
+import 'package:basketvibe/features/onboarding/presentation/bloc/onboarding_event.dart';
+import 'package:basketvibe/features/onboarding/presentation/bloc/onboarding_state.dart';
+import 'package:basketvibe/features/onboarding/presentation/models/onboarding_content_data.dart';
+import 'package:basketvibe/features/onboarding/presentation/widgets/onboarding_content.dart';
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});

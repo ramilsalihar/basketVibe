@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../styles/app_colors.dart';
+import 'package:basketvibe/core/styles/app_colors.dart';
 
 extension ContextExtension on BuildContext {
   /// Get theme brightness

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../styles/app_theme.dart';
-import '../router/app_router.dart';
-import 'app_bloc_observer.dart';
+import 'package:basketvibe/core/app/app_bloc_observer.dart';
+import 'package:basketvibe/core/router/app_router.dart';
+import 'package:basketvibe/core/styles/app_theme.dart';
 
 class App extends StatelessWidget {
   const App({super.key});

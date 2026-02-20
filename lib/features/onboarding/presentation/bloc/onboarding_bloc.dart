@@ -1,8 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../domain/usecases/check_onboarding_status_usecase.dart';
-import '../../domain/usecases/set_onboarding_complete_usecase.dart';
-import 'onboarding_event.dart';
-import 'onboarding_state.dart';
+import 'package:basketvibe/features/onboarding/domain/usecases/check_onboarding_status_usecase.dart';
+import 'package:basketvibe/features/onboarding/domain/usecases/set_onboarding_complete_usecase.dart';
+import 'package:basketvibe/features/onboarding/presentation/bloc/onboarding_event.dart';
+import 'package:basketvibe/features/onboarding/presentation/bloc/onboarding_state.dart';
 
 class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   final CheckOnboardingStatusUseCase _checkOnboardingStatusUseCase;

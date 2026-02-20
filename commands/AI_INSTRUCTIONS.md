@@ -61,8 +61,37 @@ Add route to `core/router/app_router.dart`
 
 ---
 
+## Code Style Rules
+
+### Imports — Use Absolute Paths Only
+**Always use package imports.** No relative imports (`../`, `./`).
+
+```dart
+// ✅ Correct — absolute (package) imports
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:basketvibe/core/styles/app_colors.dart';
+import 'package:basketvibe/features/auth/presentation/widgets/auth_text_field.dart';
+
+// ❌ Wrong — relative imports
+import '../../core/styles/app_colors.dart';
+import '../widgets/auth_text_field.dart';
+```
+
+Project code: `package:basketvibe/<path_from_lib/>`. Keeps refactors safe and dependencies explicit.
+
+### SOLID Principles
+- **S**ingle Responsibility — One reason to change per class (e.g. one use case = one action).
+- **O**pen/Closed — Extend via new classes (e.g. new Failure types), not by editing existing ones.
+- **L**iskov Substitution — Implementations must be substitutable for their interfaces (repositories, data sources).
+- **I**nterface Segregation — Small, focused interfaces (e.g. repository contracts per feature).
+- **D**ependency Inversion — Depend on abstractions (repository interfaces, `LocalStorageService`); inject concrete implementations via GetIt.
+
+---
+
 ## Code Quality Checklist
 Before finalizing any code, verify:
+- [ ] **Imports use absolute paths only** (`package:basketvibe/...` for project code)
 - [ ] All classes use `Equatable` where needed
 - [ ] All errors use `Either<Failure, T>` (not try/catch in use cases)
 - [ ] No Flutter imports in domain layer
@@ -72,6 +101,7 @@ Before finalizing any code, verify:
 - [ ] File is in the correct directory per FOLDER_STRUCTURE.md
 - [ ] `const` constructors used where possible
 - [ ] No business logic in widgets
+- [ ] SOLID principles respected (single responsibility, depend on abstractions)
 
 ---
 

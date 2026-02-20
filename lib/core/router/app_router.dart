@@ -1,13 +1,13 @@
-import 'package:flutter/material.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import '../../features/home/presentation/pages/home_page.dart';
-import '../../features/splash/presentation/pages/splash_page.dart';
-import '../../features/onboarding/presentation/pages/onboarding_page.dart';
-import '../../features/onboarding/presentation/bloc/onboarding_bloc.dart';
-import '../../features/auth/presentation/pages/login_page.dart';
-import '../constants/route_constants.dart';
-import '../app/di/injection.dart';
+import 'package:basketvibe/core/app/di/injection.dart';
+import 'package:basketvibe/core/constants/route_constants.dart';
+import 'package:basketvibe/features/auth/presentation/pages/login_page.dart';
+import 'package:basketvibe/features/home/presentation/pages/home_page.dart';
+import 'package:basketvibe/features/onboarding/presentation/bloc/onboarding_bloc.dart';
+import 'package:basketvibe/features/onboarding/presentation/pages/onboarding_page.dart';
+import 'package:basketvibe/features/splash/presentation/pages/splash_page.dart';
 
 class AppRouter {
   AppRouter._();

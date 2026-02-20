@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'app_colors.dart';
-import 'app_text_styles.dart';
-import 'app_border_radius.dart';
+import 'package:basketvibe/core/styles/app_colors.dart';
+import 'package:basketvibe/core/styles/app_text_styles.dart';
+import 'package:basketvibe/core/styles/app_border_radius.dart';
 
 class AppTheme {
   AppTheme._();
@@ -46,7 +46,7 @@ class AppTheme {
         titleTextStyle: AppTextStyles.h2.copyWith(color: textPri),
         iconTheme: IconThemeData(color: textPri),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: surface,
         elevation: 0,
         shape: const RoundedRectangleBorder(borderRadius: AppRadius.brMD),

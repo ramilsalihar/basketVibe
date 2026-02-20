@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import '../../../../core/styles/app_colors.dart';
-import '../../../../core/styles/app_text_styles.dart';
-import '../../../../core/styles/app_spacing.dart';
-import '../../../../core/styles/app_border_radius.dart';
-import '../../../../core/utils/helpers/validator_helper.dart';
-import '../../../../core/constants/route_constants.dart';
-import '../widgets/auth_text_field.dart';
+import 'package:basketvibe/core/styles/app_border_radius.dart';
+import 'package:basketvibe/core/styles/app_colors.dart';
+import 'package:basketvibe/core/styles/app_spacing.dart';
+import 'package:basketvibe/core/styles/app_text_styles.dart';
+import 'package:basketvibe/core/utils/helpers/validator_helper.dart';
+import 'package:basketvibe/features/auth/presentation/widgets/auth_text_field.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../../core/styles/app_colors.dart';
-import '../../../../core/styles/app_text_styles.dart';
-import '../../../../core/styles/app_spacing.dart';
-import '../widgets/bottom_nav_bar.dart';
+import 'package:basketvibe/core/styles/app_spacing.dart';
+import 'package:basketvibe/core/styles/app_text_styles.dart';
+import 'package:basketvibe/features/home/presentation/widgets/bottom_nav_bar.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

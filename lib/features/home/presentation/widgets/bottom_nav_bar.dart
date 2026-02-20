@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../core/styles/app_colors.dart';
-import '../../../../core/styles/app_border_radius.dart';
+import 'package:basketvibe/core/styles/app_border_radius.dart';
+import 'package:basketvibe/core/styles/app_colors.dart';
 
 class BottomNavBar extends StatelessWidget {
   final int currentIndex;

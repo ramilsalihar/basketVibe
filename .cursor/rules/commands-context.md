@@ -38,3 +38,7 @@ All documentation is in the `commands/` folder:
 5. Verify against the code quality checklist in `AI_INSTRUCTIONS.md`
 
 This ensures consistent code quality and adherence to project standards.
+
+## Code Style (from FEATURES_AND_RULES / AI_INSTRUCTIONS)
+- **Imports:** Use absolute paths only. Project: `package:basketvibe/...`. No relative imports (`../`, `./`).
+- **SOLID:** Single responsibility, depend on abstractions (interfaces), small interfaces, extend via new classes.

@@ -46,17 +46,33 @@
 - Use `const` constructors wherever possible
 - Name keys: `Key('login_button')` for testing
 
-### Import Order (follow flutter lints)
+### Imports — Absolute Paths Only (No Relative Imports)
+Use **package imports only**. Project code: `package:basketvibe/<path_from_lib/>`.
+
 ```dart
 // 1. dart:
 import 'dart:async';
 // 2. package:flutter/
 import 'package:flutter/material.dart';
-// 3. package: (third party)
+// 3. package: (third-party)
 import 'package:flutter_bloc/flutter_bloc.dart';
-// 4. relative imports
-import '../widgets/game_card.dart';
+import 'package:go_router/go_router.dart';
+// 4. package:basketvibe (project — absolute path)
+import 'package:basketvibe/core/styles/app_colors.dart';
+import 'package:basketvibe/core/errors/failures.dart';
+import 'package:basketvibe/features/games/presentation/widgets/game_card.dart';
 ```
+
+**Do not use:** `import '../widgets/game_card.dart';` or any `../` / `./` imports.
+
+### SOLID Principles
+| Principle | Apply in BasketVibe |
+|-----------|---------------------|
+| **S**ingle Responsibility | One use case = one action; one BLoC = one screen/flow; widgets only render. |
+| **O**pen/Closed | Add new failures, features, use cases by adding classes; avoid changing existing ones for new behavior. |
+| **L**iskov Substitution | Every repository impl and data source must be usable wherever the interface is expected. |
+| **I**nterface Segregation | Small repository contracts per feature; no fat interfaces. |
+| **D**ependency Inversion | Depend on abstractions (e.g. `AuthRepository`, `LocalStorageService`); inject implementations via GetIt. |
 
 ### Error Handling Pattern
 ```dart
@@ -125,6 +141,8 @@ group('GamesBloc', () {
 ## DO's and DON'Ts
 
 ### ✅ DO
+- **Use absolute imports only** — `package:basketvibe/...` for project code; `package:...` for dependencies
+- Follow **SOLID** — single responsibility, depend on abstractions, small interfaces
 - Use `go_router` for navigation with route guards
 - Use `GetIt` + `@injectable` for DI
 - Use `freezed` for immutable models
@@ -134,6 +152,7 @@ group('GamesBloc', () {
 - Write `toEntity()` on Models, not `fromEntity()` on Entities
 
 ### ❌ DON'T
+- **Don't use relative imports** — no `../` or `./` for project files
 - Don't put business logic in widgets
 - Don't call Firebase directly from BLoC or presentation
 - Don't use `context` in BLoC
@@ -141,3 +160,4 @@ group('GamesBloc', () {
 - Don't use `setState` — use BLoC
 - Don't import feature A directly into feature B
 - Don't use `dynamic` types
+- Don't depend on concrete classes where an abstraction exists (respect D in SOLID)

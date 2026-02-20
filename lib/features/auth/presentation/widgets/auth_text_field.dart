@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../core/styles/app_colors.dart';
-import '../../../../core/styles/app_text_styles.dart';
+import 'package:basketvibe/core/styles/app_colors.dart';
+import 'package:basketvibe/core/styles/app_text_styles.dart';
 
 class AuthTextField extends StatelessWidget {
   final TextEditingController controller;

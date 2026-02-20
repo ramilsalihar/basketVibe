@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
-import '../../../../core/errors/failures.dart';
-import '../../../../core/local_storage/local_storage_service.dart';
-import '../../../../core/local_storage/local_storage_keys.dart';
+import 'package:basketvibe/core/errors/failures.dart';
+import 'package:basketvibe/core/local_storage/local_storage_keys.dart';
+import 'package:basketvibe/core/local_storage/local_storage_service.dart';
 
 class CheckOnboardingStatusUseCase {
   final LocalStorageService _localStorage;
