@@ -5,7 +5,8 @@ import 'package:basketvibe/core/app/di/injection.dart';
 import 'package:basketvibe/core/constants/route_constants.dart';
 import 'package:basketvibe/features/auth/presentation/pages/login_page.dart';
 import 'package:basketvibe/features/courts/presentation/pages/court_finder_page.dart';
-import 'package:basketvibe/features/games/presentation/pages/create_game_placeholder_page.dart';
+import 'package:basketvibe/features/games/presentation/pages/create_game_page.dart';
+import 'package:basketvibe/features/games/presentation/cubit/game_cubit.dart';
 import 'package:basketvibe/features/home/presentation/pages/home_page.dart';
 import 'package:basketvibe/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:basketvibe/features/onboarding/presentation/pages/onboarding_page.dart';
@@ -55,11 +56,14 @@ class AppRouter {
         builder: (context, state) => const CourtFinderPage(),
       ),
 
-      // Create Game (placeholder)
+      // Create Game
       GoRoute(
         path: RouteConstants.createGame,
         name: 'createGame',
-        builder: (context, state) => const CreateGamePlaceholderPage(),
+        builder: (context, state) => BlocProvider(
+          create: (_) => getIt<GameCubit>(),
+          child: const CreateGamePage(),
+        ),
       ),
     ],
   );

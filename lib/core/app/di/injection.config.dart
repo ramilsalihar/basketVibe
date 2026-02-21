@@ -13,7 +13,11 @@ import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 import 'package:shared_preferences/shared_preferences.dart' as _i460;
 
-import '../../../features/auth/presentation/cubit/auth_cubit.dart' as _i20;
+import '../../../features/auth/presentation/cubit/auth_cubit.dart' as _i1066;
+import '../../../features/games/domain/di/game_module.dart' as _i472;
+import '../../../features/games/domain/repositories/game_repository.dart'
+    as _i192;
+import '../../../features/games/presentation/cubit/game_cubit.dart' as _i848;
 import '../../../features/onboarding/domain/di/onboarding_module.dart' as _i96;
 import '../../../features/onboarding/domain/usecases/check_onboarding_status_usecase.dart'
     as _i1057;
@@ -31,8 +35,10 @@ extension GetItInjectableX on _i174.GetIt {
     _i526.EnvironmentFilter? environmentFilter,
   }) async {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
+    final gameModule = _$GameModule();
     final sharedPreferencesModule = _$SharedPreferencesModule();
     final onboardingModule = _$OnboardingModule();
+    gh.factory<_i192.GameRepository>(() => gameModule.gameRepository());
     await gh.singletonAsync<_i460.SharedPreferences>(
       () => sharedPreferencesModule.sharedPreferences,
       preResolve: true,
@@ -40,8 +46,11 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i189.LocalStorageService>(
       () => _i189.LocalStorageServiceImpl(gh<_i460.SharedPreferences>()),
     );
-    gh.factory<_i20.AuthCubit>(
-      () => _i20.AuthCubit(gh<_i189.LocalStorageService>()),
+    gh.factory<_i848.GameCubit>(
+      () => gameModule.gameCubit(gh<_i192.GameRepository>()),
+    );
+    gh.factory<_i1066.AuthCubit>(
+      () => _i1066.AuthCubit(gh<_i189.LocalStorageService>()),
     );
     gh.factory<_i1057.CheckOnboardingStatusUseCase>(
       () => onboardingModule.checkOnboardingStatusUseCase(
@@ -62,6 +71,8 @@ extension GetItInjectableX on _i174.GetIt {
     return this;
   }
 }
+
+class _$GameModule extends _i472.GameModule {}
 
 class _$SharedPreferencesModule extends _i813.SharedPreferencesModule {}
 
