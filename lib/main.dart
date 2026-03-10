@@ -9,4 +9,6 @@ void main() async {
   await configureDependencies();
 
   runApp(const App());
+
+  // Updates
 }
