@@ -31,7 +31,7 @@ class AppTheme {
         brightness: brightness,
         primary: AppColors.primary,
         onPrimary: Colors.white,
-        secondary: AppColors.accentPurple,
+        secondary: AppColors.secondary,
         onSecondary: Colors.white,
         error: AppColors.error,
         onError: Colors.white,

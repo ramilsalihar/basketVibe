@@ -73,7 +73,7 @@ class _EventBanner extends StatelessWidget {
         gradient: LinearGradient(
           colors: [
             AppColors.primary.withOpacity(0.15),
-            AppColors.accentPurple.withOpacity(0.1),
+            AppColors.secondary.withOpacity(0.1),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,

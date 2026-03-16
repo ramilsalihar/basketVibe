@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -12,7 +13,17 @@ import 'package:basketvibe/features/games/domain/entities/game_entity.dart';
 import 'package:basketvibe/features/games/presentation/cubit/game_cubit.dart';
 import 'package:basketvibe/features/games/presentation/cubit/game_state.dart';
 
-/// Create a new game lobby ("The Run").
+/// Court option for dropdown (matches mock courts from map/court finder).
+class _CourtOption {
+  const _CourtOption({required this.id, required this.name, this.address});
+  final String id;
+  final String name;
+  final String? address;
+}
+
+enum _PaymentOption { online, cash, free }
+
+/// Host a game — create a new game lobby ("The Run").
 class CreateGamePage extends StatefulWidget {
   const CreateGamePage({super.key});
 
@@ -21,66 +32,97 @@ class CreateGamePage extends StatefulWidget {
 }
 
 class _CreateGamePageState extends State<CreateGamePage> {
+  static const List<_CourtOption> _courts = [
+    _CourtOption(id: 'court_1', name: 'Восток-5', address: 'Улица · Бесплатно'),
+    _CourtOption(id: 'court_2', name: 'Спартак', address: 'Зал · Платно'),
+    _CourtOption(id: 'court_3', name: 'Бишкек Арена', address: 'Зал · Платно'),
+  ];
+
   final _formKey = GlobalKey<FormState>();
-  final _courtNameController = TextEditingController();
-  final _addressController = TextEditingController();
+  final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _maxPlayersController = TextEditingController(text: '10');
+  final _cashAmountController = TextEditingController();
 
+  _CourtOption? _selectedCourt;
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
-  GameLevel _selectedLevel = GameLevel.balanced;
-  GameVisibility _selectedVisibility = GameVisibility.public;
+  _PaymentOption _paymentOption = _PaymentOption.free;
   int _maxPlayers = 10;
 
   @override
   void dispose() {
-    _courtNameController.dispose();
-    _addressController.dispose();
+    _titleController.dispose();
     _descriptionController.dispose();
     _maxPlayersController.dispose();
+    _cashAmountController.dispose();
     super.dispose();
   }
 
-  Future<void> _selectDate(BuildContext context) async {
+  Future<void> _showDatePicker(BuildContext context) async {
     final now = DateTime.now();
-    final picked = await showDatePicker(
+    await showCupertinoModalPopup<void>(
       context: context,
-      initialDate: now,
-      firstDate: now,
-      lastDate: now.add(const Duration(days: 30)),
+      builder: (context) => _DatePickerSheet(
+        initial: _selectedDate ?? now,
+        minimumDate: now,
+        maximumDate: now.add(const Duration(days: 365)),
+        onDone: (DateTime value) {
+          setState(() => _selectedDate = value);
+        },
+      ),
     );
-    if (picked != null) {
-      setState(() => _selectedDate = picked);
-    }
   }
 
-  Future<void> _selectTime(BuildContext context) async {
-    final picked = await showTimePicker(
+  Future<void> _showTimePicker(BuildContext context) async {
+    TimeOfDay picked = _selectedTime ?? TimeOfDay.now();
+    final initial = DateTime(2000, 1, 1, picked.hour, picked.minute);
+
+    await showCupertinoModalPopup<void>(
       context: context,
-      initialTime: TimeOfDay.now(),
+      builder: (context) => _TimePickerSheet(
+        initial: initial,
+        onDone: (TimeOfDay value) {
+          setState(() => _selectedTime = value);
+        },
+      ),
     );
-    if (picked != null) {
-      setState(() => _selectedTime = picked);
-    }
   }
 
   void _submitForm(BuildContext context) {
     if (!_formKey.currentState!.validate()) return;
 
-    if (_selectedDate == null || _selectedTime == null) {
+    if (_selectedCourt == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Пожалуйста, выберите дату и время')),
+        const SnackBar(content: Text('Выберите площадку')),
       );
       return;
     }
 
-    final hostId = context.read<AuthCubit>().state is AuthAuthenticated
-        ? 'user_1' // TODO: Get actual user ID
-        : 'guest_1';
-    final hostName = 'Вы'; // TODO: Get actual user name
+    if (_selectedDate == null || _selectedTime == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Выберите дату и время')),
+      );
+      return;
+    }
 
-    // Combine date and time
+    double? pricePerPlayer;
+    if (_paymentOption == _PaymentOption.cash) {
+      final amount = double.tryParse(_cashAmountController.text.trim());
+      if (amount == null || amount < 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Введите корректную сумму')),
+        );
+        return;
+      }
+      pricePerPlayer = amount;
+    }
+
+    final hostId = context.read<AuthCubit>().state is AuthAuthenticated
+        ? 'user_1'
+        : 'guest_1';
+    final hostName = 'Вы';
+
     final startTime = DateTime(
       _selectedDate!.year,
       _selectedDate!.month,
@@ -90,25 +132,27 @@ class _CreateGamePageState extends State<CreateGamePage> {
     );
 
     final game = GameEntity(
-      id: '', // Will be generated by repository
-      courtId: 'court_${_courtNameController.text}',
-      courtName: _courtNameController.text,
-      city: 'Бишкек', // TODO: Get from location selector
-      address: _addressController.text.isNotEmpty
-          ? _addressController.text
-          : _courtNameController.text,
+      id: '',
+      courtId: _selectedCourt!.id,
+      courtName: _selectedCourt!.name,
+      city: 'Бишкек',
+      address: _selectedCourt!.address ?? _selectedCourt!.name,
       hostId: hostId,
       hostName: hostName,
       startTime: startTime,
-      duration: const Duration(hours: 2), // Default 2 hours
+      duration: const Duration(hours: 2),
       maxPlayers: _maxPlayers,
-      currentPlayers: 1, // Host is included
-      visibility: _selectedVisibility,
-      level: _selectedLevel,
+      currentPlayers: 1,
+      visibility: GameVisibility.public,
+      level: GameLevel.balanced,
       status: GameStatus.open,
-      description: _descriptionController.text.isNotEmpty
-          ? _descriptionController.text
-          : null,
+      title: _titleController.text.trim().isEmpty
+          ? null
+          : _titleController.text.trim(),
+      description: _descriptionController.text.trim().isEmpty
+          ? null
+          : _descriptionController.text.trim(),
+      pricePerPlayer: pricePerPlayer,
     );
 
     context.read<GameCubit>().createGame(game);
@@ -140,7 +184,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
       child: Scaffold(
         backgroundColor: isDark ? AppColors.darkBg : AppColors.lightBg,
         appBar: AppBar(
-          title: const Text('Создать ран'),
+          title: const Text('Host a game'),
           leading: IconButton(
             icon: const Icon(Icons.close),
             onPressed: () => context.pop(),
@@ -158,36 +202,63 @@ class _CreateGamePageState extends State<CreateGamePage> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     AppSpacing.gapLG,
-                    // Court Name
+                    // Title
                     TextFormField(
-                      controller: _courtNameController,
+                      controller: _titleController,
                       decoration: InputDecoration(
-                        labelText: 'Площадка *',
-                        hintText: 'Например: Восток-5',
+                        labelText: 'Title *',
+                        hintText: 'e.g. Evening Run, 3x3 Tournament',
                         border: OutlineInputBorder(
                           borderRadius: AppRadius.brMD,
                         ),
                       ),
                       style: AppTextStyles.bodyMD,
                       validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Введите название площадки';
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Enter a title';
                         }
                         return null;
                       },
                     ),
                     AppSpacing.gapMD,
-                    // Address (optional)
+                    // Description
                     TextFormField(
-                      controller: _addressController,
+                      controller: _descriptionController,
                       decoration: InputDecoration(
-                        labelText: 'Адрес (необязательно)',
-                        hintText: 'Например: ул. Восток-5',
+                        labelText: 'Description',
+                        hintText: 'e.g. 3x3, intermediate, bring dark tee',
                         border: OutlineInputBorder(
                           borderRadius: AppRadius.brMD,
                         ),
                       ),
                       style: AppTextStyles.bodyMD,
+                      maxLines: 3,
+                    ),
+                    AppSpacing.gapMD,
+                    // Court dropdown
+                    DropdownButtonFormField<_CourtOption>(
+                      value: _selectedCourt,
+                      decoration: InputDecoration(
+                        labelText: 'Court *',
+                        border: OutlineInputBorder(
+                          borderRadius: AppRadius.brMD,
+                        ),
+                      ),
+                      hint: const Text('Choose a court'),
+                      items: _courts
+                          .map(
+                            (c) => DropdownMenuItem(
+                              value: c,
+                              child: Text(c.name),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (value) =>
+                          setState(() => _selectedCourt = value),
+                      validator: (value) {
+                        if (value == null) return 'Choose a court';
+                        return null;
+                      },
                     ),
                     AppSpacing.gapMD,
                     // Date & Time
@@ -195,7 +266,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
                       children: [
                         Expanded(
                           child: InkWell(
-                            onTap: () => _selectDate(context),
+                            onTap: () => _showDatePicker(context),
                             child: Container(
                               padding: AppSpacing.cardPadding,
                               decoration: BoxDecoration(
@@ -217,7 +288,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
                                   Expanded(
                                     child: Text(
                                       _selectedDate == null
-                                          ? 'Дата *'
+                                          ? 'Date *'
                                           : DateFormat('dd.MM.yyyy')
                                               .format(_selectedDate!),
                                       style: AppTextStyles.bodyMD.copyWith(
@@ -239,7 +310,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
                         AppSpacing.rowGapMD,
                         Expanded(
                           child: InkWell(
-                            onTap: () => _selectTime(context),
+                            onTap: () => _showTimePicker(context),
                             child: Container(
                               padding: AppSpacing.cardPadding,
                               decoration: BoxDecoration(
@@ -261,7 +332,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
                                   Expanded(
                                     child: Text(
                                       _selectedTime == null
-                                          ? 'Время *'
+                                          ? 'Time *'
                                           : _selectedTime!.format(context),
                                       style: AppTextStyles.bodyMD.copyWith(
                                         color: _selectedTime == null
@@ -286,7 +357,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
                     TextFormField(
                       controller: _maxPlayersController,
                       decoration: InputDecoration(
-                        labelText: 'Максимум игроков *',
+                        labelText: 'Max players *',
                         hintText: '10',
                         border: OutlineInputBorder(
                           borderRadius: AppRadius.brMD,
@@ -296,20 +367,20 @@ class _CreateGamePageState extends State<CreateGamePage> {
                       style: AppTextStyles.bodyMD,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Введите количество игроков';
+                          return 'Enter number of players';
                         }
                         final players = int.tryParse(value);
                         if (players == null || players < 2 || players > 20) {
-                          return 'От 2 до 20 игроков';
+                          return 'Between 2 and 20';
                         }
                         _maxPlayers = players;
                         return null;
                       },
                     ),
                     AppSpacing.gapMD,
-                    // Skill Level
+                    // Payment options
                     Text(
-                      'Уровень игры *',
+                      'Payment',
                       style: AppTextStyles.labelMD.copyWith(
                         color: isDark
                             ? AppColors.darkTextPrimary
@@ -317,73 +388,58 @@ class _CreateGamePageState extends State<CreateGamePage> {
                       ),
                     ),
                     AppSpacing.gapSM,
-                    SegmentedButton<GameLevel>(
-                      segments: const [
-                        ButtonSegment(
-                          value: GameLevel.casual,
-                          label: Text('Казуал'),
+                    ..._PaymentOption.values.map((option) {
+                      return RadioListTile<_PaymentOption>(
+                        title: Text(
+                          option == _PaymentOption.online
+                              ? 'Online'
+                              : option == _PaymentOption.cash
+                                  ? 'Cash'
+                                  : 'Free',
                         ),
-                        ButtonSegment(
-                          value: GameLevel.balanced,
-                          label: Text('Средний'),
-                        ),
-                        ButtonSegment(
-                          value: GameLevel.competitive,
-                          label: Text('Профи'),
-                        ),
-                      ],
-                      selected: {_selectedLevel},
-                      onSelectionChanged: (Set<GameLevel> selection) {
-                        setState(() => _selectedLevel = selection.first);
-                      },
-                    ),
-                    AppSpacing.gapMD,
-                    // Visibility
-                    Text(
-                      'Видимость',
-                      style: AppTextStyles.labelMD.copyWith(
-                        color: isDark
-                            ? AppColors.darkTextPrimary
-                            : AppColors.lightTextPrimary,
-                      ),
-                    ),
-                    AppSpacing.gapSM,
-                    SegmentedButton<GameVisibility>(
-                      segments: const [
-                        ButtonSegment(
-                          value: GameVisibility.public,
-                          label: Text('Публично'),
-                        ),
-                        ButtonSegment(
-                          value: GameVisibility.friendsOnly,
-                          label: Text('Друзья'),
-                        ),
-                        ButtonSegment(
-                          value: GameVisibility.private,
-                          label: Text('Приватно'),
-                        ),
-                      ],
-                      selected: {_selectedVisibility},
-                      onSelectionChanged: (Set<GameVisibility> selection) {
-                        setState(() => _selectedVisibility = selection.first);
-                      },
-                    ),
-                    AppSpacing.gapMD,
-                    // Description
-                    TextFormField(
-                      controller: _descriptionController,
-                      decoration: InputDecoration(
-                        labelText: 'Описание (необязательно)',
-                        hintText: 'Например: 3x3, intermediate, bring dark tee',
-                        border: OutlineInputBorder(
-                          borderRadius: AppRadius.brMD,
+                        value: option,
+                        groupValue: _paymentOption,
+                        onChanged: (value) =>
+                            setState(() => _paymentOption = value!),
+                        activeColor: AppColors.primary,
+                      );
+                    }),
+                    if (_paymentOption == _PaymentOption.online) ...[
+                      AppSpacing.gapSM,
+                      Padding(
+                        padding: const EdgeInsets.only(left: 16),
+                        child: Text(
+                          'In development',
+                          style: AppTextStyles.bodySM.copyWith(
+                            color: isDark
+                                ? AppColors.darkTextSecondary
+                                : AppColors.lightTextSecondary,
+                            fontStyle: FontStyle.italic,
+                          ),
                         ),
                       ),
-                      style: AppTextStyles.bodyMD,
-                      maxLines: 3,
-                    ),
+                    ],
+                    if (_paymentOption == _PaymentOption.cash) ...[
+                      AppSpacing.gapSM,
+                      Padding(
+                        padding: const EdgeInsets.only(left: 16),
+                        child: TextFormField(
+                          controller: _cashAmountController,
+                          decoration: InputDecoration(
+                            labelText: 'Amount to bring',
+                            hintText: 'e.g. 500',
+                            border: OutlineInputBorder(
+                              borderRadius: AppRadius.brMD,
+                            ),
+                          ),
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                          ),
+                          style: AppTextStyles.bodyMD,
+                        ),
+                      ),
+                    ],
                     AppSpacing.gapXL,
-                    // Submit Button
                     ElevatedButton(
                       onPressed: isLoading ? null : () => _submitForm(context),
                       style: ElevatedButton.styleFrom(
@@ -405,7 +461,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
                               ),
                             )
                           : Text(
-                              'Создать ран',
+                              'Host game',
                               style: AppTextStyles.buttonLG.copyWith(
                                 color: Colors.white,
                               ),
@@ -417,6 +473,138 @@ class _CreateGamePageState extends State<CreateGamePage> {
               ),
             );
           },
+        ),
+      ),
+    );
+  }
+}
+
+class _DatePickerSheet extends StatefulWidget {
+  const _DatePickerSheet({
+    required this.initial,
+    required this.minimumDate,
+    required this.maximumDate,
+    required this.onDone,
+  });
+
+  final DateTime initial;
+  final DateTime minimumDate;
+  final DateTime maximumDate;
+  final void Function(DateTime value) onDone;
+
+  @override
+  State<_DatePickerSheet> createState() => _DatePickerSheetState();
+}
+
+class _DatePickerSheetState extends State<_DatePickerSheet> {
+  late DateTime _picked;
+
+  @override
+  void initState() {
+    super.initState();
+    _picked = widget.initial;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 280,
+      color: CupertinoColors.systemBackground.resolveFrom(context),
+      child: SafeArea(
+        top: false,
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                CupertinoButton(
+                  child: const Text('Cancel'),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+                CupertinoButton(
+                  child: const Text('Done'),
+                  onPressed: () {
+                    widget.onDone(_picked);
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            ),
+            Expanded(
+              child: CupertinoDatePicker(
+                mode: CupertinoDatePickerMode.date,
+                initialDateTime: widget.initial,
+                minimumDate: widget.minimumDate,
+                maximumDate: widget.maximumDate,
+                onDateTimeChanged: (DateTime value) =>
+                    setState(() => _picked = value),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _TimePickerSheet extends StatefulWidget {
+  const _TimePickerSheet({
+    required this.initial,
+    required this.onDone,
+  });
+
+  final DateTime initial;
+  final void Function(TimeOfDay value) onDone;
+
+  @override
+  State<_TimePickerSheet> createState() => _TimePickerSheetState();
+}
+
+class _TimePickerSheetState extends State<_TimePickerSheet> {
+  late DateTime _picked;
+
+  @override
+  void initState() {
+    super.initState();
+    _picked = widget.initial;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 280,
+      color: CupertinoColors.systemBackground.resolveFrom(context),
+      child: SafeArea(
+        top: false,
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                CupertinoButton(
+                  child: const Text('Cancel'),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+                CupertinoButton(
+                  child: const Text('Done'),
+                  onPressed: () {
+                    widget.onDone(
+                        TimeOfDay(hour: _picked.hour, minute: _picked.minute));
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            ),
+            Expanded(
+              child: CupertinoDatePicker(
+                mode: CupertinoDatePickerMode.time,
+                initialDateTime: widget.initial,
+                use24hFormat: true,
+                onDateTimeChanged: (DateTime value) =>
+                    setState(() => _picked = value),
+              ),
+            ),
+          ],
         ),
       ),
     );

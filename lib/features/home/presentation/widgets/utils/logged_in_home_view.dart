@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:basketvibe/core/constants/route_constants.dart';
 import 'package:basketvibe/core/styles/app_colors.dart';
 import 'package:basketvibe/core/styles/app_spacing.dart';
 import 'package:basketvibe/core/styles/app_text_styles.dart';
 import 'package:basketvibe/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:basketvibe/features/courts/presentation/pages/court_finder_page.dart';
 import 'package:basketvibe/features/home/presentation/pages/home_feed_page.dart';
+import 'package:basketvibe/features/home/presentation/pages/upcoming_events_page.dart';
 import 'package:basketvibe/features/home/presentation/widgets/utils/bottom_nav_bar.dart';
 
 class LoggedInHomeView extends StatefulWidget {
@@ -17,25 +20,62 @@ class LoggedInHomeView extends StatefulWidget {
 
 class _LoggedInHomeViewState extends State<LoggedInHomeView> {
   int _currentIndex = 0;
+  late PageController _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _onTabTapped(int index) {
+    if (_currentIndex == index) return;
+    setState(() => _currentIndex = index);
+    _pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 280),
+      curve: Curves.easeInOutCubic,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
+      body: PageView(
+        controller: _pageController,
+        physics: const NeverScrollableScrollPhysics(),
+        onPageChanged: (index) => setState(() => _currentIndex = index),
         children: [
           HomeFeedPage(
             notificationCount: 2,
-            onNavigateToCourts: () => setState(() => _currentIndex = 1),
+            onNavigateToCourts: () => _onTabTapped(2),
           ),
+          const UpcomingEventsPage(),
           const CourtFinderPage(),
           _buildProfileTab(context),
         ],
       ),
       bottomNavigationBar: BottomNavBar(
         currentIndex: _currentIndex,
-        onTap: (index) => setState(() => _currentIndex = index),
+        onTap: _onTabTapped,
       ),
+      floatingActionButton: _currentIndex == 0
+          ? FloatingActionButton(
+              onPressed: () => context.push(RouteConstants.createGame),
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              highlightElevation: 0,
+              child: const Icon(Icons.add_rounded, size: 28),
+            )
+          : null,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 
@@ -47,7 +87,7 @@ class _LoggedInHomeViewState extends State<LoggedInHomeView> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            Icons.person,
+            Icons.person_rounded,
             size: 64,
             color: AppColors.primary,
           ),
@@ -63,7 +103,7 @@ class _LoggedInHomeViewState extends State<LoggedInHomeView> {
           AppSpacing.gapXL,
           OutlinedButton.icon(
             onPressed: () => context.read<AuthCubit>().logout(),
-            icon: const Icon(Icons.logout, size: 20),
+            icon: const Icon(Icons.logout_rounded, size: 20),
             label: const Text('Выйти'),
             style: OutlinedButton.styleFrom(
               foregroundColor: AppColors.error,
