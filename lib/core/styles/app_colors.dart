@@ -10,6 +10,7 @@ class AppColors {
   static const primaryMuted = Color(0x2600D4AA); // 15% opacity — chip bg
 
   // ─── Accent Colors ────────────────────────────────────────
+  static const secondary = Color(0xFF2F1160); // Deep Purple
   static const accent = Color(0xFFFF6B35); // Orange highlight
   static const accentYellow = Color(0xFFFFC107); // Warning / coin
   static const accentPurple = Color(0xFF7B61FF); // NFT / special
@@ -49,19 +50,19 @@ class AppColors {
 
   // ─── Gradients ────────────────────────────────────────────
   static const walletCardGradient = LinearGradient(
-    colors: [Color(0xFF00D4AA), Color(0xFF0094FF)],
+    colors: [AppColors.primary, AppColors.secondary],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
   static const nftCardGradient = LinearGradient(
-    colors: [Color(0xFF7B61FF), Color(0xFFFF4D8C)],
+    colors: [AppColors.secondary, Color(0xFFFF4D8C)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
   static const primaryButtonGradient = LinearGradient(
-    colors: [Color(0xFF00D4AA), Color(0xFF00A886)],
+    colors: [AppColors.primary, AppColors.secondary],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );

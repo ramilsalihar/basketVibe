@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:basketvibe/core/constants/route_constants.dart';
 import 'package:basketvibe/core/styles/app_colors.dart';
 import 'package:basketvibe/core/styles/app_spacing.dart';
 import 'package:basketvibe/core/styles/app_text_styles.dart';
@@ -111,24 +109,6 @@ class HomeQuickActionHeader extends StatelessWidget {
                     ),
                   ),
               ],
-            ),
-          ),
-          // Create Run / Post Highlight
-          Container(
-            decoration: BoxDecoration(
-              gradient: AppColors.primaryButtonGradient,
-              borderRadius: AppRadius.brPill,
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.primary.withOpacity(0.3),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: IconButton(
-              onPressed: () => context.push(RouteConstants.createGame),
-              icon: const Icon(Icons.add, color: Colors.white, size: 28),
             ),
           ),
         ],

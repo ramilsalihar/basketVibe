@@ -20,6 +20,7 @@ class GameEntity extends Equatable {
     required this.visibility,
     required this.level,
     required this.status,
+    this.title,
     this.pricePerPlayer,
     this.description,
     this.chatId,
@@ -55,6 +56,9 @@ class GameEntity extends Equatable {
 
   /// Current lifecycle state of the lobby.
   final GameStatus status;
+
+  /// Optional event title (e.g. "Evening Run", "3x3 Tournament").
+  final String? title;
 
   /// Optional monetization info.
   ///
@@ -95,6 +99,7 @@ class GameEntity extends Equatable {
     GameVisibility? visibility,
     GameLevel? level,
     GameStatus? status,
+    String? title,
     double? pricePerPlayer,
     String? description,
     String? chatId,
@@ -115,6 +120,7 @@ class GameEntity extends Equatable {
       visibility: visibility ?? this.visibility,
       level: level ?? this.level,
       status: status ?? this.status,
+      title: title ?? this.title,
       pricePerPlayer: pricePerPlayer ?? this.pricePerPlayer,
       description: description ?? this.description,
       chatId: chatId ?? this.chatId,
@@ -138,6 +144,7 @@ class GameEntity extends Equatable {
         visibility,
         level,
         status,
+        title,
         pricePerPlayer,
         description,
         chatId,
