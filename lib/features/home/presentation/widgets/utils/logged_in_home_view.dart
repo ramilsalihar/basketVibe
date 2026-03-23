@@ -3,13 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:basketvibe/core/constants/route_constants.dart';
 import 'package:basketvibe/core/styles/app_colors.dart';
-import 'package:basketvibe/core/styles/app_spacing.dart';
-import 'package:basketvibe/core/styles/app_text_styles.dart';
 import 'package:basketvibe/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:basketvibe/features/courts/presentation/pages/court_finder_page.dart';
 import 'package:basketvibe/features/home/presentation/pages/home_feed_page.dart';
 import 'package:basketvibe/features/home/presentation/pages/upcoming_events_page.dart';
 import 'package:basketvibe/features/home/presentation/widgets/utils/bottom_nav_bar.dart';
+import 'package:basketvibe/features/profile/presentation/pages/profile_page.dart';
 
 class LoggedInHomeView extends StatefulWidget {
   const LoggedInHomeView({super.key});
@@ -58,7 +57,10 @@ class _LoggedInHomeViewState extends State<LoggedInHomeView> {
           ),
           const UpcomingEventsPage(),
           const CourtFinderPage(),
-          _buildProfileTab(context),
+          ProfilePage(
+            userId: 'current_user',
+            onLogout: () => context.read<AuthCubit>().logout(),
+          ),
         ],
       ),
       bottomNavigationBar: BottomNavBar(
@@ -76,42 +78,6 @@ class _LoggedInHomeViewState extends State<LoggedInHomeView> {
             )
           : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-    );
-  }
-
-  Widget _buildProfileTab(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.person_rounded,
-            size: 64,
-            color: AppColors.primary,
-          ),
-          AppSpacing.gapLG,
-          Text(
-            'Профиль',
-            style: AppTextStyles.h1.copyWith(
-              color: isDark
-                  ? AppColors.darkTextPrimary
-                  : AppColors.lightTextPrimary,
-            ),
-          ),
-          AppSpacing.gapXL,
-          OutlinedButton.icon(
-            onPressed: () => context.read<AuthCubit>().logout(),
-            icon: const Icon(Icons.logout_rounded, size: 20),
-            label: const Text('Выйти'),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.error,
-              side: const BorderSide(color: AppColors.error),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

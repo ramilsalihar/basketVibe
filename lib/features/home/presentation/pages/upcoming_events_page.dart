@@ -19,6 +19,7 @@ class UpcomingEventsPage extends StatelessWidget {
           child: const Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              SizedBox(height: kToolbarHeight),
               UpcomingEventsSection(),
               SizedBox(height: 100),
             ],
