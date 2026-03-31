@@ -12,6 +12,9 @@
 .swiftpm/
 migrate_working_dir/
 
+# Cursor related
+.cursor/
+
 # IntelliJ related
 *.iml
 *.ipr
