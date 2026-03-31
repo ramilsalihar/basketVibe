@@ -6,6 +6,7 @@ import 'package:basketvibe/core/constants/route_constants.dart';
 import 'package:basketvibe/features/auth/presentation/pages/login_page.dart';
 import 'package:basketvibe/features/courts/presentation/pages/court_finder_page.dart';
 import 'package:basketvibe/features/games/presentation/pages/create_game_page.dart';
+import 'package:basketvibe/features/games/presentation/pages/game_overview_page.dart';
 import 'package:basketvibe/features/games/presentation/cubit/game_cubit.dart';
 import 'package:basketvibe/features/home/presentation/pages/home_page.dart';
 import 'package:basketvibe/features/onboarding/presentation/bloc/onboarding_bloc.dart';
@@ -47,6 +48,13 @@ class AppRouter {
         path: RouteConstants.home,
         name: 'home',
         builder: (context, state) => const HomePage(),
+      ),
+
+      // Games Overview
+      GoRoute(
+        path: RouteConstants.games,
+        name: 'games',
+        builder: (context, state) => const GameOverviewPage(),
       ),
 
       // Courts (Court Finder / Map)

@@ -1,4 +1,4 @@
-import 'package:basketvibe/features/home/presentation/widgets/utils/bottom_nav_bar.dart';
+import 'package:basketvibe/features/home/presentation/widgets/navigation/bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';

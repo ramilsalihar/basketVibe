@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:basketvibe/core/styles/app_colors.dart';
 import 'package:basketvibe/core/styles/app_spacing.dart';
-import 'package:basketvibe/features/home/presentation/widgets/utils/upcoming_events_section.dart';
+import 'package:basketvibe/features/home/presentation/widgets/sections/upcoming_events_section.dart';
 
 /// Full-page tab for upcoming events / tournaments.
 class UpcomingEventsPage extends StatelessWidget {

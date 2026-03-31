@@ -35,14 +35,14 @@ extension GetItInjectableX on _i174.GetIt {
     _i526.EnvironmentFilter? environmentFilter,
   }) async {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
-    final gameModule = _$GameModule();
     final sharedPreferencesModule = _$SharedPreferencesModule();
+    final gameModule = _$GameModule();
     final onboardingModule = _$OnboardingModule();
-    gh.factory<_i192.GameRepository>(() => gameModule.gameRepository());
     await gh.singletonAsync<_i460.SharedPreferences>(
       () => sharedPreferencesModule.sharedPreferences,
       preResolve: true,
     );
+    gh.lazySingleton<_i192.GameRepository>(() => gameModule.gameRepository());
     gh.lazySingleton<_i189.LocalStorageService>(
       () => _i189.LocalStorageServiceImpl(gh<_i460.SharedPreferences>()),
     );
@@ -72,8 +72,8 @@ extension GetItInjectableX on _i174.GetIt {
   }
 }
 
-class _$GameModule extends _i472.GameModule {}
-
 class _$SharedPreferencesModule extends _i813.SharedPreferencesModule {}
+
+class _$GameModule extends _i472.GameModule {}
 
 class _$OnboardingModule extends _i96.OnboardingModule {}

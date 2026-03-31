@@ -63,12 +63,7 @@ android {
 
     buildTypes {
         release {
-            // Uses signing credentials from android/key.local when present.
-            signingConfig = if (hasSigningConfig) {
-                signingConfigs.getByName("release")
-            } else {
-                signingConfigs.getByName("debug")
-            }
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 }

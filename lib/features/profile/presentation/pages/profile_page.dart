@@ -9,6 +9,7 @@ import 'package:basketvibe/features/profile/data/repositories/profile_repository
 import 'package:basketvibe/features/profile/domain/usecases/get_profile_use_case.dart';
 import 'package:basketvibe/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:basketvibe/features/profile/presentation/cubit/profile_state.dart';
+import 'package:basketvibe/features/profile/presentation/pages/history/history_page.dart';
 import 'package:basketvibe/features/profile/presentation/widgets/cards/profile_info_card.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -124,6 +125,23 @@ class _ProfileContentView extends StatelessWidget {
           ),
           AppSpacing.gapLG,
           profileCard,
+          AppSpacing.gapMD,
+          TextFormField(
+            readOnly: true,
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const HistoryPage(),
+                ),
+              );
+            },
+            decoration: const InputDecoration(
+              labelText: 'History',
+              hintText: 'Open activity history',
+              suffixIcon: Icon(Icons.chevron_right_rounded),
+              prefixIcon: Icon(Icons.history_rounded),
+            ),
+          ),
           AppSpacing.gapMD,
           OutlinedButton.icon(
             onPressed: () => context.read<ThemeCubit>().toggleThemeMode(),

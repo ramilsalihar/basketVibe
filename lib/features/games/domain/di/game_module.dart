@@ -5,7 +5,7 @@ import 'package:basketvibe/features/games/presentation/cubit/game_cubit.dart';
 
 @module
 abstract class GameModule {
-  @injectable
+  @lazySingleton
   GameRepository gameRepository() => GameRepositoryImpl();
 
   @injectable
