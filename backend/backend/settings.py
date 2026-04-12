@@ -102,7 +102,12 @@ if os.getenv('DB_NAME'):
         }
     }
 else:
-    raise ValueError("DB_NAME is not set. Add DB_NAME to backend/.env")
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation
