@@ -12,6 +12,13 @@
 .swiftpm/
 migrate_working_dir/
 
+# Backend related
+.venv/
+*.sqlite3
+__pycache__/
+*.py[cod]
+.env
+
 # Cursor related
 .cursor/
 
