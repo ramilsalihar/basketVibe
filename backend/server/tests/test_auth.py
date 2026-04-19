@@ -1,3 +1,4 @@
+from datetime import timedelta
 from unittest.mock import patch
 
 from django.contrib.auth.models import User
@@ -84,6 +85,39 @@ class GoogleLoginViewTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    @patch('server.auth.views.id_token.verify_oauth2_token')
+    def test_missing_email_in_token_creates_user_with_blank_email(self, mock_verify):
+        # id_info with no 'email' key — view uses .get('email', '')
+        mock_verify.return_value = {'sub': '999', 'name': 'No Email', 'picture': ''}
+
+        response = self.client.post(GOOGLE_LOGIN_URL, {'id_token': 'valid-token'}, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        user = User.objects.get(username='999')
+        self.assertEqual(user.email, '')
+        self.assertEqual(response.data['user']['email'], '')
+
+    @patch('server.auth.views.id_token.verify_oauth2_token')
+    def test_missing_name_in_token_creates_user_with_blank_name(self, mock_verify):
+        # id_info with no 'name' key — view uses .get('name', '')
+        mock_verify.return_value = {'sub': '888', 'email': 'noname@example.com', 'picture': ''}
+
+        response = self.client.post(GOOGLE_LOGIN_URL, {'id_token': 'valid-token'}, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        user = User.objects.get(username='888')
+        self.assertEqual(user.first_name, '')
+        self.assertEqual(user.last_name, '')
+
+    @patch('server.auth.views.id_token.verify_oauth2_token')
+    def test_new_user_profile_stores_avatar_url(self, mock_verify):
+        mock_verify.return_value = MOCK_ID_INFO
+
+        self.client.post(GOOGLE_LOGIN_URL, {'id_token': 'valid-token'}, format='json')
+
+        profile = UserProfile.objects.get(google_id='123456789')
+        self.assertEqual(profile.avatar_url, MOCK_ID_INFO['picture'])
+
 
 class TokenRefreshViewTests(APITestCase):
 
@@ -107,3 +141,30 @@ class TokenRefreshViewTests(APITestCase):
         response = self.client.post(TOKEN_REFRESH_URL, {}, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_rotation_returns_new_refresh_token(self):
+        # ROTATE_REFRESH_TOKENS=True means a fresh refresh token must be returned
+        refresh = RefreshToken.for_user(self.user)
+        original = str(refresh)
+
+        response = self.client.post(TOKEN_REFRESH_URL, {'refresh': original}, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('refresh', response.data)
+        self.assertNotEqual(response.data['refresh'], original)
+
+    def test_expired_refresh_token_returns_401(self):
+        refresh = RefreshToken.for_user(self.user)
+        refresh.set_exp(lifetime=timedelta(seconds=-1))
+
+        response = self.client.post(TOKEN_REFRESH_URL, {'refresh': str(refresh)}, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_access_token_cannot_be_used_as_refresh_token(self):
+        refresh = RefreshToken.for_user(self.user)
+        access_token = str(refresh.access_token)
+
+        response = self.client.post(TOKEN_REFRESH_URL, {'refresh': access_token}, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
