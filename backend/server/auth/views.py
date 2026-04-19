@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from backend.settings import GOOGLE_CLIENT_ID
+from django.conf import settings
 from server.models import UserProfile
 
 
@@ -30,7 +30,7 @@ class GoogleLoginView(APIView):
             id_info = id_token.verify_oauth2_token(
                 token,
                 google_requests.Request(),
-                GOOGLE_CLIENT_ID,
+                settings.GOOGLE_CLIENT_ID,
             )
         except ValueError as e:
             return Response({'error': f'Invalid token: {e}'}, status=status.HTTP_401_UNAUTHORIZED)
