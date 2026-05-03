@@ -13,6 +13,8 @@ import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 import 'package:shared_preferences/shared_preferences.dart' as _i460;
 
+import '../../../features/auth/data/datasources/auth_remote_datasource.dart'
+    as _iARD;
 import '../../../features/auth/presentation/cubit/auth_cubit.dart' as _i1066;
 import '../../../features/games/domain/di/game_module.dart' as _i472;
 import '../../../features/games/domain/repositories/game_repository.dart'
@@ -26,6 +28,7 @@ import '../../../features/onboarding/domain/usecases/set_onboarding_complete_use
 import '../../../features/onboarding/presentation/bloc/onboarding_bloc.dart'
     as _i160;
 import '../../local_storage/local_storage_service.dart' as _i189;
+import '../../services/secure_token_storage.dart' as _iSTS;
 import 'modules/shared_preferences_module.dart' as _i813;
 
 extension GetItInjectableX on _i174.GetIt {
@@ -46,11 +49,21 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i189.LocalStorageService>(
       () => _i189.LocalStorageServiceImpl(gh<_i460.SharedPreferences>()),
     );
+    gh.lazySingleton<_iSTS.SecureTokenStorage>(
+      () => _iSTS.SecureTokenStorage(),
+    );
+    gh.lazySingleton<_iARD.AuthRemoteDataSource>(
+      () => _iARD.AuthRemoteDataSource(),
+    );
     gh.factory<_i848.GameCubit>(
       () => gameModule.gameCubit(gh<_i192.GameRepository>()),
     );
     gh.factory<_i1066.AuthCubit>(
-      () => _i1066.AuthCubit(gh<_i189.LocalStorageService>()),
+      () => _i1066.AuthCubit(
+        gh<_i189.LocalStorageService>(),
+        gh<_iSTS.SecureTokenStorage>(),
+        gh<_iARD.AuthRemoteDataSource>(),
+      ),
     );
     gh.factory<_i1057.CheckOnboardingStatusUseCase>(
       () => onboardingModule.checkOnboardingStatusUseCase(

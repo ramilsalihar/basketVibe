@@ -17,13 +17,13 @@ class HomePage extends StatelessWidget {
       body: BlocBuilder<AuthCubit, AuthState>(
         builder: (context, state) {
           return switch (state) {
-            AuthInitial() => const Center(
+            AuthAuthenticated() => const LoggedInHomeView(),
+            AuthInitial() || AuthLoading() => const Center(
                 child: CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
                 ),
               ),
-            AuthUnauthenticated() => const LoggedInHomeView(),
-            AuthAuthenticated() => const LoggedInHomeView(),
+            AuthUnauthenticated() || AuthError() => const LoggedInHomeView(),
           };
         },
       ),

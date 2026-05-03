@@ -3,66 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:basketvibe/core/constants/route_constants.dart';
 import 'package:basketvibe/core/styles/app_colors.dart';
-import 'package:basketvibe/core/styles/app_spacing.dart';
 import 'package:basketvibe/core/styles/app_text_styles.dart';
-import 'package:basketvibe/core/utils/helpers/validator_helper.dart';
 import 'package:basketvibe/features/auth/presentation/cubit/auth_cubit.dart';
-import 'package:basketvibe/features/auth/presentation/widgets/fields/auth_text_field.dart';
+import 'package:basketvibe/features/auth/presentation/cubit/auth_state.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
-
-  @override
-  State<LoginPage> createState() => _LoginPageState();
-}
-
-class _LoginPageState extends State<LoginPage> {
-  final _formKey = GlobalKey<FormState>();
-  final _phoneController = TextEditingController();
-  final _passwordController = TextEditingController();
-  bool _obscurePassword = true;
-  bool _isLoading = false;
-
-  @override
-  void dispose() {
-    _phoneController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _handleLogin() async {
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
-
-      // TODO: Replace with actual auth (e.g. Firebase Phone OTP)
-      await Future.delayed(const Duration(seconds: 1));
-
-      if (!mounted) return;
-      setState(() {
-        _isLoading = false;
-      });
-      context.read<AuthCubit>().login();
-      context.go(RouteConstants.home);
-    }
-  }
-
-  Future<void> _handleGoogleLogin() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    // TODO: Implement Google login
-    await Future.delayed(const Duration(seconds: 1));
-
-    if (!mounted) return;
-    setState(() {
-      _isLoading = false;
-    });
-    context.read<AuthCubit>().login();
-    context.go(RouteConstants.home);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,213 +16,224 @@ class _LoginPageState extends State<LoginPage> {
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBg : AppColors.lightBg,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: AppSpacing.pagePadding,
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                AppSpacing.gapXXL,
+      body: BlocConsumer<AuthCubit, AuthState>(
+        listener: (context, state) {
+          if (state is AuthAuthenticated) {
+            if (state.isNewUser) {
+              context.go(RouteConstants.onboarding);
+            } else {
+              context.go(RouteConstants.home);
+            }
+          } else if (state is AuthError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: AppColors.error,
+              ),
+            );
+          }
+        },
+        builder: (context, state) {
+          final isLoading = state is AuthLoading;
 
-                // Logo
-                Center(
-                  child: Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      gradient: AppColors.primaryButtonGradient,
-                      shape: BoxShape.circle,
+          return SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Column(
+                children: [
+                  const Spacer(flex: 2),
+
+                  // Logo
+                  Image.asset(
+                    'assets/logo/app_logo.png',
+                    width: 100,
+                    height: 100,
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // App name
+                  Text(
+                    'LineUp',
+                    style: AppTextStyles.h1.copyWith(
+                      color: isDark
+                          ? AppColors.darkTextPrimary
+                          : AppColors.lightTextPrimary,
+                      fontSize: 36,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.5,
                     ),
-                    child: const Icon(
-                      Icons.sports_basketball,
-                      size: 40,
-                      color: Colors.white,
-                    ),
                   ),
-                ),
 
-                AppSpacing.gapXL,
+                  const SizedBox(height: 8),
 
-                // Title
-                Text(
-                  'Добро пожаловать',
-                  style: AppTextStyles.h1.copyWith(
-                    color: isDark
-                        ? AppColors.darkTextPrimary
-                        : AppColors.lightTextPrimary,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-
-                AppSpacing.gapSM,
-
-                Text(
-                  'Войдите в свой аккаунт',
-                  style: AppTextStyles.bodyMD.copyWith(
-                    color: isDark
-                        ? AppColors.darkTextSecondary
-                        : AppColors.lightTextSecondary,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-
-                AppSpacing.gapXXL,
-
-                // Phone field
-                AuthTextField(
-                  controller: _phoneController,
-                  label: 'Номер телефона',
-                  hint: '+996 XXX XXX XXX',
-                  keyboardType: TextInputType.phone,
-                  prefixIcon: Icons.phone,
-                  validator: ValidatorHelper.validatePhone,
-                ),
-
-                AppSpacing.gapLG,
-
-                // Password field
-                AuthTextField(
-                  controller: _passwordController,
-                  label: 'Пароль',
-                  hint: 'Введите пароль',
-                  obscureText: _obscurePassword,
-                  prefixIcon: Icons.lock,
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                  Text(
+                    'Find your next run',
+                    style: AppTextStyles.bodyMD.copyWith(
                       color: isDark
                           ? AppColors.darkTextSecondary
                           : AppColors.lightTextSecondary,
                     ),
-                    onPressed: () {
-                      setState(() {
-                        _obscurePassword = !_obscurePassword;
-                      });
-                    },
                   ),
-                  validator: ValidatorHelper.validatePassword,
-                ),
 
-                AppSpacing.gapSM,
+                  const Spacer(flex: 3),
 
-                // Forgot password
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () {
-                      // TODO: Navigate to forgot password
-                    },
-                    child: Text(
-                      'Забыли пароль?',
-                      style: AppTextStyles.labelMD.copyWith(
-                        color: AppColors.primary,
-                      ),
-                    ),
-                  ),
-                ),
-
-                AppSpacing.gapXL,
-
-                // Login button
-                ElevatedButton(
-                  onPressed: _isLoading ? null : _handleLogin,
-                  child: _isLoading
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(Colors.white),
-                          ),
-                        )
-                      : Text(
-                          'Войти',
-                          style: AppTextStyles.buttonLG,
-                        ),
-                ),
-
-                AppSpacing.gapLG,
-
-                // Divider
-                Row(
-                  children: [
-                    Expanded(
-                      child: Divider(
-                        color: isDark
-                            ? AppColors.darkBorder
-                            : AppColors.lightBorder,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        'или',
-                        style: AppTextStyles.bodySM.copyWith(
+                  // Google sign-in button
+                  SizedBox(
+                    width: double.infinity,
+                    height: 52,
+                    child: OutlinedButton(
+                      onPressed: isLoading
+                          ? null
+                          : () => context.read<AuthCubit>().googleSignIn(),
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(
                           color: isDark
-                              ? AppColors.darkTextMuted
-                              : AppColors.lightTextMuted,
+                              ? AppColors.darkBorder
+                              : AppColors.lightBorder,
                         ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        backgroundColor: isDark
+                            ? AppColors.darkSurface
+                            : AppColors.lightSurface,
                       ),
+                      child: isLoading
+                          ? SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: AppColors.primary,
+                              ),
+                            )
+                          : Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                _GoogleLogo(),
+                                const SizedBox(width: 12),
+                                Text(
+                                  'Continue with Google',
+                                  style: AppTextStyles.buttonMD.copyWith(
+                                    color: isDark
+                                        ? AppColors.darkTextPrimary
+                                        : AppColors.lightTextPrimary,
+                                  ),
+                                ),
+                              ],
+                            ),
                     ),
-                    Expanded(
-                      child: Divider(
-                        color: isDark
-                            ? AppColors.darkBorder
-                            : AppColors.lightBorder,
-                      ),
-                    ),
-                  ],
-                ),
-
-                AppSpacing.gapLG,
-
-                // Google login button
-                OutlinedButton.icon(
-                  onPressed: _isLoading ? null : _handleGoogleLogin,
-                  icon: const Icon(Icons.g_mobiledata, size: 24),
-                  label: Text(
-                    'Войти через Google',
-                    style: AppTextStyles.buttonMD,
                   ),
-                ),
 
-                AppSpacing.gapXL,
+                  const Spacer(flex: 1),
 
-                // Sign up link
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Нет аккаунта? ',
-                      style: AppTextStyles.bodyMD.copyWith(
+                  Text(
+                    'By continuing, you agree to our Terms of Service\nand Privacy Policy',
+                    style: AppTextStyles.bodySM.copyWith(
+                      color: isDark
+                          ? AppColors.darkTextMuted
+                          : AppColors.lightTextMuted,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  TextButton(
+                    onPressed: () => context.go(RouteConstants.home),
+                    child: Text(
+                      'Continue without registration',
+                      style: AppTextStyles.bodySM.copyWith(
                         color: isDark
                             ? AppColors.darkTextSecondary
                             : AppColors.lightTextSecondary,
+                        decoration: TextDecoration.underline,
                       ),
                     ),
-                    TextButton(
-                      onPressed: () {
-                        // TODO: Navigate to register
-                      },
-                      child: Text(
-                        'Зарегистрироваться',
-                        style: AppTextStyles.labelLG.copyWith(
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
 
-                AppSpacing.gapXL,
-              ],
+                  const SizedBox(height: 24),
+                ],
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
+}
+
+class _GoogleLogo extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 20,
+      height: 20,
+      child: CustomPaint(painter: _GoogleLogoPainter()),
+    );
+  }
+}
+
+class _GoogleLogoPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = size.width / 2;
+
+    // Red (top-right)
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      -1.05,
+      1.57,
+      false,
+      Paint()
+        ..color = const Color(0xFFEA4335)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = size.width * 0.2,
+    );
+    // Yellow (bottom)
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      0.52,
+      1.57,
+      false,
+      Paint()
+        ..color = const Color(0xFFFBBC05)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = size.width * 0.2,
+    );
+    // Green (bottom-left)
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      2.09,
+      0.79,
+      false,
+      Paint()
+        ..color = const Color(0xFF34A853)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = size.width * 0.2,
+    );
+    // Blue (left)
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      2.88,
+      1.74,
+      false,
+      Paint()
+        ..color = const Color(0xFF4285F4)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = size.width * 0.2,
+    );
+
+    // Blue horizontal bar
+    canvas.drawRect(
+      Rect.fromLTWH(size.width * 0.5, size.height * 0.38, size.width * 0.5,
+          size.height * 0.24),
+      Paint()..color = const Color(0xFF4285F4),
+    );
+  }
+
+  @override
+  bool shouldRepaint(_GoogleLogoPainter old) => false;
 }

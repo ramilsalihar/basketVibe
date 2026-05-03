@@ -2,8 +2,11 @@ class AppConstants {
   AppConstants._();
 
   // App info
-  static const String appName = 'BasketVibe';
+  static const String appName = 'LineUp';
   static const String appVersion = '1.0.0';
+
+  // API
+  static const String apiBaseUrl = 'https://basketvibe-backend-1037501300842.europe-west4.run.app/api';
 
   // Default values
   static const int defaultMaxPlayers = 10;
