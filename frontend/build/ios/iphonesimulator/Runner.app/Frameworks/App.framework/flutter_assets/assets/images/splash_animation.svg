@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#00D4AA" /> <!-- Primary -->
+      <stop offset="100%" stop-color="#2F1160" /> <!-- Secondary -->
+    </linearGradient>
+
+    <mask id="pin-mask">
+      <rect width="400" height="400" fill="white" />
+      
+      <g stroke="black" stroke-width="7" stroke-linecap="butt" fill="none">
+        <line x1="200" y1="50" x2="200" y2="210" />
+        <line x1="117" y1="135" x2="283" y2="135" />
+        <path d="M 155 61 Q 110 135 155 209" />
+        <path d="M 245 61 Q 290 135 245 209" />
+      </g>
+    </mask>
+  </defs>
+
+  <rect width="400" height="400" fill="url(#bg-grad)" />
+
+  <g stroke="#ffffff" stroke-width="3" fill="none" stroke-linecap="butt" opacity="0.9">
+    <path d="M -20 190 Q 200 290 420 190" />
+    <path d="M -20 340 Q 200 300 420 340" />
+    <line x1="115" y1="230" x2="115" y2="420" />
+    <line x1="285" y1="230" x2="285" y2="420" />
+    <path d="M 160 240 L 160 315 A 40 40 0 0 0 240 315 L 240 240" />
+    <line x1="200" y1="280" x2="200" y2="370" />
+  </g>
+
+  <g>
+    <path 
+      d="M 200 280 
+         Q 115 205 115 135 
+         A 85 85 0 1 1 285 135 
+         Q 285 205 200 280 Z" 
+      fill="#ffffff" 
+      mask="url(#pin-mask)" 
+    />
+  </g>
+</svg>
