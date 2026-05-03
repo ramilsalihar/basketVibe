@@ -228,8 +228,12 @@ class _GoogleLogoPainter extends CustomPainter {
 
     // Blue horizontal bar
     canvas.drawRect(
-      Rect.fromLTWH(size.width * 0.5, size.height * 0.38, size.width * 0.5,
-          size.height * 0.24),
+      Rect.fromLTWH(
+        size.width * 0.5,
+        size.height * 0.38,
+        size.width * 0.5,
+        size.height * 0.24,
+      ),
       Paint()..color = const Color(0xFF4285F4),
     );
   }

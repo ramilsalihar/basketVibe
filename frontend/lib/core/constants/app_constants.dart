@@ -1,3 +1,5 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class AppConstants {
   AppConstants._();
 
@@ -6,7 +8,12 @@ class AppConstants {
   static const String appVersion = '1.0.0';
 
   // API
-  static const String apiBaseUrl = 'https://basketvibe-backend-1037501300842.europe-west4.run.app/api';
+  static String get apiBaseUrl => dotenv.env['API_BASE_URL']!;
+
+  // Google Sign-In
+  static String get googleServerClientId => dotenv.env['GOOGLE_SERVER_CLIENT_ID']!;
+  static String get googleIosClientId => dotenv.env['GOOGLE_IOS_CLIENT_ID']!;
+  static String get googleAndroidClientId => dotenv.env['GOOGLE_ANDROID_CLIENT_ID']!;
 
   // Default values
   static const int defaultMaxPlayers = 10;

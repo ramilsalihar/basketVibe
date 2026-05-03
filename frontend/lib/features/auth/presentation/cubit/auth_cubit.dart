@@ -2,6 +2,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:injectable/injectable.dart';
+import 'package:basketvibe/core/constants/app_constants.dart';
 import 'package:basketvibe/core/local_storage/local_storage_keys.dart';
 import 'package:basketvibe/core/local_storage/local_storage_service.dart';
 import 'package:basketvibe/core/services/secure_token_storage.dart';
@@ -19,7 +20,10 @@ class AuthCubit extends Cubit<AuthState> {
   final SecureTokenStorage _tokenStorage;
   final AuthRemoteDataSource _remoteDataSource;
 
-  final _googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
+  final _googleSignIn = GoogleSignIn(
+    scopes: ['email', 'profile'],
+    serverClientId: AppConstants.googleServerClientId,
+  );
 
   Future<void> checkAuthStatus() async {
     final isLoggedIn = await _localStorage.getBool(
