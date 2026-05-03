@@ -20,7 +20,6 @@ dependencies:
 
   # Dependency Injection
   get_it: ^9.2.1
-  injectable: ^3.0.0
 
   # Functional Programming
   dartz: ^0.10.1
@@ -43,8 +42,10 @@ dependencies:
 
   # Auth
   google_sign_in: ^6.2.1
-  http: ^1.2.1
   flutter_secure_storage: ^9.2.2
+
+  # Network
+  dio: ^5.8.0
 
   # Environment
   flutter_dotenv: ^5.2.1
@@ -69,7 +70,6 @@ dev_dependencies:
   build_runner: ^2.4.13
   freezed: ^3.2.5
   json_serializable: ^6.8.0
-  injectable_generator: ^3.0.2
 
   # Testing
   bloc_test: ^10.0.0

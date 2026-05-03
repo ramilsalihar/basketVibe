@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:basketvibe/core/app/app_bloc_observer.dart';
-import 'package:basketvibe/core/app/di/injection.dart';
+import 'package:basketvibe/core/network/injection.dart';
 import 'package:basketvibe/core/app/theme_cubit.dart';
 import 'package:basketvibe/core/local_storage/local_storage_service.dart';
 import 'package:basketvibe/core/router/app_router.dart';

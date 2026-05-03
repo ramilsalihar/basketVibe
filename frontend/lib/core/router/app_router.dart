@@ -1,7 +1,7 @@
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:basketvibe/core/app/di/injection.dart';
+import 'package:basketvibe/core/network/injection.dart';
 import 'package:basketvibe/core/constants/route_constants.dart';
 import 'package:basketvibe/features/auth/presentation/pages/login_page.dart';
 import 'package:basketvibe/features/courts/presentation/pages/court_finder_page.dart';

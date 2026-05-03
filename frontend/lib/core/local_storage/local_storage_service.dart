@@ -1,4 +1,3 @@
-import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class LocalStorageService {
@@ -12,7 +11,6 @@ abstract class LocalStorageService {
   Future<void> clear();
 }
 
-@LazySingleton(as: LocalStorageService)
 class LocalStorageServiceImpl implements LocalStorageService {
   final SharedPreferences _prefs;
 
