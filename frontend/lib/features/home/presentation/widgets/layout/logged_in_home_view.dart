@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:basketvibe/core/constants/route_constants.dart';
 import 'package:basketvibe/core/styles/app_colors.dart';
-import 'package:basketvibe/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:basketvibe/features/courts/presentation/pages/court_finder_page.dart';
 import 'package:basketvibe/features/games/presentation/pages/upcoming_games_page.dart';
 import 'package:basketvibe/features/home/presentation/pages/home_feed_page.dart';
@@ -57,10 +55,7 @@ class _LoggedInHomeViewState extends State<LoggedInHomeView> {
           ),
           const UpcomingGamesPage(),
           const CourtFinderPage(),
-          ProfilePage(
-            userId: 'current_user',
-            onLogout: () => context.read<AuthCubit>().logout(),
-          ),
+          const ProfilePage(userId: 'current_user'),
         ],
       ),
       bottomNavigationBar: BottomNavBar(

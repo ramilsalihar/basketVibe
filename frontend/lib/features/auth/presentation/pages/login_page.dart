@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:basketvibe/core/constants/route_constants.dart';
 import 'package:basketvibe/core/styles/app_colors.dart';
@@ -111,7 +112,11 @@ class LoginPage extends StatelessWidget {
                           : Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                _GoogleLogo(),
+                                SvgPicture.asset(
+                                  'assets/icons/google_icon.svg',
+                                  width: 20,
+                                  height: 20,
+                                ),
                                 const SizedBox(width: 12),
                                 Text(
                                   'Continue with Google',
@@ -162,82 +167,4 @@ class LoginPage extends StatelessWidget {
       ),
     );
   }
-}
-
-class _GoogleLogo extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 20,
-      height: 20,
-      child: CustomPaint(painter: _GoogleLogoPainter()),
-    );
-  }
-}
-
-class _GoogleLogoPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final radius = size.width / 2;
-
-    // Red (top-right)
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: radius),
-      -1.05,
-      1.57,
-      false,
-      Paint()
-        ..color = const Color(0xFFEA4335)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = size.width * 0.2,
-    );
-    // Yellow (bottom)
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: radius),
-      0.52,
-      1.57,
-      false,
-      Paint()
-        ..color = const Color(0xFFFBBC05)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = size.width * 0.2,
-    );
-    // Green (bottom-left)
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: radius),
-      2.09,
-      0.79,
-      false,
-      Paint()
-        ..color = const Color(0xFF34A853)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = size.width * 0.2,
-    );
-    // Blue (left)
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: radius),
-      2.88,
-      1.74,
-      false,
-      Paint()
-        ..color = const Color(0xFF4285F4)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = size.width * 0.2,
-    );
-
-    // Blue horizontal bar
-    canvas.drawRect(
-      Rect.fromLTWH(
-        size.width * 0.5,
-        size.height * 0.38,
-        size.width * 0.5,
-        size.height * 0.24,
-      ),
-      Paint()..color = const Color(0xFF4285F4),
-    );
-  }
-
-  @override
-  bool shouldRepaint(_GoogleLogoPainter old) => false;
 }

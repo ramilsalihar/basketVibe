@@ -16,10 +16,7 @@ class DioNetwork {
   static final List<void Function()> _queue = [];
 
   static void initDio() {
-    assert(
-      AppConstants.apiBaseUrl.isNotEmpty,
-      'API_BASE_URL not set in .env',
-    );
+    assert(AppConstants.apiBaseUrl.isNotEmpty, 'API_BASE_URL not set in .env');
     appAPI = Dio(baseOptions(AppConstants.apiBaseUrl));
     appAPI.interceptors.add(_queuedInterceptor());
   }
@@ -27,7 +24,8 @@ class DioNetwork {
   static QueuedInterceptorsWrapper _queuedInterceptor() {
     return QueuedInterceptorsWrapper(
       onRequest: (options, handler) async {
-        final token = await GetIt.instance<SecureTokenStorage>().getAccessToken();
+        final token = await GetIt.instance<SecureTokenStorage>()
+            .getAccessToken();
         if (token != null) {
           options.headers['Authorization'] = 'Bearer $token';
         }
@@ -52,12 +50,18 @@ class DioNetwork {
               // TODO: call AuthRepository.refreshAccessToken() when implemented
               // For now, clear session and reject — cubit detects cleared tokens
               _isRefreshing = false;
-              for (final cb in _queue) { cb(); }
+              for (final cb in _queue) {
+                cb();
+              }
               _queue.clear();
               await _clearSession();
               return handler.reject(error);
             } catch (e, st) {
-              log('Token refresh error: $e', name: 'DioNetwork', stackTrace: st);
+              log(
+                'Token refresh error: $e',
+                name: 'DioNetwork',
+                stackTrace: st,
+              );
               _isRefreshing = false;
               _queue.clear();
               await _clearSession();
@@ -94,11 +98,16 @@ class DioNetwork {
           handler.resolve(response);
         } catch (e) {
           log('Queued retry failed: $e', name: 'DioNetwork');
-          handler.reject(DioException(requestOptions: requestOptions, error: e));
+          handler.reject(
+            DioException(requestOptions: requestOptions, error: e),
+          );
         }
       } else {
         handler.reject(
-          DioException(requestOptions: requestOptions, error: 'No valid access token'),
+          DioException(
+            requestOptions: requestOptions,
+            error: 'No valid access token',
+          ),
         );
       }
       completer.complete();

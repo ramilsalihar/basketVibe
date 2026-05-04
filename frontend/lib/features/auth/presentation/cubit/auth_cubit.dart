@@ -62,9 +62,12 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   Future<void> logout() async {
-    await _googleSignIn.signOut();
-    await _tokenStorage.clearTokens();
-    await _localStorage.setBool(LocalStorageKeys.isLoggedIn, false);
+    await Future.wait([
+      _googleSignIn.signOut(),
+      _tokenStorage.clearTokens(),
+      _localStorage.setBool(LocalStorageKeys.isLoggedIn, false),
+      _localStorage.remove(LocalStorageKeys.userId),
+    ]);
     emit(const AuthUnauthenticated());
   }
 }
