@@ -5,10 +5,11 @@ import 'package:go_router/go_router.dart';
 import 'package:basketvibe/core/constants/route_constants.dart';
 import 'package:basketvibe/core/styles/app_colors.dart';
 import 'package:basketvibe/core/styles/app_text_styles.dart';
+import 'package:basketvibe/core/utils/mixin/snackbars/snackbar_mixin.dart';
 import 'package:basketvibe/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:basketvibe/features/auth/presentation/cubit/auth_state.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatelessWidget with SnackbarMixin {
   const LoginPage({super.key});
 
   @override
@@ -26,12 +27,7 @@ class LoginPage extends StatelessWidget {
               context.go(RouteConstants.home);
             }
           } else if (state is AuthError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: AppColors.error,
-              ),
-            );
+            showErrorSnackbar(context, state.message);
           }
         },
         builder: (context, state) {

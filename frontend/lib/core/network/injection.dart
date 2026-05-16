@@ -1,8 +1,9 @@
 import 'package:basketvibe/core/local_storage/local_storage_service.dart';
 import 'package:basketvibe/core/network/dio_network.dart';
 import 'package:basketvibe/core/services/secure_token_storage.dart';
-import 'package:basketvibe/features/auth/data/datasources/auth_remote_datasource.dart';
-import 'package:basketvibe/features/auth/data/datasources/google_sign_in_datasource.dart';
+import 'package:basketvibe/features/auth/data/datasources/local/auth_local_datasource.dart';
+import 'package:basketvibe/features/auth/data/datasources/remote/auth_remote_datasource.dart';
+import 'package:basketvibe/features/auth/data/datasources/remote/google_sign_in_datasource.dart';
 import 'package:basketvibe/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:basketvibe/features/games/data/repositories/game_repository_impl.dart';
 import 'package:basketvibe/features/games/domain/repositories/game_repository.dart';
@@ -30,6 +31,9 @@ Future<void> configureDependencies() async {
   getIt.registerLazySingleton<Dio>(() => DioNetwork.appAPI);
 
   // Data sources
+  getIt.registerLazySingleton<AuthLocalDataSource>(
+    () => AuthLocalDataSource(getIt()),
+  );
   getIt.registerLazySingleton<AuthRemoteDataSource>(
     () => AuthRemoteDataSource(getIt()),
   );
