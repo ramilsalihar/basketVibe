@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:basketvibe/core/app/theme_cubit.dart';
+import 'package:basketvibe/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:basketvibe/core/styles/app_colors.dart';
 import 'package:basketvibe/core/styles/app_spacing.dart';
 import 'package:basketvibe/core/styles/app_text_styles.dart';
@@ -16,11 +17,9 @@ class ProfilePage extends StatelessWidget {
   const ProfilePage({
     super.key,
     required this.userId,
-    required this.onLogout,
   });
 
   final String userId;
-  final VoidCallback onLogout;
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +44,6 @@ class ProfilePage extends StatelessWidget {
             ProfileLoaded(:final profile) => _ProfileContentView(
                 userName: profile.displayName,
                 profileCard: ProfileInfoCard(profile: profile),
-                onLogout: onLogout,
               ),
           };
         },
@@ -58,12 +56,10 @@ class _ProfileContentView extends StatelessWidget {
   const _ProfileContentView({
     required this.userName,
     required this.profileCard,
-    required this.onLogout,
   });
 
   final String userName;
   final Widget profileCard;
-  final VoidCallback onLogout;
 
   @override
   Widget build(BuildContext context) {
@@ -155,7 +151,7 @@ class _ProfileContentView extends StatelessWidget {
           ),
           AppSpacing.gapXL,
           OutlinedButton.icon(
-            onPressed: onLogout,
+            onPressed: () => context.read<AuthCubit>().logout(),
             icon: const Icon(Icons.logout_rounded, size: 20),
             label: const Text('Выйти'),
             style: OutlinedButton.styleFrom(

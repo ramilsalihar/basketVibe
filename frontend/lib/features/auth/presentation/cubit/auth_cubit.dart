@@ -1,38 +1,52 @@
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:injectable/injectable.dart';
-import 'package:basketvibe/core/constants/app_constants.dart';
 import 'package:basketvibe/core/local_storage/local_storage_keys.dart';
 import 'package:basketvibe/core/local_storage/local_storage_service.dart';
-import 'package:basketvibe/core/services/secure_token_storage.dart';
-import 'package:basketvibe/features/auth/data/datasources/auth_remote_datasource.dart';
+import 'package:basketvibe/features/auth/data/datasources/local/auth_local_datasource.dart';
+import 'package:basketvibe/features/auth/data/datasources/remote/auth_remote_datasource.dart';
+import 'package:basketvibe/features/auth/data/datasources/remote/google_sign_in_datasource.dart';
 import 'package:basketvibe/features/auth/presentation/cubit/auth_state.dart';
 
-@injectable
 class AuthCubit extends Cubit<AuthState> {
-  AuthCubit(this._localStorage, this._tokenStorage, this._remoteDataSource)
-      : super(const AuthInitial()) {
+  AuthCubit(
+    this._localStorage,
+    this._localDataSource,
+    this._remoteDataSource,
+    this._googleSignIn,
+  ) : super(const AuthInitial()) {
     Future.microtask(() => checkAuthStatus());
   }
 
   final LocalStorageService _localStorage;
-  final SecureTokenStorage _tokenStorage;
+  final AuthLocalDataSource _localDataSource;
   final AuthRemoteDataSource _remoteDataSource;
-
-  final _googleSignIn = GoogleSignIn(
-    scopes: ['email', 'profile'],
-    serverClientId: AppConstants.googleServerClientId,
-  );
+  final GoogleSignInDatasource _googleSignIn;
 
   Future<void> checkAuthStatus() async {
-    final isLoggedIn = await _localStorage.getBool(
-      LocalStorageKeys.isLoggedIn,
-      defaultValue: false,
-    );
-    if (isLoggedIn) {
-      emit(const AuthAuthenticated(isNewUser: false));
-    } else {
+    try {
+      final loggedIn = await _localDataSource.isUserLoggedIn();
+
+      if (loggedIn) {
+        emit(const AuthAuthenticated(isNewUser: false));
+        return;
+      }
+
+      // Access token missing but refresh token present — try silent refresh
+      final hasRefresh = await _localDataSource.hasRefreshToken();
+      if (hasRefresh) {
+        final refreshToken = await _localDataSource.getRefreshToken();
+        final result = await _remoteDataSource.refreshToken(refreshToken!);
+        final currentRefresh = await _localDataSource.getRefreshToken();
+        await _localDataSource.saveTokens(
+          accessToken: result.access,
+          refreshToken: currentRefresh!,
+        );
+        emit(const AuthAuthenticated(isNewUser: false));
+        return;
+      }
+
+      emit(const AuthUnauthenticated());
+    } on Exception {
+      await _localDataSource.clearTokens();
       emit(const AuthUnauthenticated());
     }
   }
@@ -41,25 +55,17 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       emit(const AuthLoading());
 
-      final googleUser = await _googleSignIn.signIn();
-      if (googleUser == null) {
-        // User cancelled the sign-in dialog
+      final idToken = await _googleSignIn.signInAndGetIdToken();
+      if (idToken == null) {
         emit(const AuthUnauthenticated());
         return;
       }
 
-      final googleAuth = await googleUser.authentication;
-      final idToken = googleAuth.idToken;
-      if (idToken == null) {
-        emit(const AuthError('Failed to get Google ID token'));
-        return;
-      }
+      final result = await _remoteDataSource.googleSignIn(idToken);
 
-      final result = await _remoteDataSource.googleLogin(idToken);
-
-      await _tokenStorage.saveTokens(
-        access: result.access,
-        refresh: result.refresh,
+      await _localDataSource.saveTokens(
+        accessToken: result.access,
+        refreshToken: result.refresh,
       );
       await _localStorage.setBool(LocalStorageKeys.isLoggedIn, true);
       await _localStorage.setString(
@@ -68,24 +74,18 @@ class AuthCubit extends Cubit<AuthState> {
       );
 
       emit(AuthAuthenticated(isNewUser: result.user.isNew));
-    } on PlatformException catch (e) {
-      final code = e.code;
-      if (code == 'sign_in_canceled' || code == 'sign_in_cancelled') {
-        emit(const AuthUnauthenticated());
-      } else if (code == 'network_error') {
-        emit(const AuthError('No internet connection'));
-      } else {
-        emit(AuthError(e.message ?? 'Google sign-in failed'));
-      }
     } on Exception catch (e) {
       emit(AuthError(e.toString().replaceFirst('Exception: ', '')));
     }
   }
 
   Future<void> logout() async {
-    await _googleSignIn.signOut();
-    await _tokenStorage.clearTokens();
-    await _localStorage.setBool(LocalStorageKeys.isLoggedIn, false);
+    await Future.wait([
+      _googleSignIn.signOut(),
+      _localDataSource.clearTokens(),
+      _localStorage.setBool(LocalStorageKeys.isLoggedIn, false),
+      _localStorage.remove(LocalStorageKeys.userId),
+    ]);
     emit(const AuthUnauthenticated());
   }
 }

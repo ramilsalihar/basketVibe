@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:basketvibe/core/app/app.dart';
-import 'package:basketvibe/core/app/di/injection.dart';
+import 'package:basketvibe/core/network/injection.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

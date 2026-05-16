@@ -11,9 +11,20 @@ class AppConstants {
   static String get apiBaseUrl => dotenv.env['API_BASE_URL']!;
 
   // Google Sign-In
-  static String get googleServerClientId => dotenv.env['GOOGLE_SERVER_CLIENT_ID']!;
-  static String get googleIosClientId => dotenv.env['GOOGLE_IOS_CLIENT_ID']!;
-  static String get googleAndroidClientId => dotenv.env['GOOGLE_ANDROID_CLIENT_ID']!;
+  static String? get googleServerClientId {
+    final v = dotenv.env['GOOGLE_SERVER_CLIENT_ID'];
+    return (v == null || v.startsWith('your-')) ? null : v;
+  }
+
+  static String? get googleIosClientId {
+    final v = dotenv.env['GOOGLE_IOS_CLIENT_ID'];
+    return (v == null || v.startsWith('your-')) ? null : v;
+  }
+
+  static String? get googleAndroidClientId {
+    final v = dotenv.env['GOOGLE_ANDROID_CLIENT_ID'];
+    return (v == null || v.startsWith('your-')) ? null : v;
+  }
 
   // Default values
   static const int defaultMaxPlayers = 10;
