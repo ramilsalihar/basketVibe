@@ -7,6 +7,7 @@ class ProfileModel extends ProfileEntity {
     required super.city,
     required super.skillLevel,
     required super.gamesPlayed,
+    super.avatarUrl,
   });
 
   factory ProfileModel.fromJson(Map<String, dynamic> json) {
@@ -16,6 +17,23 @@ class ProfileModel extends ProfileEntity {
       city: json['city'] as String,
       skillLevel: json['skillLevel'] as String,
       gamesPlayed: json['gamesPlayed'] as int,
+    );
+  }
+
+  /// Maps the `users/{userId}` Firestore document; nullable profile
+  /// fields fall back to sensible display defaults.
+  factory ProfileModel.fromFirestore(String id, Map<String, dynamic> data) {
+    final email = data['email'] as String?;
+    return ProfileModel(
+      id: id,
+      displayName: data['displayName'] as String? ??
+          data['username'] as String? ??
+          email?.split('@').first ??
+          'Player',
+      city: data['city'] as String? ?? '—',
+      skillLevel: data['skillLevel'] as String? ?? 'beginner',
+      gamesPlayed: (data['gamesPlayed'] as num?)?.toInt() ?? 0,
+      avatarUrl: data['avatarUrl'] as String?,
     );
   }
 

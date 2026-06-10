@@ -12,6 +12,12 @@ import 'package:basketvibe/features/games/data/repositories/game_repository_impl
 import 'package:basketvibe/features/games/domain/repositories/game_repository.dart';
 import 'package:basketvibe/features/games/presentation/cubit/game_cubit.dart';
 import 'package:basketvibe/features/onboarding/domain/usecases/check_onboarding_status_usecase.dart';
+import 'package:basketvibe/features/profile/data/datasources/profile_remote_data_source.dart';
+import 'package:basketvibe/features/profile/data/repositories/profile_repository_impl.dart';
+import 'package:basketvibe/features/profile/domain/repositories/profile_repository.dart';
+import 'package:basketvibe/features/profile/domain/usecases/get_profile_use_case.dart';
+import 'package:basketvibe/features/profile/domain/usecases/update_profile_use_case.dart';
+import 'package:basketvibe/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:basketvibe/features/onboarding/domain/usecases/set_onboarding_complete_usecase.dart';
 import 'package:basketvibe/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:dio/dio.dart';
@@ -58,7 +64,20 @@ Future<void> configureDependencies() async {
     () => GameRepositoryImpl(getIt()),
   );
 
+  // Profile
+  getIt.registerLazySingleton<ProfileRemoteDataSource>(
+    () => ProfileRemoteDataSource(getIt()),
+  );
+  getIt.registerLazySingleton<ProfileRepository>(
+    () => ProfileRepositoryImpl(getIt()),
+  );
+  getIt.registerFactory<GetProfileUseCase>(() => GetProfileUseCase(getIt()));
+  getIt.registerFactory<UpdateProfileUseCase>(
+    () => UpdateProfileUseCase(getIt()),
+  );
+
   // Cubits / Blocs
+  getIt.registerFactory<ProfileCubit>(() => ProfileCubit(getIt(), getIt()));
   getIt.registerFactory<AuthCubit>(
     () => AuthCubit(getIt(), getIt(), getIt(), getIt()),
   );

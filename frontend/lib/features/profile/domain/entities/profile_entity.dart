@@ -8,6 +8,7 @@ class ProfileEntity extends Equatable {
     required this.city,
     required this.skillLevel,
     required this.gamesPlayed,
+    this.avatarUrl,
   });
 
   final String id;
@@ -15,8 +16,10 @@ class ProfileEntity extends Equatable {
   final String city;
   final String skillLevel;
   final int gamesPlayed;
+  final String? avatarUrl;
 
   @override
-  List<Object?> get props => [id, displayName, city, skillLevel, gamesPlayed];
+  List<Object?> get props =>
+      [id, displayName, city, skillLevel, gamesPlayed, avatarUrl];
 }
 

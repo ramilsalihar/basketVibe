@@ -7,6 +7,7 @@ import 'package:basketvibe/features/games/presentation/pages/upcoming_games_page
 import 'package:basketvibe/features/home/presentation/pages/home_feed_page.dart';
 import 'package:basketvibe/features/home/presentation/widgets/navigation/bottom_nav_bar.dart';
 import 'package:basketvibe/features/profile/presentation/pages/profile_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoggedInHomeView extends StatefulWidget {
   const LoggedInHomeView({super.key});
@@ -55,7 +56,7 @@ class _LoggedInHomeViewState extends State<LoggedInHomeView> {
           ),
           const UpcomingGamesPage(),
           const CourtFinderPage(),
-          const ProfilePage(userId: 'current_user'),
+          ProfilePage(userId: FirebaseAuth.instance.currentUser?.uid ?? ''),
         ],
       ),
       bottomNavigationBar: BottomNavBar(

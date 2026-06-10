@@ -9,9 +9,11 @@ class ProfileInfoCard extends StatelessWidget {
   const ProfileInfoCard({
     super.key,
     required this.profile,
+    this.onEdit,
   });
 
   final ProfileEntity profile;
+  final VoidCallback? onEdit;
 
   @override
   Widget build(BuildContext context) {
@@ -26,44 +28,54 @@ class ProfileInfoCard extends StatelessWidget {
           color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
         ),
       ),
-      child: Column(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            profile.displayName,
-            style: AppTextStyles.h2.copyWith(
-              color: isDark
-                  ? AppColors.darkTextPrimary
-                  : AppColors.lightTextPrimary,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'City: ${profile.city}',
+                  style: AppTextStyles.bodyMD.copyWith(
+                    color: isDark
+                        ? AppColors.darkTextSecondary
+                        : AppColors.lightTextSecondary,
+                  ),
+                ),
+                AppSpacing.gapXS,
+                Text(
+                  'Level: ${profile.skillLevel}',
+                  style: AppTextStyles.bodyMD.copyWith(
+                    color: isDark
+                        ? AppColors.darkTextSecondary
+                        : AppColors.lightTextSecondary,
+                  ),
+                ),
+                AppSpacing.gapXS,
+                Text(
+                  'Games played: ${profile.gamesPlayed}',
+                  style: AppTextStyles.bodyMD.copyWith(
+                    color: isDark
+                        ? AppColors.darkTextSecondary
+                        : AppColors.lightTextSecondary,
+                  ),
+                ),
+              ],
             ),
           ),
-          AppSpacing.gapSM,
-          Text(
-            'City: ${profile.city}',
-            style: AppTextStyles.bodyMD.copyWith(
-              color: isDark
-                  ? AppColors.darkTextSecondary
-                  : AppColors.lightTextSecondary,
+          if (onEdit != null)
+            IconButton(
+              tooltip: 'Edit profile',
+              onPressed: onEdit,
+              icon: Icon(
+                Icons.edit_rounded,
+                size: 20,
+                color: isDark
+                    ? AppColors.darkTextSecondary
+                    : AppColors.lightTextSecondary,
+              ),
             ),
-          ),
-          AppSpacing.gapXS,
-          Text(
-            'Level: ${profile.skillLevel}',
-            style: AppTextStyles.bodyMD.copyWith(
-              color: isDark
-                  ? AppColors.darkTextSecondary
-                  : AppColors.lightTextSecondary,
-            ),
-          ),
-          AppSpacing.gapXS,
-          Text(
-            'Games played: ${profile.gamesPlayed}',
-            style: AppTextStyles.bodyMD.copyWith(
-              color: isDark
-                  ? AppColors.darkTextSecondary
-                  : AppColors.lightTextSecondary,
-            ),
-          ),
         ],
       ),
     );
