@@ -1,0 +1,68 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Users
+    match /users/{userId} {
+      allow read: if request.auth != null;
+      allow create, update, delete: if request.auth != null
+                                    && request.auth.uid == userId;
+    }
+
+    // Games
+    match /games/{gameId} {
+      allow read: if request.auth != null;
+
+      // Host creates the game and must be its first player.
+      allow create: if request.auth != null
+                    && request.auth.uid == request.resource.data.hostId
+                    && request.resource.data.playerIds == [request.auth.uid];
+
+      allow update: if request.auth != null
+                    && (
+                      // Host can edit the game freely.
+                      resource.data.hostId == request.auth.uid
+                      // Any player can join/leave: may only touch
+                      // playerIds (+ derived status), only adding or
+                      // removing their own uid, within capacity.
+                      || (
+                        request.resource.data.diff(resource.data)
+                          .affectedKeys()
+                          .hasOnly(['playerIds', 'status'])
+                        && request.resource.data.playerIds.size()
+                             <= resource.data.maxPlayers
+                        && (
+                          // Join: adds exactly own uid.
+                          (
+                            request.resource.data.playerIds.toSet()
+                              .difference(resource.data.playerIds.toSet())
+                              == [request.auth.uid].toSet()
+                            && resource.data.playerIds.toSet()
+                              .difference(request.resource.data.playerIds.toSet())
+                              == [].toSet()
+                          )
+                          // Leave: removes exactly own uid (host stays).
+                          || (
+                            resource.data.playerIds.toSet()
+                              .difference(request.resource.data.playerIds.toSet())
+                              == [request.auth.uid].toSet()
+                            && request.resource.data.playerIds.toSet()
+                              .difference(resource.data.playerIds.toSet())
+                              == [].toSet()
+                            && request.auth.uid != resource.data.hostId
+                          )
+                        )
+                      )
+                    );
+
+      allow delete: if request.auth != null
+                    && resource.data.hostId == request.auth.uid;
+    }
+
+    // Deny everything else
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

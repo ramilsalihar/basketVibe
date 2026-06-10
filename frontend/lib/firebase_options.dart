@@ -56,13 +56,13 @@ class DefaultFirebaseOptions {
     projectId: 'basketvibe-f2391',
     storageBucket: 'basketvibe-f2391.firebasestorage.app',
   );
-
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDcNC9wt6QUBIF-mugpNyoAsTI-PuzTDBQ',
     appId: '1:75943924299:ios:cc4ccb612c512efc42f3ce',
     messagingSenderId: '75943924299',
     projectId: 'basketvibe-f2391',
     storageBucket: 'basketvibe-f2391.firebasestorage.app',
+    iosClientId: '75943924299-9tvk6f9cs2355oi2g19be71i9iomfvn4.apps.googleusercontent.com',
     iosBundleId: 'com.example.basketvibe',
   );
 }

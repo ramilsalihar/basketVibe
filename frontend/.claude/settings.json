@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(firebase deploy *)",
+      "Bash(firebase firestore *)",
+      "Bash(xcrun simctl *)",
+      "Bash(firebase --help)",
+      "Bash(firebase firestore:databases:list --project basketvibe-f2391)",
+      "Bash(node -e \"const c=require\\('/Users/ramilsalihar/.config/configstore/firebase-tools.json'\\); console.log\\(c.tokens.access_token\\)\")",
+      "Bash(curl -s -H 'Authorization: Bearer __CMDSUB_OUTPUT__' 'https://firestore.googleapis.com/v1/projects/basketvibe-f2391/databases/\\(default\\)/documents/users?pageSize=10')",
+      "Bash(curl -s -H 'Authorization: Bearer __CMDSUB_OUTPUT__' https://identitytoolkit.googleapis.com/admin/v2/projects/basketvibe-f2391/config)",
+      "Bash(python3 -c \"import json,sys; c=json.load\\(sys.stdin\\); print\\(json.dumps\\(c.get\\('signIn', c\\), indent=1\\)[:800]\\)\")",
+      "Bash(curl -s -H 'Authorization: Bearer __CMDSUB_OUTPUT__' https://identitytoolkit.googleapis.com/admin/v2/projects/basketvibe-f2391/defaultSupportedIdpConfigs)",
+      "Bash(flutterfire configure *)",
+      "Bash(python3 -c \"import json; d=json.load\\(open\\('android/app/google-services.json'\\)\\); print\\(json.dumps\\(d['client'][0]['oauth_client'], indent=1\\)\\); print\\(json.dumps\\([s for s in d['client'][0]['services'].get\\('appinvite_service',{}\\).get\\('other_platform_oauth_client',[]\\)], indent=1\\)\\)\")",
+      "Bash(/usr/libexec/PlistBuddy -c \"Set :CFBundleURLTypes:0:CFBundleURLSchemes:0 com.googleusercontent.apps.75943924299-9tvk6f9cs2355oi2g19be71i9iomfvn4\" ios/Runner/Info.plist)",
+      "Bash(flutter run *)",
+      "Bash([ -f \"$F\" ])"
+    ]
+  }
+}
