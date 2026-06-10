@@ -7,9 +7,9 @@ import 'package:basketvibe/core/styles/app_colors.dart';
 import 'package:basketvibe/core/styles/app_spacing.dart';
 import 'package:basketvibe/core/styles/app_text_styles.dart';
 import 'package:basketvibe/core/styles/app_border_radius.dart';
-import 'package:basketvibe/features/auth/presentation/cubit/auth_cubit.dart';
-import 'package:basketvibe/features/auth/presentation/cubit/auth_state.dart';
+import 'package:basketvibe/core/network/injection.dart';
 import 'package:basketvibe/features/games/domain/entities/game_entity.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:basketvibe/features/games/presentation/cubit/game_cubit.dart';
 import 'package:basketvibe/features/games/presentation/cubit/game_state.dart';
 
@@ -118,10 +118,15 @@ class _CreateGamePageState extends State<CreateGamePage> {
       pricePerPlayer = amount;
     }
 
-    final hostId = context.read<AuthCubit>().state is AuthAuthenticated
-        ? 'user_1'
-        : 'guest_1';
-    final hostName = 'Вы';
+    final currentUser = getIt<FirebaseAuth>().currentUser;
+    if (currentUser == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Войдите, чтобы создать игру')),
+      );
+      return;
+    }
+    final hostId = currentUser.uid;
+    final hostName = currentUser.displayName ?? 'Вы';
 
     final startTime = DateTime(
       _selectedDate!.year,

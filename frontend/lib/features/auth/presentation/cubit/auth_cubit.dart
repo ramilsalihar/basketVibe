@@ -1,52 +1,32 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:basketvibe/core/local_storage/local_storage_keys.dart';
 import 'package:basketvibe/core/local_storage/local_storage_service.dart';
-import 'package:basketvibe/features/auth/data/datasources/local/auth_local_datasource.dart';
 import 'package:basketvibe/features/auth/data/datasources/remote/auth_remote_datasource.dart';
 import 'package:basketvibe/features/auth/data/datasources/remote/google_sign_in_datasource.dart';
+import 'package:basketvibe/features/auth/data/datasources/remote/user_remote_datasource.dart';
 import 'package:basketvibe/features/auth/presentation/cubit/auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   AuthCubit(
     this._localStorage,
-    this._localDataSource,
     this._remoteDataSource,
+    this._userDataSource,
     this._googleSignIn,
   ) : super(const AuthInitial()) {
     Future.microtask(() => checkAuthStatus());
   }
 
   final LocalStorageService _localStorage;
-  final AuthLocalDataSource _localDataSource;
   final AuthRemoteDataSource _remoteDataSource;
+  final UserRemoteDataSource _userDataSource;
   final GoogleSignInDatasource _googleSignIn;
 
+  /// Firebase persists the session and refreshes tokens itself —
+  /// a non-null currentUser means we are logged in.
   Future<void> checkAuthStatus() async {
-    try {
-      final loggedIn = await _localDataSource.isUserLoggedIn();
-
-      if (loggedIn) {
-        emit(const AuthAuthenticated(isNewUser: false));
-        return;
-      }
-
-      // Access token missing but refresh token present — try silent refresh
-      final hasRefresh = await _localDataSource.hasRefreshToken();
-      if (hasRefresh) {
-        final refreshToken = await _localDataSource.getRefreshToken();
-        final result = await _remoteDataSource.refreshToken(refreshToken!);
-        final currentRefresh = await _localDataSource.getRefreshToken();
-        await _localDataSource.saveTokens(
-          accessToken: result.access,
-          refreshToken: currentRefresh!,
-        );
-        emit(const AuthAuthenticated(isNewUser: false));
-        return;
-      }
-
-      emit(const AuthUnauthenticated());
-    } on Exception {
-      await _localDataSource.clearTokens();
+    if (_remoteDataSource.currentUser != null) {
+      emit(const AuthAuthenticated(isNewUser: false));
+    } else {
       emit(const AuthUnauthenticated());
     }
   }
@@ -63,15 +43,13 @@ class AuthCubit extends Cubit<AuthState> {
 
       final result = await _remoteDataSource.googleSignIn(idToken);
 
-      await _localDataSource.saveTokens(
-        accessToken: result.access,
-        refreshToken: result.refresh,
+      await _userDataSource.ensureUserDocument(
+        _remoteDataSource.currentUser!,
+        isNew: result.user.isNew,
       );
+
       await _localStorage.setBool(LocalStorageKeys.isLoggedIn, true);
-      await _localStorage.setString(
-        LocalStorageKeys.userId,
-        result.user.id.toString(),
-      );
+      await _localStorage.setString(LocalStorageKeys.userId, result.user.id);
 
       emit(AuthAuthenticated(isNewUser: result.user.isNew));
     } on Exception catch (e) {
@@ -81,8 +59,8 @@ class AuthCubit extends Cubit<AuthState> {
 
   Future<void> logout() async {
     await Future.wait([
+      _remoteDataSource.signOut(),
       _googleSignIn.signOut(),
-      _localDataSource.clearTokens(),
       _localStorage.setBool(LocalStorageKeys.isLoggedIn, false),
       _localStorage.remove(LocalStorageKeys.userId),
     ]);

@@ -1,10 +1,13 @@
 import 'package:basketvibe/core/local_storage/local_storage_service.dart';
 import 'package:basketvibe/core/network/dio_network.dart';
 import 'package:basketvibe/core/services/secure_token_storage.dart';
-import 'package:basketvibe/features/auth/data/datasources/local/auth_local_datasource.dart';
 import 'package:basketvibe/features/auth/data/datasources/remote/auth_remote_datasource.dart';
 import 'package:basketvibe/features/auth/data/datasources/remote/google_sign_in_datasource.dart';
+import 'package:basketvibe/features/auth/data/datasources/remote/user_remote_datasource.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:basketvibe/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:basketvibe/features/games/data/datasources/game_remote_datasource.dart';
 import 'package:basketvibe/features/games/data/repositories/game_repository_impl.dart';
 import 'package:basketvibe/features/games/domain/repositories/game_repository.dart';
 import 'package:basketvibe/features/games/presentation/cubit/game_cubit.dart';
@@ -30,19 +33,30 @@ Future<void> configureDependencies() async {
   DioNetwork.initDio();
   getIt.registerLazySingleton<Dio>(() => DioNetwork.appAPI);
 
-  // Data sources
-  getIt.registerLazySingleton<AuthLocalDataSource>(
-    () => AuthLocalDataSource(getIt()),
+  // Firebase
+  getIt.registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance);
+  getIt.registerLazySingleton<FirebaseFirestore>(
+    () => FirebaseFirestore.instance,
   );
+
+  // Data sources
   getIt.registerLazySingleton<AuthRemoteDataSource>(
     () => AuthRemoteDataSource(getIt()),
+  );
+  getIt.registerLazySingleton<UserRemoteDataSource>(
+    () => UserRemoteDataSource(getIt()),
   );
   getIt.registerLazySingleton<GoogleSignInDatasource>(
     () => GoogleSignInDatasource(),
   );
 
   // Game
-  getIt.registerLazySingleton<GameRepository>(() => GameRepositoryImpl());
+  getIt.registerLazySingleton<GameRemoteDataSource>(
+    () => GameRemoteDataSource(getIt()),
+  );
+  getIt.registerLazySingleton<GameRepository>(
+    () => GameRepositoryImpl(getIt()),
+  );
 
   // Cubits / Blocs
   getIt.registerFactory<AuthCubit>(

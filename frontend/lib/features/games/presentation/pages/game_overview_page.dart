@@ -9,6 +9,7 @@ import 'package:basketvibe/core/styles/app_text_styles.dart';
 import 'package:basketvibe/features/games/domain/entities/game_entity.dart';
 import 'package:basketvibe/features/games/presentation/cubit/game_cubit.dart';
 import 'package:basketvibe/features/games/presentation/cubit/game_state.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 /// Single game overview page where users can see details and join.
 class GameOverviewPage extends StatelessWidget {
@@ -87,9 +88,20 @@ class _GameOverviewView extends StatelessWidget {
               AppSpacing.gapLG,
               ElevatedButton.icon(
                 onPressed: selectedGame.isJoinable
-                    ? () => context
-                        .read<GameCubit>()
-                        .joinGame(selectedGame.id, 'user_1')
+                    ? () {
+                        final uid = getIt<FirebaseAuth>().currentUser?.uid;
+                        if (uid == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Войдите, чтобы присоединиться'),
+                            ),
+                          );
+                          return;
+                        }
+                        context
+                            .read<GameCubit>()
+                            .joinGame(selectedGame.id, uid);
+                      }
                     : null,
                 icon: const Icon(Icons.sports_basketball_rounded),
                 label: Text(
