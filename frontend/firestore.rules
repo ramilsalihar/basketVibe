@@ -60,6 +60,12 @@ service cloud.firestore {
                     && resource.data.hostId == request.auth.uid;
     }
 
+    // Courts: read-only catalog, managed from the console/admin.
+    match /courts/{courtId} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+
     // Deny everything else
     match /{document=**} {
       allow read, write: if false;

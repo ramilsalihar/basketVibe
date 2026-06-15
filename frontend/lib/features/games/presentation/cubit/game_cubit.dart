@@ -8,10 +8,14 @@ class GameCubit extends Cubit<GameState> {
 
   final GameRepository _repository;
 
+  // The cubit can be closed (page disposed) while a Firestore call is
+  // still in flight — every emit after an await must check isClosed.
+
   /// Load all active game lobbies.
   Future<void> loadActiveGames() async {
     emit(const GameLoading());
     final result = await _repository.getActiveGames();
+    if (isClosed) return;
     result.fold(
       (failure) => emit(GameError(failure.message)),
       (games) => emit(GameLoaded(games: games)),
@@ -22,6 +26,7 @@ class GameCubit extends Cubit<GameState> {
   Future<void> createGame(GameEntity game) async {
     emit(const GameLoading());
     final result = await _repository.createGame(game);
+    if (isClosed) return;
     result.fold(
       (failure) => emit(GameError(failure.message)),
       (createdGame) {
@@ -35,6 +40,7 @@ class GameCubit extends Cubit<GameState> {
   /// Join a game lobby.
   Future<void> joinGame(String gameId, String playerId) async {
     final result = await _repository.joinGame(gameId, playerId);
+    if (isClosed) return;
     result.fold(
       (failure) => emit(GameError(failure.message)),
       (_) {
@@ -47,6 +53,7 @@ class GameCubit extends Cubit<GameState> {
   /// Leave a game lobby.
   Future<void> leaveGame(String gameId, String playerId) async {
     final result = await _repository.leaveGame(gameId, playerId);
+    if (isClosed) return;
     result.fold(
       (failure) => emit(GameError(failure.message)),
       (_) {

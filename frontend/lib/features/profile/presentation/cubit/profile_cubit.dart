@@ -17,6 +17,7 @@ class ProfileCubit extends Cubit<ProfileState> {
     }
     emit(const ProfileLoading());
     final result = await _getProfileUseCase(GetProfileParams(userId: userId));
+    if (isClosed) return;
     result.fold(
       (failure) => emit(ProfileError(failure.message)),
       (profile) => emit(ProfileLoaded(profile)),
@@ -39,6 +40,7 @@ class ProfileCubit extends Cubit<ProfileState> {
         skillLevel: skillLevel,
       ),
     );
+    if (isClosed) return;
     await result.fold(
       (failure) async => emit(ProfileError(failure.message)),
       (_) => loadProfile(userId),

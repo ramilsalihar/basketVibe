@@ -15,7 +15,9 @@
       "Bash(python3 -c \"import json; d=json.load\\(open\\('android/app/google-services.json'\\)\\); print\\(json.dumps\\(d['client'][0]['oauth_client'], indent=1\\)\\); print\\(json.dumps\\([s for s in d['client'][0]['services'].get\\('appinvite_service',{}\\).get\\('other_platform_oauth_client',[]\\)], indent=1\\)\\)\")",
       "Bash(/usr/libexec/PlistBuddy -c \"Set :CFBundleURLTypes:0:CFBundleURLSchemes:0 com.googleusercontent.apps.75943924299-9tvk6f9cs2355oi2g19be71i9iomfvn4\" ios/Runner/Info.plist)",
       "Bash(flutter run *)",
-      "Bash([ -f \"$F\" ])"
+      "Bash([ -f \"$F\" ])",
+      "Bash(sed -n '1,110p')",
+      "Bash(sed -n '1,60p' lib/features/games/presentation/widgets/cards/upcoming_game_card.dart)"
     ]
   }
 }

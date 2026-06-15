@@ -8,18 +8,12 @@ import 'package:basketvibe/core/styles/app_spacing.dart';
 import 'package:basketvibe/core/styles/app_text_styles.dart';
 import 'package:basketvibe/core/styles/app_border_radius.dart';
 import 'package:basketvibe/core/network/injection.dart';
+import 'package:basketvibe/features/courts/data/datasources/court_remote_datasource.dart';
+import 'package:basketvibe/features/courts/data/models/court_model.dart';
 import 'package:basketvibe/features/games/domain/entities/game_entity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:basketvibe/features/games/presentation/cubit/game_cubit.dart';
 import 'package:basketvibe/features/games/presentation/cubit/game_state.dart';
-
-/// Court option for dropdown (matches mock courts from map/court finder).
-class _CourtOption {
-  const _CourtOption({required this.id, required this.name, this.address});
-  final String id;
-  final String name;
-  final String? address;
-}
 
 enum _PaymentOption { online, cash, free }
 
@@ -32,23 +26,42 @@ class CreateGamePage extends StatefulWidget {
 }
 
 class _CreateGamePageState extends State<CreateGamePage> {
-  static const List<_CourtOption> _courts = [
-    _CourtOption(id: 'court_1', name: 'Восток-5', address: 'Улица · Бесплатно'),
-    _CourtOption(id: 'court_2', name: 'Спартак', address: 'Зал · Платно'),
-    _CourtOption(id: 'court_3', name: 'Бишкек Арена', address: 'Зал · Платно'),
-  ];
-
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _maxPlayersController = TextEditingController(text: '10');
   final _cashAmountController = TextEditingController();
 
-  _CourtOption? _selectedCourt;
+  List<CourtModel> _courts = [];
+  bool _courtsLoading = true;
+  CourtModel? _selectedCourt;
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
   _PaymentOption _paymentOption = _PaymentOption.free;
   int _maxPlayers = 10;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCourts();
+  }
+
+  Future<void> _loadCourts() async {
+    try {
+      final courts = await getIt<CourtRemoteDataSource>().getCourts();
+      if (!mounted) return;
+      setState(() {
+        _courts = courts;
+        _courtsLoading = false;
+      });
+    } on Exception {
+      if (!mounted) return;
+      setState(() => _courtsLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Не удалось загрузить площадки')),
+      );
+    }
+  }
 
   @override
   void dispose() {
@@ -140,8 +153,8 @@ class _CreateGamePageState extends State<CreateGamePage> {
       id: '',
       courtId: _selectedCourt!.id,
       courtName: _selectedCourt!.name,
-      city: 'Бишкек',
-      address: _selectedCourt!.address ?? _selectedCourt!.name,
+      city: _selectedCourt!.city,
+      address: _selectedCourt!.address,
       hostId: hostId,
       hostName: hostName,
       startTime: startTime,
@@ -241,7 +254,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
                     ),
                     AppSpacing.gapMD,
                     // Court dropdown
-                    DropdownButtonFormField<_CourtOption>(
+                    DropdownButtonFormField<CourtModel>(
                       value: _selectedCourt,
                       decoration: InputDecoration(
                         labelText: 'Court *',
@@ -249,7 +262,9 @@ class _CreateGamePageState extends State<CreateGamePage> {
                           borderRadius: AppRadius.brMD,
                         ),
                       ),
-                      hint: const Text('Choose a court'),
+                      hint: Text(
+                        _courtsLoading ? 'Loading courts…' : 'Choose a court',
+                      ),
                       items: _courts
                           .map(
                             (c) => DropdownMenuItem(
