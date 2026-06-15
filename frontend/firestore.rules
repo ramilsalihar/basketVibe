@@ -12,7 +12,8 @@ service cloud.firestore {
 
     // Games
     match /games/{gameId} {
-      allow read: if request.auth != null;
+      // Public listings: guests can browse, only auth users can write.
+      allow read: if true;
 
       // Host creates the game and must be its first player.
       allow create: if request.auth != null
@@ -60,9 +61,9 @@ service cloud.firestore {
                     && resource.data.hostId == request.auth.uid;
     }
 
-    // Courts: read-only catalog, managed from the console/admin.
+    // Courts: public read-only catalog, managed from the console/admin.
     match /courts/{courtId} {
-      allow read: if request.auth != null;
+      allow read: if true;
       allow write: if false;
     }
 

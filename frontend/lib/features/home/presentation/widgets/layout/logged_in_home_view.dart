@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:basketvibe/core/constants/route_constants.dart';
 import 'package:basketvibe/core/styles/app_colors.dart';
+import 'package:basketvibe/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:basketvibe/features/auth/presentation/cubit/auth_state.dart';
+import 'package:basketvibe/features/auth/presentation/widgets/auth_lock_view.dart';
 import 'package:basketvibe/features/courts/presentation/pages/court_finder_page.dart';
 import 'package:basketvibe/features/games/presentation/pages/upcoming_games_page.dart';
 import 'package:basketvibe/features/home/presentation/pages/home_feed_page.dart';
@@ -56,7 +60,19 @@ class _LoggedInHomeViewState extends State<LoggedInHomeView> {
           ),
           const UpcomingGamesPage(),
           const CourtFinderPage(),
-          ProfilePage(userId: FirebaseAuth.instance.currentUser?.uid ?? ''),
+          BlocBuilder<AuthCubit, AuthState>(
+            builder: (context, state) {
+              if (state is! AuthAuthenticated) {
+                return const AuthLockView(
+                  message:
+                      'Войдите, чтобы видеть профиль и историю игр.',
+                );
+              }
+              return ProfilePage(
+                userId: FirebaseAuth.instance.currentUser?.uid ?? '',
+              );
+            },
+          ),
         ],
       ),
       bottomNavigationBar: BottomNavBar(
@@ -65,7 +81,24 @@ class _LoggedInHomeViewState extends State<LoggedInHomeView> {
       ),
       floatingActionButton: _currentIndex == 0
           ? FloatingActionButton(
-              onPressed: () => context.push(RouteConstants.createGame),
+              onPressed: () {
+                final authed =
+                    context.read<AuthCubit>().state is AuthAuthenticated;
+                if (!authed) {
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => Scaffold(
+                        appBar: AppBar(),
+                        body: const AuthLockView(
+                          message: 'Войдите, чтобы создать игру.',
+                        ),
+                      ),
+                    ),
+                  );
+                  return;
+                }
+                context.push(RouteConstants.createGame);
+              },
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
               elevation: 0,

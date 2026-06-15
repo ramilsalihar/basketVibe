@@ -1,15 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:basketvibe/core/constants/route_constants.dart';
 import 'package:basketvibe/core/network/injection.dart';
 import 'package:basketvibe/core/styles/app_colors.dart';
 import 'package:basketvibe/core/styles/app_spacing.dart';
 import 'package:basketvibe/core/styles/app_text_styles.dart';
+import 'package:basketvibe/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:basketvibe/features/auth/presentation/cubit/auth_state.dart';
+import 'package:basketvibe/features/auth/presentation/widgets/login_required_dialog.dart';
 import 'package:basketvibe/features/games/domain/entities/game_entity.dart';
 import 'package:basketvibe/features/games/presentation/cubit/game_cubit.dart';
 import 'package:basketvibe/features/games/presentation/cubit/game_state.dart';
 import 'package:basketvibe/features/games/presentation/pages/game_overview_page.dart';
 import 'package:basketvibe/features/games/presentation/widgets/sections/upcoming_games_list_section.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
+/// Routes to create-game for signed-in users, otherwise pops a login dialog.
+void _onCreateGame(BuildContext context) {
+  final authed = context.read<AuthCubit>().state is AuthAuthenticated;
+  if (!authed) {
+    showLoginRequiredDialog(
+      context,
+      message: 'Войдите, чтобы создать игру.',
+    );
+    return;
+  }
+  context.push(RouteConstants.createGame);
+}
 
 /// Full-page tab for upcoming games list, loaded from Firestore.
 class UpcomingGamesPage extends StatelessWidget {
@@ -77,6 +95,10 @@ class _UpcomingGamesView extends StatelessWidget {
                           onRetry: () =>
                               context.read<GameCubit>().loadActiveGames(),
                         ),
+                      GameLoaded(:final games) when games.isEmpty =>
+                        _GamesEmptyView(
+                          onCreateGame: () => _onCreateGame(context),
+                        ),
                       _ => UpcomingGamesListSection(
                           games: state is GameLoaded
                               ? state.games
@@ -98,6 +120,64 @@ class _UpcomingGamesView extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _GamesEmptyView extends StatelessWidget {
+  const _GamesEmptyView({required this.onCreateGame});
+
+  final VoidCallback onCreateGame;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 80),
+      child: Column(
+        children: [
+          Container(
+            width: 84,
+            height: 84,
+            decoration: const BoxDecoration(
+              color: AppColors.primaryMuted,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.sports_basketball_rounded,
+              color: AppColors.primary,
+              size: 40,
+            ),
+          ),
+          AppSpacing.gapLG,
+          Text(
+            'Пока нет игр',
+            textAlign: TextAlign.center,
+            style: AppTextStyles.h2.copyWith(
+              color: isDark
+                  ? AppColors.darkTextPrimary
+                  : AppColors.lightTextPrimary,
+            ),
+          ),
+          AppSpacing.gapSM,
+          Text(
+            'Создайте игру и позовите игроков на площадку.',
+            textAlign: TextAlign.center,
+            style: AppTextStyles.bodyMD.copyWith(
+              color: isDark
+                  ? AppColors.darkTextSecondary
+                  : AppColors.lightTextSecondary,
+            ),
+          ),
+          AppSpacing.gapLG,
+          FilledButton.icon(
+            onPressed: onCreateGame,
+            icon: const Icon(Icons.add_rounded, size: 20),
+            label: const Text('Создать игру'),
+          ),
+        ],
       ),
     );
   }
