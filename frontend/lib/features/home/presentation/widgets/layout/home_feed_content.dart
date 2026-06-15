@@ -40,7 +40,7 @@ class HomeFeedContent extends StatelessWidget {
             children: [
               HomeQuickActionHeader(notificationCount: notificationCount),
               AppSpacing.gapSM,
-              const WhosBallingTicker(),
+              // const WhosBallingTicker(),
               AppSpacing.gapLG,
             ],
           ),
@@ -61,19 +61,14 @@ class HomeFeedContent extends StatelessWidget {
             },
           ),
         ),
-        SliverToBoxAdapter(
-          child: AppSpacing.gapXL,
-        ),
+        SliverToBoxAdapter(child: AppSpacing.gapXL),
         SliverToBoxAdapter(
           child: PublicCourtsSection(
             onTapCourt: (court) => onOpenCourt?.call(court),
           ),
         ),
-        const SliverToBoxAdapter(
-          child: SizedBox(height: 100),
-        ),
+        const SliverToBoxAdapter(child: SizedBox(height: 100)),
       ],
     );
   }
 }
-
