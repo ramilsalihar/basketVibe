@@ -6,6 +6,9 @@ import 'package:basketvibe/core/styles/app_colors.dart';
 import 'package:basketvibe/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:basketvibe/features/auth/presentation/cubit/auth_state.dart';
 import 'package:basketvibe/features/auth/presentation/widgets/auth_lock_view.dart';
+import 'package:basketvibe/core/network/injection.dart';
+import 'package:basketvibe/features/courts/data/models/court_model.dart';
+import 'package:basketvibe/features/courts/presentation/cubit/courts_cubit.dart';
 import 'package:basketvibe/features/courts/presentation/pages/court_finder_page.dart';
 import 'package:basketvibe/features/games/presentation/pages/upcoming_games_page.dart';
 import 'package:basketvibe/features/home/presentation/pages/home_feed_page.dart';
@@ -23,16 +26,26 @@ class LoggedInHomeView extends StatefulWidget {
 class _LoggedInHomeViewState extends State<LoggedInHomeView> {
   int _currentIndex = 0;
   late PageController _pageController;
+  late final CourtsCubit _courtsCubit;
+
+  /// Switches to the courts tab; the cubit request makes CourtFinderPage
+  /// open the overview sheet once it builds.
+  void _openCourt(CourtModel court) {
+    _courtsCubit.requestOverview(court);
+    _onTabTapped(2);
+  }
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController();
+    _courtsCubit = getIt<CourtsCubit>()..loadCourts();
   }
 
   @override
   void dispose() {
     _pageController.dispose();
+    _courtsCubit.close();
     super.dispose();
   }
 
@@ -48,6 +61,13 @@ class _LoggedInHomeViewState extends State<LoggedInHomeView> {
 
   @override
   Widget build(BuildContext context) {
+    return BlocProvider<CourtsCubit>.value(
+      value: _courtsCubit,
+      child: _buildScaffold(context),
+    );
+  }
+
+  Widget _buildScaffold(BuildContext context) {
     return Scaffold(
       body: PageView(
         controller: _pageController,
@@ -57,6 +77,7 @@ class _LoggedInHomeViewState extends State<LoggedInHomeView> {
           HomeFeedPage(
             notificationCount: 2,
             onNavigateToCourts: () => _onTabTapped(2),
+            onOpenCourt: _openCourt,
           ),
           const UpcomingGamesPage(),
           const CourtFinderPage(),

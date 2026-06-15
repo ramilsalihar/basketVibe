@@ -8,6 +8,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:basketvibe/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:basketvibe/features/courts/data/datasources/court_remote_datasource.dart';
+import 'package:basketvibe/features/courts/data/datasources/sport_type_remote_datasource.dart';
+import 'package:basketvibe/features/courts/presentation/cubit/courts_cubit.dart';
 import 'package:basketvibe/features/games/data/datasources/game_remote_datasource.dart';
 import 'package:basketvibe/features/games/data/repositories/game_repository_impl.dart';
 import 'package:basketvibe/features/games/domain/repositories/game_repository.dart';
@@ -60,6 +62,12 @@ Future<void> configureDependencies() async {
   // Courts
   getIt.registerLazySingleton<CourtRemoteDataSource>(
     () => CourtRemoteDataSource(getIt()),
+  );
+  getIt.registerLazySingleton<SportTypeRemoteDataSource>(
+    () => SportTypeRemoteDataSource(getIt()),
+  );
+  getIt.registerFactory<CourtsCubit>(
+    () => CourtsCubit(getIt(), getIt()),
   );
 
   // Game

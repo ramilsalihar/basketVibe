@@ -7,6 +7,7 @@ import 'package:basketvibe/features/games/presentation/cubit/game_state.dart';
 import 'package:basketvibe/features/games/presentation/pages/game_overview_page.dart';
 import 'package:basketvibe/features/games/presentation/widgets/sections/upcoming_games_carousel.dart';
 import 'package:basketvibe/features/home/presentation/widgets/sections/home_quick_action_header.dart';
+import 'package:basketvibe/features/courts/data/models/court_model.dart';
 import 'package:basketvibe/features/courts/presentation/widgets/public_courts_section.dart';
 import 'package:basketvibe/features/home/presentation/widgets/sections/whos_balling_ticker.dart';
 
@@ -15,10 +16,12 @@ class HomeFeedContent extends StatelessWidget {
     super.key,
     this.notificationCount = 2,
     this.onNavigateToCourts,
+    this.onOpenCourt,
   });
 
   final int notificationCount;
   final VoidCallback? onNavigateToCourts;
+  final void Function(CourtModel court)? onOpenCourt;
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +66,7 @@ class HomeFeedContent extends StatelessWidget {
         ),
         SliverToBoxAdapter(
           child: PublicCourtsSection(
-            onTapCourt: (_) => onNavigateToCourts?.call(),
+            onTapCourt: (court) => onOpenCourt?.call(court),
           ),
         ),
         const SliverToBoxAdapter(

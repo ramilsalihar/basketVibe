@@ -1,28 +1,22 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:basketvibe/core/network/injection.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:basketvibe/core/styles/app_border_radius.dart';
 import 'package:basketvibe/core/styles/app_colors.dart';
 import 'package:basketvibe/core/styles/app_spacing.dart';
 import 'package:basketvibe/core/styles/app_text_styles.dart';
-import 'package:basketvibe/features/courts/data/datasources/court_remote_datasource.dart';
 import 'package:basketvibe/features/courts/data/models/court_model.dart';
+import 'package:basketvibe/features/courts/presentation/cubit/courts_cubit.dart';
+import 'package:basketvibe/features/courts/presentation/cubit/courts_state.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-/// Horizontally scrolling "public places to play" section, loaded
-/// from the `courts` collection.
-class PublicCourtsSection extends StatefulWidget {
+/// Horizontally scrolling "public places to play" section, driven by the
+/// surrounding [CourtsCubit].
+class PublicCourtsSection extends StatelessWidget {
   const PublicCourtsSection({super.key, this.onTapCourt});
 
   /// Called with the tapped court (e.g. open the court finder map).
   final void Function(CourtModel court)? onTapCourt;
-
-  @override
-  State<PublicCourtsSection> createState() => _PublicCourtsSectionState();
-}
-
-class _PublicCourtsSectionState extends State<PublicCourtsSection> {
-  late final Future<List<CourtModel>> _courtsFuture;
 
   static const _skeletonCourts = [
     CourtModel(
@@ -50,12 +44,6 @@ class _PublicCourtsSectionState extends State<PublicCourtsSection> {
   ];
 
   @override
-  void initState() {
-    super.initState();
-    _courtsFuture = getIt<CourtRemoteDataSource>().getCourts();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -74,10 +62,9 @@ class _PublicCourtsSectionState extends State<PublicCourtsSection> {
           ),
         ),
         const SizedBox(height: 8),
-        FutureBuilder<List<CourtModel>>(
-          future: _courtsFuture,
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
+        BlocBuilder<CourtsCubit, CourtsState>(
+          builder: (context, state) {
+            if (state.status == CourtsStatus.error) {
               return Padding(
                 padding: AppSpacing.pagePadding,
                 child: Text(
@@ -91,10 +78,9 @@ class _PublicCourtsSectionState extends State<PublicCourtsSection> {
               );
             }
 
-            final loading =
-                snapshot.connectionState != ConnectionState.done;
-            final courts =
-                loading ? _skeletonCourts : (snapshot.data ?? const []);
+            final loading = state.status == CourtsStatus.loading ||
+                state.status == CourtsStatus.initial;
+            final courts = loading ? _skeletonCourts : state.courts;
 
             if (courts.isEmpty) return const SizedBox.shrink();
 
@@ -112,9 +98,9 @@ class _PublicCourtsSectionState extends State<PublicCourtsSection> {
                       padding: const EdgeInsets.only(right: 12),
                       child: _CourtCard(
                         court: court,
-                        onTap: widget.onTapCourt == null
+                        onTap: onTapCourt == null
                             ? null
-                            : () => widget.onTapCourt!(court),
+                            : () => onTapCourt!(court),
                       ),
                     );
                   },

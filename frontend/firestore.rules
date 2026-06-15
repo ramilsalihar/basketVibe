@@ -67,6 +67,12 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Sport types: public read-only catalog.
+    match /sportTypes/{sportTypeId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
     // Deny everything else
     match /{document=**} {
       allow read, write: if false;

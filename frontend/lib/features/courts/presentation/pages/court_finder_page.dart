@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:basketvibe/core/widgets/dialogs/app_dialog.dart';
@@ -6,9 +7,16 @@ import 'package:basketvibe/core/styles/app_colors.dart';
 import 'package:basketvibe/core/styles/app_border_radius.dart';
 import 'package:basketvibe/core/styles/app_spacing.dart';
 import 'package:basketvibe/core/styles/app_text_styles.dart';
+import 'package:basketvibe/features/courts/data/models/court_model.dart';
+import 'package:basketvibe/features/courts/data/models/sport_type_model.dart';
 import 'package:basketvibe/features/courts/data/map_service.dart';
+import 'package:basketvibe/features/courts/presentation/cubit/courts_cubit.dart';
+import 'package:basketvibe/features/courts/presentation/cubit/courts_state.dart';
+import 'package:skeletonizer/skeletonizer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// Full-screen court finder with map, heatmap, and filters.
+/// Reads courts/sport types from the surrounding [CourtsCubit].
 class CourtFinderPage extends StatefulWidget {
   const CourtFinderPage({super.key});
 
@@ -25,52 +33,45 @@ class _CourtFinderPageState extends State<CourtFinderPage> {
   final LatLng _initialCenter = MapService.defaultCenter;
   final double _initialZoom = MapService.defaultZoom;
 
-  static const List<_CourtOverviewData> _popularCourts = [
-    _CourtOverviewData(
-      name: 'Восток-5',
-      address: '7-й микрорайон, 52/4',
-      distanceMeters: 800,
-      status: 'Открыто',
-      statusColor: AppColors.success,
-      schedule: '11:00 - 23:00',
-      imageUrls: [
-        'https://images.unsplash.com/photo-1519861531473-9200262188bf?w=600',
-        'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=600',
-        'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=600',
-      ],
-    ),
-    _CourtOverviewData(
-      name: 'Спартак',
-      address: 'пр. Мира, 19',
-      distanceMeters: 1200,
-      status: 'Закрыто',
-      statusColor: AppColors.accentPink,
-      schedule: '10:00 - 22:00',
-      imageUrls: [
-        'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=600',
-        'https://images.unsplash.com/photo-1505666287802-931dc83a5dc7?w=600',
-        'https://images.unsplash.com/photo-1518063319789-7217e6706b04?w=600',
-      ],
-    ),
-    _CourtOverviewData(
-      name: 'Бишкек Арена',
-      address: 'ул. Манаса, 88',
-      distanceMeters: 1500,
-      status: 'Открыто',
-      statusColor: AppColors.success,
-      schedule: '09:00 - 00:00',
-      imageUrls: [
-        'https://images.unsplash.com/photo-1471295253337-3ceaaedca402?w=600',
-        'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=600',
-        'https://images.unsplash.com/photo-1543357480-c60d40007a3f?w=600',
-      ],
-    ),
-  ];
+  // Filters. null = no filter applied.
+  String? _sportFilter; // sportTypeId
+  String? _typeFilter; // 'indoor' | 'outdoor'
+  bool _freeOnly = false;
 
   @override
   void initState() {
     super.initState();
     _initializeMap();
+  }
+
+  List<CourtModel> _applyFilters(List<CourtModel> courts) {
+    return courts.where((c) {
+      if (_sportFilter != null && c.sportTypeId != _sportFilter) return false;
+      if (_typeFilter != null && c.type != _typeFilter) return false;
+      if (_freeOnly && !c.isFree) return false;
+      return true;
+    }).toList();
+  }
+
+  void _showCourtOverview(
+    CourtModel court,
+    Map<String, SportTypeModel> sportTypes,
+  ) {
+    AppDialog.showBottomSheet<void>(
+      context: context,
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+      content: _SingleCourtOverview(
+        court: court,
+        sportType: sportTypes[court.sportTypeId],
+      ),
+    );
+    if (court.lat != 0 || court.lng != 0) {
+      try {
+        _mapService.goToLocation(_mapController, LatLng(court.lat, court.lng));
+      } catch (_) {
+        // Map controller not ready yet — ignore, sheet still opens.
+      }
+    }
   }
 
   Future<void> _initializeMap() async {
@@ -94,14 +95,6 @@ class _CourtFinderPageState extends State<CourtFinderPage> {
     await _mapService.goToCurrentLocation(_mapController);
   }
 
-  void _showCourtOverview(_CourtOverviewData court) {
-    AppDialog.showBottomSheet<void>(
-      context: context,
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
-      content: _SingleCourtOverview(court: court),
-    );
-  }
-
   @override
   void dispose() {
     _mapController.dispose();
@@ -111,6 +104,42 @@ class _CourtFinderPageState extends State<CourtFinderPage> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return BlocConsumer<CourtsCubit, CourtsState>(
+      listenWhen: (prev, curr) =>
+          curr.pendingOverviewCourt != null &&
+          prev.pendingOverviewCourt != curr.pendingOverviewCourt,
+      listener: (context, state) {
+        final court = state.pendingOverviewCourt!;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          _showCourtOverview(court, state.sportTypes);
+          context.read<CourtsCubit>().clearOverviewRequest();
+        });
+      },
+      builder: (context, state) {
+        // Handles the case where the request was set before this page
+        // was built (PageView builds tabs lazily): open on first build.
+        if (state.pendingOverviewCourt != null) {
+          final court = state.pendingOverviewCourt!;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted) return;
+            _showCourtOverview(court, state.sportTypes);
+            context.read<CourtsCubit>().clearOverviewRequest();
+          });
+        }
+        return _buildContent(context, isDark, state);
+      },
+    );
+  }
+
+  Widget _buildContent(
+    BuildContext context,
+    bool isDark,
+    CourtsState state,
+  ) {
+    final loading = state.status == CourtsStatus.loading ||
+        state.status == CourtsStatus.initial;
 
     return Column(
         children: [
@@ -169,19 +198,59 @@ class _CourtFinderPageState extends State<CourtFinderPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Quick filters
+                // Sport category tabs
+                if (state.sportTypes.isNotEmpty)
+                  SizedBox(
+                    height: 36,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: [
+                        _FilterChip(
+                          label: 'Все',
+                          isSelected: _sportFilter == null,
+                          onSelected: () => setState(() => _sportFilter = null),
+                        ),
+                        for (final sport in state.sportTypes.values) ...[
+                          const SizedBox(width: 8),
+                          _FilterChip(
+                            label: sport.name,
+                            icon: sport.iconData,
+                            isSelected: _sportFilter == sport.id,
+                            onSelected: () =>
+                                setState(() => _sportFilter = sport.id),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                AppSpacing.gapMD,
+                // Type / price filters
                 Row(
                   children: [
-                    _FilterChip(label: 'Зал', isSelected: false),
+                    _FilterChip(
+                      label: 'Зал',
+                      isSelected: _typeFilter == 'indoor',
+                      onSelected: () => setState(() => _typeFilter =
+                          _typeFilter == 'indoor' ? null : 'indoor'),
+                    ),
                     const SizedBox(width: 8),
-                    _FilterChip(label: 'Улица', isSelected: true),
+                    _FilterChip(
+                      label: 'Улица',
+                      isSelected: _typeFilter == 'outdoor',
+                      onSelected: () => setState(() => _typeFilter =
+                          _typeFilter == 'outdoor' ? null : 'outdoor'),
+                    ),
                     const SizedBox(width: 8),
-                    _FilterChip(label: 'Бесплатно', isSelected: false),
+                    _FilterChip(
+                      label: 'Бесплатно',
+                      isSelected: _freeOnly,
+                      onSelected: () => setState(() => _freeOnly = !_freeOnly),
+                    ),
                   ],
                 ),
                 AppSpacing.gapXL,
                 Text(
-                  'Популярные площадки',
+                  'Площадки',
                   style: AppTextStyles.h2.copyWith(
                     color: isDark
                         ? AppColors.darkTextPrimary
@@ -189,21 +258,69 @@ class _CourtFinderPageState extends State<CourtFinderPage> {
                   ),
                 ),
                 AppSpacing.gapMD,
-                _CourtListTile(
-                  name: 'Восток-5',
-                  subtitle: 'Улица · Бесплатно',
-                  onTap: () => _showCourtOverview(_popularCourts[0]),
-                ),
-                _CourtListTile(
-                  name: 'Спартак',
-                  subtitle: 'Зал · Платно',
-                  onTap: () => _showCourtOverview(_popularCourts[1]),
-                ),
-                _CourtListTile(
-                  name: 'Бишкек Арена',
-                  subtitle: 'Зал · Платно',
-                  onTap: () => _showCourtOverview(_popularCourts[2]),
-                ),
+                if (loading)
+                  Skeletonizer(
+                    enabled: true,
+                    child: Column(
+                      children: List.generate(
+                        3,
+                        (_) => const _CourtListTile(
+                          name: 'Court name',
+                          subtitle: 'Зал · Бесплатно',
+                        ),
+                      ),
+                    ),
+                  )
+                else
+                  Builder(
+                    builder: (context) {
+                      final filtered = _applyFilters(state.courts);
+                      final child = filtered.isEmpty
+                          ? Text(
+                              'Площадки не найдены',
+                              key: const ValueKey('empty'),
+                              style: AppTextStyles.bodyMD.copyWith(
+                                color: isDark
+                                    ? AppColors.darkTextSecondary
+                                    : AppColors.lightTextSecondary,
+                              ),
+                            )
+                          : Column(
+                              // Re-keyed per filter so the switcher animates.
+                              key: ValueKey(
+                                '$_sportFilter|$_typeFilter|$_freeOnly',
+                              ),
+                              children: filtered
+                                  .map(
+                                    (court) => _CourtListTile(
+                                      name: court.name,
+                                      subtitle: court.subtitle,
+                                      onTap: () => _showCourtOverview(
+                                        court,
+                                        state.sportTypes,
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                            );
+                      return AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 280),
+                        switchInCurve: Curves.easeOut,
+                        switchOutCurve: Curves.easeIn,
+                        transitionBuilder: (child, animation) => FadeTransition(
+                          opacity: animation,
+                          child: SlideTransition(
+                            position: Tween<Offset>(
+                              begin: const Offset(0.06, 0),
+                              end: Offset.zero,
+                            ).animate(animation),
+                            child: child,
+                          ),
+                        ),
+                        child: child,
+                      );
+                    },
+                  ),
               ],
             ),
           ),
@@ -213,17 +330,31 @@ class _CourtFinderPageState extends State<CourtFinderPage> {
 }
 
 class _FilterChip extends StatelessWidget {
-  const _FilterChip({required this.label, required this.isSelected});
+  const _FilterChip({
+    required this.label,
+    required this.isSelected,
+    this.onSelected,
+    this.icon,
+  });
 
   final String label;
   final bool isSelected;
+  final VoidCallback? onSelected;
+  final IconData? icon;
 
   @override
   Widget build(BuildContext context) {
     return FilterChip(
+      avatar: icon == null
+          ? null
+          : Icon(
+              icon,
+              size: 16,
+              color: isSelected ? AppColors.primary : null,
+            ),
       label: Text(label),
       selected: isSelected,
-      onSelected: (_) {},
+      onSelected: onSelected == null ? null : (_) => onSelected!(),
       selectedColor: AppColors.primaryMuted,
       checkmarkColor: AppColors.primary,
     );
@@ -271,30 +402,21 @@ class _CourtListTile extends StatelessWidget {
   }
 }
 
-class _CourtOverviewData {
-  const _CourtOverviewData({
-    required this.name,
-    required this.address,
-    required this.distanceMeters,
-    required this.status,
-    required this.statusColor,
-    required this.schedule,
-    required this.imageUrls,
-  });
-
-  final String name;
-  final String address;
-  final int distanceMeters;
-  final String status;
-  final Color statusColor;
-  final String schedule;
-  final List<String> imageUrls;
-}
-
 class _SingleCourtOverview extends StatelessWidget {
-  const _SingleCourtOverview({required this.court});
+  const _SingleCourtOverview({required this.court, this.sportType});
 
-  final _CourtOverviewData court;
+  final CourtModel court;
+  final SportTypeModel? sportType;
+
+  Future<void> _openWhatsApp(BuildContext context) async {
+    final uri = Uri.parse('https://wa.me/${court.whatsappDigits}');
+    final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!ok && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Не удалось открыть WhatsApp')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -304,32 +426,35 @@ class _SingleCourtOverview extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        SizedBox(
-          height: 100,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            itemCount: court.imageUrls.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 8),
-            itemBuilder: (context, index) => ClipRRect(
-              borderRadius: AppRadius.brSM,
-              child: Image.network(
-                court.imageUrls[index],
-                width: 110,
-                height: 100,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
+        if (court.imageUrls.isNotEmpty)
+          SizedBox(
+            height: 100,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: court.imageUrls.length,
+              separatorBuilder: (_, _) => const SizedBox(width: 8),
+              itemBuilder: (context, index) => ClipRRect(
+                borderRadius: AppRadius.brSM,
+                child: Image.network(
+                  court.imageUrls[index],
                   width: 110,
                   height: 100,
-                  color: isDark ? AppColors.darkSurface2 : AppColors.lightSurface2,
-                  child: const Icon(
-                    Icons.image_not_supported_rounded,
-                    color: AppColors.primary,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, _, _) => Container(
+                    width: 110,
+                    height: 100,
+                    color: isDark
+                        ? AppColors.darkSurface2
+                        : AppColors.lightSurface2,
+                    child: const Icon(
+                      Icons.image_not_supported_rounded,
+                      color: AppColors.primary,
+                    ),
                   ),
                 ),
               ),
             ),
           ),
-        ),
         AppSpacing.gapLG,
         Text(
           '${court.name}, ${court.address}',
@@ -338,82 +463,86 @@ class _SingleCourtOverview extends StatelessWidget {
           ),
         ),
         AppSpacing.gapMD,
-        Row(
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
           children: [
-            Icon(
-              Icons.near_me_rounded,
-              size: 16,
-              color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
-            ),
-            const SizedBox(width: 4),
-            Text(
-              '${court.distanceMeters} м',
-              style: AppTextStyles.bodyMD.copyWith(
-                color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+            if (sportType != null)
+              _OverviewChip(
+                icon: sportType!.iconData,
+                label: sportType!.name,
               ),
-            ),
-            const SizedBox(width: 12),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(
-                color: court.statusColor.withOpacity(0.15),
-                borderRadius: AppRadius.brPill,
-              ),
-              child: Text(
-                court.status,
-                style: AppTextStyles.labelMD.copyWith(color: court.statusColor),
-              ),
-            ),
+            _OverviewChip(label: court.subtitle),
           ],
         ),
-        AppSpacing.gapLG,
-        Row(
-          children: [
-            Text(
-              'Время работы',
-              style: AppTextStyles.bodyMD.copyWith(
-                color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+        if (court.schedule.isNotEmpty) ...[
+          AppSpacing.gapLG,
+          Row(
+            children: [
+              Text(
+                'Время работы',
+                style: AppTextStyles.bodyMD.copyWith(
+                  color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                ),
               ),
-            ),
-            const SizedBox(width: 16),
-            Text(
-              court.schedule,
-              style: AppTextStyles.labelLG.copyWith(
-                color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-              ),
-            ),
-          ],
-        ),
-        AppSpacing.gapLG,
-        DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: AppColors.primaryButtonGradient,
-            borderRadius: AppRadius.brPill,
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.primary.withOpacity(0.3),
-                blurRadius: 14,
-                offset: const Offset(0, 6),
+              const SizedBox(width: 16),
+              Text(
+                court.schedule,
+                style: AppTextStyles.labelLG.copyWith(
+                  color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                ),
               ),
             ],
           ),
-          child: ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.transparent,
-              shadowColor: Colors.transparent,
-              shape: const RoundedRectangleBorder(borderRadius: AppRadius.brPill),
+        ],
+        if (court.whatsapp.isNotEmpty) ...[
+          AppSpacing.gapLG,
+          FilledButton.icon(
+            onPressed: () => _openWhatsApp(context),
+            style: FilledButton.styleFrom(
+              backgroundColor: const Color(0xFF25D366),
+              foregroundColor: Colors.white,
+              minimumSize: const Size.fromHeight(52),
+              shape: const RoundedRectangleBorder(
+                borderRadius: AppRadius.brPill,
+              ),
             ),
-            child: Text(
-              'Бронировать',
-              style: AppTextStyles.buttonLG.copyWith(color: Colors.white),
-            ),
+            icon: const Icon(Icons.chat_rounded, size: 20),
+            label: Text('WhatsApp · ${court.whatsapp}'),
           ),
-        ),
+        ],
       ],
+    );
+  }
+}
+
+class _OverviewChip extends StatelessWidget {
+  const _OverviewChip({required this.label, this.icon});
+
+  final String label;
+  final IconData? icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: AppColors.primaryMuted,
+        borderRadius: AppRadius.brPill,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) ...[
+            Icon(icon, size: 14, color: AppColors.primary),
+            const SizedBox(width: 4),
+          ],
+          Text(
+            label,
+            style: AppTextStyles.labelMD.copyWith(color: AppColors.primary),
+          ),
+        ],
+      ),
     );
   }
 }

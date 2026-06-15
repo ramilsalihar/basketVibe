@@ -10,8 +10,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 /// lat, lng: number
 /// isFree: bool
 /// type: 'indoor' | 'outdoor'
-/// schedule: string    — opening hours, e.g. "09:00 - 23:00"
-/// imageUrls: string[] — photos of the place
+/// schedule: string     — opening hours, e.g. "09:00 - 23:00"
+/// imageUrls: string[]  — photos of the place
+/// whatsapp: string     — contact number, e.g. "+996 700 123 456"
+/// sportTypeId: string  — references sportTypes/{id}, e.g. "basketball"
 /// ```
 class CourtModel {
   const CourtModel({
@@ -25,6 +27,8 @@ class CourtModel {
     required this.type,
     this.schedule = '',
     this.imageUrls = const [],
+    this.whatsapp = '',
+    this.sportTypeId = '',
   });
 
   final String id;
@@ -44,6 +48,12 @@ class CourtModel {
   /// Photos of the place; first one is used as the card cover.
   final List<String> imageUrls;
 
+  /// Contact number in "+996 700 123 456" form. Empty if none.
+  final String whatsapp;
+
+  /// References `sportTypes/{id}`, e.g. "basketball".
+  final String sportTypeId;
+
   factory CourtModel.fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> doc,
   ) {
@@ -60,8 +70,13 @@ class CourtModel {
       schedule: data['schedule'] as String? ?? '',
       imageUrls:
           (data['imageUrls'] as List<dynamic>? ?? const []).cast<String>(),
+      whatsapp: data['whatsapp'] as String? ?? '',
+      sportTypeId: data['sportTypeId'] as String? ?? '',
     );
   }
+
+  /// Digits-only form for wa.me links, e.g. "996700123456".
+  String get whatsappDigits => whatsapp.replaceAll(RegExp(r'[^0-9]'), '');
 
   /// Short display line, e.g. "Зал · Платно".
   String get subtitle =>
