@@ -216,6 +216,27 @@ class AppLocalizationsRu extends AppLocalizations {
   String get createGameMaxPlayersRange => 'От 2 до 20';
 
   @override
+  String get createGameVisibility => 'Видимость';
+
+  @override
+  String get visibilityPublic => 'Публичная';
+
+  @override
+  String get visibilityPrivate => 'Приватная';
+
+  @override
+  String get visibilityPublicHint => 'Каждый может найти и присоединиться';
+
+  @override
+  String get visibilityPrivateHint => 'Только по ссылке';
+
+  @override
+  String get historyTitle => 'История';
+
+  @override
+  String get historyEmpty => 'Пока нет игр. Присоединитесь или создайте!';
+
+  @override
   String get createGamePayment => 'Оплата';
 
   @override

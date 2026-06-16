@@ -37,7 +37,7 @@ class UpcomingGamesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => getIt<GameCubit>()..loadActiveGames(),
+      create: (_) => getIt<GameCubit>()..watchActiveGames(),
       child: const _UpcomingGamesView(),
     );
   }
@@ -74,7 +74,8 @@ class _UpcomingGamesView extends StatelessWidget {
       backgroundColor: isDark ? AppColors.darkBg : AppColors.lightBg,
       body: SafeArea(
         child: RefreshIndicator(
-          onRefresh: () => context.read<GameCubit>().loadActiveGames(),
+          onRefresh: () async =>
+              context.read<GameCubit>().watchActiveGames(),
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             padding: AppSpacing.pagePadding,
@@ -94,7 +95,7 @@ class _UpcomingGamesView extends StatelessWidget {
                       GameError(:final message) => _GamesErrorView(
                           message: message,
                           onRetry: () =>
-                              context.read<GameCubit>().loadActiveGames(),
+                              context.read<GameCubit>().watchActiveGames(),
                         ),
                       GameLoaded(:final games) when games.isEmpty =>
                         _GamesEmptyView(

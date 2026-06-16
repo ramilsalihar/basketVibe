@@ -26,6 +26,35 @@ class GameRemoteDataSource {
     return snapshot.docs.map(GameModel.fromFirestore).toList();
   }
 
+  /// Realtime stream of open, public games that haven't ended yet
+  /// (soonest first). A game stays visible until start + duration passes.
+  Stream<List<GameEntity>> watchActiveGames() {
+    return _games
+        .where('visibility', isEqualTo: GameVisibility.public.name)
+        .where('status', isEqualTo: GameStatus.open.name)
+        .orderBy('startTime')
+        .snapshots()
+        .map((snapshot) {
+      final now = DateTime.now();
+      return snapshot.docs
+          .map(GameModel.fromFirestore)
+          .where((g) => g.endTime.isAfter(now))
+          .toList();
+    });
+  }
+
+  /// Realtime stream of games the user hosts or has joined, newest first.
+  Stream<List<GameEntity>> watchMyGames(String uid) {
+    return _games
+        .where('playerIds', arrayContains: uid)
+        .snapshots()
+        .map((snapshot) {
+      final games = snapshot.docs.map(GameModel.fromFirestore).toList()
+        ..sort((a, b) => b.startTime.compareTo(a.startTime));
+      return games;
+    });
+  }
+
   /// Creates the game document; the host is the first player.
   Future<GameEntity> createGame(GameEntity game) async {
     final doc = _games.doc();

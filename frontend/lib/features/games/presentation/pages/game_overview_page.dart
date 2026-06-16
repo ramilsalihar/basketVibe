@@ -25,7 +25,7 @@ class GameOverviewPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => getIt<GameCubit>()..loadActiveGames(),
+      create: (_) => getIt<GameCubit>()..watchActiveGames(),
       child: _GameOverviewView(gameId: gameId),
     );
   }
@@ -78,34 +78,39 @@ class _GameOverviewView extends StatelessWidget {
                   orElse: () => games.first,
                 );
 
+          final uid = getIt<FirebaseAuth>().currentUser?.uid;
+          final isHost = uid != null && uid == selectedGame.hostId;
+
           return ListView(
             padding: AppSpacing.pagePadding,
             children: [
               _GameOverviewCard(game: selectedGame),
               AppSpacing.gapLG,
-              ElevatedButton.icon(
-                onPressed: selectedGame.isJoinable
-                    ? () {
-                        final uid = getIt<FirebaseAuth>().currentUser?.uid;
-                        if (uid == null) {
-                          AppSnackbar.error(
-                            context,
-                            AppLocalizations.of(context).joinGameLoginMessage,
-                          );
-                          return;
+              // Host doesn't join their own game.
+              if (!isHost)
+                ElevatedButton.icon(
+                  onPressed: selectedGame.isJoinable
+                      ? () {
+                          if (uid == null) {
+                            AppSnackbar.error(
+                              context,
+                              AppLocalizations.of(context)
+                                  .joinGameLoginMessage,
+                            );
+                            return;
+                          }
+                          context
+                              .read<GameCubit>()
+                              .joinGame(selectedGame.id, uid);
                         }
-                        context
-                            .read<GameCubit>()
-                            .joinGame(selectedGame.id, uid);
-                      }
-                    : null,
-                icon: const Icon(Icons.sports_basketball_rounded),
-                label: Text(
-                  selectedGame.isJoinable
-                      ? AppLocalizations.of(context).gamesJoin
-                      : AppLocalizations.of(context).gamesFull,
+                      : null,
+                  icon: const Icon(Icons.sports_basketball_rounded),
+                  label: Text(
+                    selectedGame.isJoinable
+                        ? AppLocalizations.of(context).gamesJoin
+                        : AppLocalizations.of(context).gamesFull,
+                  ),
                 ),
-              ),
             ],
           );
         },

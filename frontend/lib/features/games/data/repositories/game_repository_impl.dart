@@ -16,6 +16,14 @@ class GameRepositoryImpl implements GameRepository {
       _run(() => _remoteDataSource.getActiveGames());
 
   @override
+  Stream<List<GameEntity>> watchActiveGames() =>
+      _remoteDataSource.watchActiveGames();
+
+  @override
+  Stream<List<GameEntity>> watchMyGames(String uid) =>
+      _remoteDataSource.watchMyGames(uid);
+
+  @override
   Future<Either<Failure, GameEntity>> createGame(GameEntity game) =>
       _run(() => _remoteDataSource.createGame(game));
 

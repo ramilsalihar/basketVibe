@@ -26,7 +26,7 @@ class HomeFeedContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => getIt<GameCubit>()..loadActiveGames(),
+      create: (_) => getIt<GameCubit>()..watchActiveGames(),
       child: _buildContent(context),
     );
   }

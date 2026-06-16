@@ -494,6 +494,48 @@ abstract class AppLocalizations {
   /// **'Between 2 and 20'**
   String get createGameMaxPlayersRange;
 
+  /// No description provided for @createGameVisibility.
+  ///
+  /// In en, this message translates to:
+  /// **'Visibility'**
+  String get createGameVisibility;
+
+  /// No description provided for @visibilityPublic.
+  ///
+  /// In en, this message translates to:
+  /// **'Public'**
+  String get visibilityPublic;
+
+  /// No description provided for @visibilityPrivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Private'**
+  String get visibilityPrivate;
+
+  /// No description provided for @visibilityPublicHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Anyone can find and join'**
+  String get visibilityPublicHint;
+
+  /// No description provided for @visibilityPrivateHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Only people with the link'**
+  String get visibilityPrivateHint;
+
+  /// No description provided for @historyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get historyTitle;
+
+  /// No description provided for @historyEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No games yet. Join or host one!'**
+  String get historyEmpty;
+
   /// No description provided for @createGamePayment.
   ///
   /// In en, this message translates to:

@@ -36,6 +36,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
   _PaymentOption _paymentOption = _PaymentOption.free;
+  GameVisibility _visibility = GameVisibility.public;
   int _maxPlayers = 10;
 
   @override
@@ -126,7 +127,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
       duration: const Duration(hours: 2),
       maxPlayers: _maxPlayers,
       currentPlayers: 1,
-      visibility: GameVisibility.public,
+      visibility: _visibility,
       level: GameLevel.balanced,
       status: GameStatus.open,
       title: _titleController.text.trim().isEmpty
@@ -345,6 +346,46 @@ class _CreateGamePageState extends State<CreateGamePage> {
                         _maxPlayers = players;
                         return null;
                       },
+                    ),
+                    AppSpacing.gapMD,
+                    // Visibility (public / private)
+                    Text(
+                      l10n.createGameVisibility,
+                      style: AppTextStyles.labelMD.copyWith(
+                        color: isDark
+                            ? AppColors.darkTextPrimary
+                            : AppColors.lightTextPrimary,
+                      ),
+                    ),
+                    AppSpacing.gapSM,
+                    SegmentedButton<GameVisibility>(
+                      segments: [
+                        ButtonSegment(
+                          value: GameVisibility.public,
+                          icon: const Icon(Icons.public_rounded, size: 18),
+                          label: Text(l10n.visibilityPublic),
+                        ),
+                        ButtonSegment(
+                          value: GameVisibility.private,
+                          icon: const Icon(Icons.lock_outline_rounded, size: 18),
+                          label: Text(l10n.visibilityPrivate),
+                        ),
+                      ],
+                      selected: {_visibility},
+                      showSelectedIcon: false,
+                      onSelectionChanged: (s) =>
+                          setState(() => _visibility = s.first),
+                    ),
+                    AppSpacing.gapXS,
+                    Text(
+                      _visibility == GameVisibility.public
+                          ? l10n.visibilityPublicHint
+                          : l10n.visibilityPrivateHint,
+                      style: AppTextStyles.bodySM.copyWith(
+                        color: isDark
+                            ? AppColors.darkTextSecondary
+                            : AppColors.lightTextSecondary,
+                      ),
                     ),
                     AppSpacing.gapMD,
                     // Payment options

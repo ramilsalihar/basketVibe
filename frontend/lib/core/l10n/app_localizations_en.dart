@@ -216,6 +216,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get createGameMaxPlayersRange => 'Between 2 and 20';
 
   @override
+  String get createGameVisibility => 'Visibility';
+
+  @override
+  String get visibilityPublic => 'Public';
+
+  @override
+  String get visibilityPrivate => 'Private';
+
+  @override
+  String get visibilityPublicHint => 'Anyone can find and join';
+
+  @override
+  String get visibilityPrivateHint => 'Only people with the link';
+
+  @override
+  String get historyTitle => 'History';
+
+  @override
+  String get historyEmpty => 'No games yet. Join or host one!';
+
+  @override
   String get createGamePayment => 'Payment';
 
   @override

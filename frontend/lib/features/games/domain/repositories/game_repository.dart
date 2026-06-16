@@ -7,6 +7,12 @@ abstract class GameRepository {
   /// Get all active/open game lobbies.
   Future<Either<Failure, List<GameEntity>>> getActiveGames();
 
+  /// Realtime stream of open, public, upcoming games.
+  Stream<List<GameEntity>> watchActiveGames();
+
+  /// Realtime stream of games the user hosts or has joined.
+  Stream<List<GameEntity>> watchMyGames(String uid);
+
   /// Create a new game lobby.
   Future<Either<Failure, GameEntity>> createGame(GameEntity game);
 
