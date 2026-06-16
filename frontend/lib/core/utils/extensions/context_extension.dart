@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:basketvibe/core/styles/app_colors.dart';
+import 'package:basketvibe/core/utils/snackbars/app_snackbar.dart';
 
 extension ContextExtension on BuildContext {
   /// Get theme brightness
@@ -24,15 +25,13 @@ extension ContextExtension on BuildContext {
   Color get borderColor =>
       isDark ? AppColors.darkBorder : AppColors.lightBorder;
 
-  /// Show snackbar
+  /// Show a rounded, app-colored snackbar.
   void showSnackBar(String message, {bool isError = false}) {
-    ScaffoldMessenger.of(this).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: isError ? AppColors.error : AppColors.primary,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+    if (isError) {
+      AppSnackbar.error(this, message);
+    } else {
+      AppSnackbar.success(this, message);
+    }
   }
 
   /// Get screen size

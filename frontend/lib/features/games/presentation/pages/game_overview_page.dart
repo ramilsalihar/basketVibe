@@ -10,6 +10,7 @@ import 'package:basketvibe/features/games/domain/entities/game_entity.dart';
 import 'package:basketvibe/features/games/presentation/cubit/game_cubit.dart';
 import 'package:basketvibe/features/games/presentation/cubit/game_state.dart';
 import 'package:basketvibe/core/l10n/app_localizations.dart';
+import 'package:basketvibe/core/utils/snackbars/app_snackbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 /// Single game overview page where users can see details and join.
@@ -44,12 +45,7 @@ class _GameOverviewView extends StatelessWidget {
       body: BlocConsumer<GameCubit, GameState>(
         listener: (context, state) {
           if (state is GameError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: AppColors.error,
-              ),
-            );
+            AppSnackbar.error(context, state.message);
           }
         },
         builder: (context, state) {
@@ -92,13 +88,9 @@ class _GameOverviewView extends StatelessWidget {
                     ? () {
                         final uid = getIt<FirebaseAuth>().currentUser?.uid;
                         if (uid == null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                AppLocalizations.of(context)
-                                    .joinGameLoginMessage,
-                              ),
-                            ),
+                          AppSnackbar.error(
+                            context,
+                            AppLocalizations.of(context).joinGameLoginMessage,
                           );
                           return;
                         }

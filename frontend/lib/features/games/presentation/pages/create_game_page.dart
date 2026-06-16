@@ -9,6 +9,7 @@ import 'package:basketvibe/core/styles/app_text_styles.dart';
 import 'package:basketvibe/core/styles/app_border_radius.dart';
 import 'package:basketvibe/core/l10n/app_localizations.dart';
 import 'package:basketvibe/core/network/injection.dart';
+import 'package:basketvibe/core/utils/snackbars/app_snackbar.dart';
 import 'package:basketvibe/features/games/domain/entities/game_entity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:basketvibe/features/games/presentation/cubit/game_cubit.dart';
@@ -82,9 +83,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
     if (!_formKey.currentState!.validate()) return;
 
     if (_selectedDate == null || _selectedTime == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.createGameSelectDateTime)),
-      );
+      AppSnackbar.error(context, l10n.createGameSelectDateTime);
       return;
     }
 
@@ -92,9 +91,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
     if (_paymentOption == _PaymentOption.cash) {
       final amount = double.tryParse(_cashAmountController.text.trim());
       if (amount == null || amount < 0) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.createGameInvalidAmount)),
-        );
+        AppSnackbar.error(context, l10n.createGameInvalidAmount);
         return;
       }
       pricePerPlayer = amount;
@@ -102,9 +99,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
 
     final currentUser = getIt<FirebaseAuth>().currentUser;
     if (currentUser == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.createGameLoginMessage)),
-      );
+      AppSnackbar.error(context, l10n.createGameLoginMessage);
       return;
     }
     final hostId = currentUser.uid;
@@ -154,20 +149,10 @@ class _CreateGamePageState extends State<CreateGamePage> {
     return BlocListener<GameCubit, GameState>(
       listener: (context, state) {
         if (state is GameCreated) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(l10n.createGameSuccess),
-              backgroundColor: AppColors.success,
-            ),
-          );
+          AppSnackbar.success(context, l10n.createGameSuccess);
           context.pop();
         } else if (state is GameError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: AppColors.error,
-            ),
-          );
+          AppSnackbar.error(context, state.message);
         }
       },
       child: Scaffold(

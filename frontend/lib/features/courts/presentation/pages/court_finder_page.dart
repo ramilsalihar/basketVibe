@@ -12,6 +12,7 @@ import 'package:basketvibe/features/courts/data/map_service.dart';
 import 'package:basketvibe/features/courts/presentation/cubit/courts_cubit.dart';
 import 'package:basketvibe/features/courts/presentation/cubit/courts_state.dart';
 import 'package:basketvibe/core/l10n/app_localizations.dart';
+import 'package:basketvibe/core/utils/snackbars/app_snackbar.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -535,10 +536,9 @@ class _SingleCourtOverview extends StatelessWidget {
     final uri = Uri.parse('https://wa.me/${court.whatsappDigits}');
     final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!ok && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context).courtsWhatsappError),
-        ),
+      AppSnackbar.error(
+        context,
+        AppLocalizations.of(context).courtsWhatsappError,
       );
     }
   }

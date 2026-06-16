@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:basketvibe/core/constants/route_constants.dart';
 import 'package:basketvibe/core/styles/app_colors.dart';
 import 'package:basketvibe/core/styles/app_text_styles.dart';
-import 'package:basketvibe/core/utils/mixin/snackbars/snackbar_mixin.dart';
+import 'package:basketvibe/core/utils/snackbars/app_snackbar.dart';
 import 'package:basketvibe/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:basketvibe/features/auth/presentation/cubit/auth_state.dart';
 
