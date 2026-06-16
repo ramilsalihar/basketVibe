@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:basketvibe/core/widgets/dialogs/app_dialog.dart';
 import 'package:basketvibe/core/styles/app_colors.dart';
 import 'package:basketvibe/core/styles/app_border_radius.dart';
 import 'package:basketvibe/core/styles/app_spacing.dart';
@@ -39,10 +38,28 @@ class _CourtFinderPageState extends State<CourtFinderPage> {
   String? _typeFilter; // 'indoor' | 'outdoor'
   bool _freeOnly = false;
 
+  static const _sheetInitialSize = 0.45;
+  final _sheetController = DraggableScrollableController();
+  bool _sheetFull = false;
+
   @override
   void initState() {
     super.initState();
     _initializeMap();
+    _sheetController.addListener(_onSheetMove);
+  }
+
+  void _onSheetMove() {
+    final full = _sheetController.size >= 0.92;
+    if (full != _sheetFull) setState(() => _sheetFull = full);
+  }
+
+  void _collapseSheet() {
+    _sheetController.animateTo(
+      _sheetInitialSize,
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeOut,
+    );
   }
 
   List<CourtModel> _applyFilters(List<CourtModel> courts) {
@@ -58,13 +75,66 @@ class _CourtFinderPageState extends State<CourtFinderPage> {
     CourtModel court,
     Map<String, SportTypeModel> sportTypes,
   ) {
-    AppDialog.showBottomSheet<void>(
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    const initialSize = 0.42;
+    final controller = DraggableScrollableController();
+
+    showModalBottomSheet<void>(
       context: context,
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
-      content: _SingleCourtOverview(
-        court: court,
-        sportType: sportTypes[court.sportTypeId],
-      ),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) {
+        return DraggableScrollableSheet(
+          controller: controller,
+          initialChildSize: initialSize,
+          minChildSize: initialSize,
+          maxChildSize: 0.95,
+          expand: false,
+          builder: (context, scrollController) {
+            return Container(
+              decoration: BoxDecoration(
+                color: isDark
+                    ? AppColors.darkSurface
+                    : AppColors.lightSurface,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(20),
+                ),
+              ),
+              // Tap the sheet to collapse it back to the initial height.
+              child: GestureDetector(
+                onTap: () => controller.animateTo(
+                  initialSize,
+                  duration: const Duration(milliseconds: 250),
+                  curve: Curves.easeOut,
+                ),
+                child: ListView(
+                  controller: scrollController,
+                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        margin: const EdgeInsets.only(bottom: 12),
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? AppColors.darkBorder
+                              : AppColors.lightBorder,
+                          borderRadius: AppRadius.brPill,
+                        ),
+                      ),
+                    ),
+                    _SingleCourtOverview(
+                      court: court,
+                      sportType: sportTypes[court.sportTypeId],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
     if (court.lat != 0 || court.lng != 0) {
       try {
@@ -99,6 +169,7 @@ class _CourtFinderPageState extends State<CourtFinderPage> {
   @override
   void dispose() {
     _mapController.dispose();
+    _sheetController.dispose();
     super.dispose();
   }
 
@@ -143,191 +214,240 @@ class _CourtFinderPageState extends State<CourtFinderPage> {
     final loading = state.status == CourtsStatus.loading ||
         state.status == CourtsStatus.initial;
 
-    return Column(
-        children: [
-          // Map
-          Expanded(
-            child: Stack(
-              children: [
-                FlutterMap(
-                  mapController: _mapController,
-                  options: MapOptions(
-                    initialCenter: _initialCenter,
-                    initialZoom: _initialZoom,
-                    maxZoom: 18.0,
-                    minZoom: 5.0,
-                  ),
-                  children: [
-                    TileLayer(
-                      urlTemplate:
-                          'https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}{r}.png',
-                      userAgentPackageName: 'com.basketvibe.app',
-                      maxZoom: 19,
-                    ),
-                    MarkerLayer(markers: _markers),
-                  ],
+    return Stack(
+      children: [
+        // Full-screen map behind the sheet.
+        Positioned.fill(
+          child: Stack(
+            children: [
+              FlutterMap(
+                mapController: _mapController,
+                options: MapOptions(
+                  initialCenter: _initialCenter,
+                  initialZoom: _initialZoom,
+                  maxZoom: 18.0,
+                  minZoom: 5.0,
                 ),
-                if (_isLoadingLocation)
-                  Container(
-                    color: Colors.black.withOpacity(0.3),
-                    child: const Center(
-                      child: CircularProgressIndicator(),
-                    ),
+                children: [
+                  TileLayer(
+                    urlTemplate:
+                        'https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}{r}.png',
+                    userAgentPackageName: 'com.basketvibe.app',
+                    maxZoom: 19,
                   ),
-                // Location button overlay
-                Positioned(
-                  bottom: 16,
-                  right: 16,
-                  child: FloatingActionButton.small(
-                    onPressed: _centerOnUserLocation,
-                    backgroundColor: isDark ? AppColors.darkSurface : AppColors.lightSurface,
-                    child: const Icon(Icons.my_location, color: AppColors.primary),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          // Filters and list
-          Container(
-            padding: AppSpacing.pagePadding,
-            decoration: BoxDecoration(
-              color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
+                  MarkerLayer(markers: _markers),
+                ],
               ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                AppSpacing.gapLG,
-                // Sport category tabs
-                if (state.sportTypes.isNotEmpty)
-                  SizedBox(
-                    height: 36,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: [
-                        _FilterChip(
-                          label: l10n.courtsFilterAll,
-                          isSelected: _sportFilter == null,
-                          onSelected: () => setState(() => _sportFilter = null),
+              if (_isLoadingLocation)
+                Container(
+                  color: Colors.black.withOpacity(0.3),
+                  child: const Center(child: CircularProgressIndicator()),
+                ),
+              Positioned(
+                bottom: 16,
+                right: 16,
+                child: FloatingActionButton.small(
+                  onPressed: _centerOnUserLocation,
+                  backgroundColor:
+                      isDark ? AppColors.darkSurface : AppColors.lightSurface,
+                  child: const Icon(Icons.my_location, color: AppColors.primary),
+                ),
+              ),
+            ],
+          ),
+        ),
+        // Filters + list as a draggable sheet: starts below half height,
+        // scrolling the list expands it to full screen.
+        DraggableScrollableSheet(
+          controller: _sheetController,
+          initialChildSize: _sheetInitialSize,
+          minChildSize: 0.25,
+          maxChildSize: 1.0,
+          builder: (context, scrollController) {
+            return Container(
+              decoration: BoxDecoration(
+                color:
+                    isDark ? AppColors.darkSurface : AppColors.lightSurface,
+                borderRadius: _sheetFull
+                    ? BorderRadius.zero
+                    : const BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20),
+                      ),
+              ),
+              child: Column(
+                children: [
+                  // Pinned header: drag handle when collapsed, a top bar
+                  // with a close button when expanded to full screen.
+                  if (_sheetFull)
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        top: kToolbarHeight,
+                        left: 8,
+                        right: 8,
+                        bottom: 4,
+                      ),
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: IconButton(
+                          icon: const Icon(Icons.close_rounded),
+                          onPressed: _collapseSheet,
                         ),
-                        for (final sport in state.sportTypes.values) ...[
-                          const SizedBox(width: 8),
-                          _FilterChip(
-                            label: sport.name,
-                            icon: sport.iconData,
-                            isSelected: _sportFilter == sport.id,
-                            onSelected: () =>
-                                setState(() => _sportFilter = sport.id),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                AppSpacing.gapMD,
-                // Type / price filters
-                Row(
-                  children: [
-                    _FilterChip(
-                      label: l10n.courtsFilterIndoor,
-                      isSelected: _typeFilter == 'indoor',
-                      onSelected: () => setState(() => _typeFilter =
-                          _typeFilter == 'indoor' ? null : 'indoor'),
-                    ),
-                    const SizedBox(width: 8),
-                    _FilterChip(
-                      label: l10n.courtsFilterOutdoor,
-                      isSelected: _typeFilter == 'outdoor',
-                      onSelected: () => setState(() => _typeFilter =
-                          _typeFilter == 'outdoor' ? null : 'outdoor'),
-                    ),
-                    const SizedBox(width: 8),
-                    _FilterChip(
-                      label: l10n.courtsFilterFree,
-                      isSelected: _freeOnly,
-                      onSelected: () => setState(() => _freeOnly = !_freeOnly),
-                    ),
-                  ],
-                ),
-                AppSpacing.gapXL,
-                Text(
-                  l10n.courtsTitle,
-                  style: AppTextStyles.h2.copyWith(
-                    color: isDark
-                        ? AppColors.darkTextPrimary
-                        : AppColors.lightTextPrimary,
-                  ),
-                ),
-                AppSpacing.gapMD,
-                if (loading)
-                  Skeletonizer(
-                    enabled: true,
-                    child: Column(
-                      children: List.generate(
-                        3,
-                        (_) => const _CourtListTile(
-                          name: 'Court name',
-                          subtitle: 'Зал · Бесплатно',
+                      ),
+                    )
+                  else
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        margin: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? AppColors.darkBorder
+                              : AppColors.lightBorder,
+                          borderRadius: AppRadius.brPill,
                         ),
                       ),
                     ),
-                  )
-                else
-                  Builder(
-                    builder: (context) {
-                      final filtered = _applyFilters(state.courts);
-                      final child = filtered.isEmpty
-                          ? Text(
-                              l10n.courtsNotFound,
-                              key: const ValueKey('empty'),
-                              style: AppTextStyles.bodyMD.copyWith(
-                                color: isDark
-                                    ? AppColors.darkTextSecondary
-                                    : AppColors.lightTextSecondary,
-                              ),
-                            )
-                          : Column(
-                              // Re-keyed per filter so the switcher animates.
-                              key: ValueKey(
-                                '$_sportFilter|$_typeFilter|$_freeOnly',
-                              ),
-                              children: filtered
-                                  .map(
-                                    (court) => _CourtListTile(
-                                      name: court.name,
-                                      subtitle: court.subtitle,
-                                      onTap: () => _showCourtOverview(
-                                        court,
-                                        state.sportTypes,
-                                      ),
-                                    ),
-                                  )
-                                  .toList(),
-                            );
-                      return AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 280),
-                        switchInCurve: Curves.easeOut,
-                        switchOutCurve: Curves.easeIn,
-                        transitionBuilder: (child, animation) => FadeTransition(
-                          opacity: animation,
-                          child: SlideTransition(
-                            position: Tween<Offset>(
-                              begin: const Offset(0.06, 0),
-                              end: Offset.zero,
-                            ).animate(animation),
-                            child: child,
+                  Expanded(
+                    child: ListView(
+                      controller: scrollController,
+                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+                      children: [
+                  // Sport category tabs
+                  if (state.sportTypes.isNotEmpty)
+                    SizedBox(
+                      height: 36,
+                      child: ListView(
+                        scrollDirection: Axis.horizontal,
+                        children: [
+                          _FilterChip(
+                            label: l10n.courtsFilterAll,
+                            isSelected: _sportFilter == null,
+                            onSelected: () =>
+                                setState(() => _sportFilter = null),
+                          ),
+                          for (final sport in state.sportTypes.values) ...[
+                            const SizedBox(width: 8),
+                            _FilterChip(
+                              label: sport.name,
+                              icon: sport.iconData,
+                              isSelected: _sportFilter == sport.id,
+                              onSelected: () =>
+                                  setState(() => _sportFilter = sport.id),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  AppSpacing.gapMD,
+                  // Type / price filters
+                  Row(
+                    children: [
+                      _FilterChip(
+                        label: l10n.courtsFilterIndoor,
+                        isSelected: _typeFilter == 'indoor',
+                        onSelected: () => setState(() => _typeFilter =
+                            _typeFilter == 'indoor' ? null : 'indoor'),
+                      ),
+                      const SizedBox(width: 8),
+                      _FilterChip(
+                        label: l10n.courtsFilterOutdoor,
+                        isSelected: _typeFilter == 'outdoor',
+                        onSelected: () => setState(() => _typeFilter =
+                            _typeFilter == 'outdoor' ? null : 'outdoor'),
+                      ),
+                      const SizedBox(width: 8),
+                      _FilterChip(
+                        label: l10n.courtsFilterFree,
+                        isSelected: _freeOnly,
+                        onSelected: () =>
+                            setState(() => _freeOnly = !_freeOnly),
+                      ),
+                    ],
+                  ),
+                  AppSpacing.gapXL,
+                  Text(
+                    l10n.courtsTitle,
+                    style: AppTextStyles.h2.copyWith(
+                      color: isDark
+                          ? AppColors.darkTextPrimary
+                          : AppColors.lightTextPrimary,
+                    ),
+                  ),
+                  AppSpacing.gapMD,
+                  if (loading)
+                    Skeletonizer(
+                      enabled: true,
+                      child: Column(
+                        children: List.generate(
+                          3,
+                          (_) => const _CourtListTile(
+                            name: 'Court name',
+                            subtitle: 'Зал · Бесплатно',
                           ),
                         ),
-                        child: child,
-                      );
-                    },
+                      ),
+                    )
+                  else
+                    Builder(
+                      builder: (context) {
+                        final filtered = _applyFilters(state.courts);
+                        final child = filtered.isEmpty
+                            ? Text(
+                                l10n.courtsNotFound,
+                                key: const ValueKey('empty'),
+                                style: AppTextStyles.bodyMD.copyWith(
+                                  color: isDark
+                                      ? AppColors.darkTextSecondary
+                                      : AppColors.lightTextSecondary,
+                                ),
+                              )
+                            : Column(
+                                key: ValueKey(
+                                  '$_sportFilter|$_typeFilter|$_freeOnly',
+                                ),
+                                children: filtered
+                                    .map(
+                                      (court) => _CourtListTile(
+                                        name: court.name,
+                                        subtitle: court.subtitle,
+                                        onTap: () => _showCourtOverview(
+                                          court,
+                                          state.sportTypes,
+                                        ),
+                                      ),
+                                    )
+                                    .toList(),
+                              );
+                        return AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 280),
+                          switchInCurve: Curves.easeOut,
+                          switchOutCurve: Curves.easeIn,
+                          transitionBuilder: (child, animation) =>
+                              FadeTransition(
+                            opacity: animation,
+                            child: SlideTransition(
+                              position: Tween<Offset>(
+                                begin: const Offset(0.06, 0),
+                                end: Offset.zero,
+                              ).animate(animation),
+                              child: child,
+                            ),
+                          ),
+                          child: child,
+                        );
+                      },
+                    ),
+                      ],
+                    ),
                   ),
-              ],
-            ),
-          ),
-        ],
+                ],
+              ),
+            );
+          },
+        ),
+      ],
     );
   }
 }
