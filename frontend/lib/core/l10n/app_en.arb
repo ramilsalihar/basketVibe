@@ -1,0 +1,67 @@
+{
+  "@@locale": "en",
+
+  "settingsTitle": "Settings",
+  "darkTheme": "Dark theme",
+  "language": "Language",
+  "languageEnglish": "English",
+  "languageRussian": "Русский",
+
+  "cancel": "Cancel",
+  "save": "Save",
+  "retry": "Try again",
+  "login": "Log in",
+
+  "loginRequiredTitle": "Sign in required",
+  "loginRequiredMessage": "Sign in to your account to continue.",
+  "createGameLoginMessage": "Sign in to create a game.",
+  "joinGameLoginMessage": "Sign in to join.",
+
+  "authLockTitle": "Sign in to your account",
+  "authLockProfileMessage": "Sign in to see your profile and game history.",
+
+  "profileMyProfile": "My profile",
+  "profileEdit": "Edit profile",
+  "profileName": "Name",
+  "profileCity": "City",
+  "profileSkillLevel": "Skill level",
+  "profileGamesPlayed": "Games played: {count}",
+  "@profileGamesPlayed": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "profileCityLine": "City: {city}",
+  "@profileCityLine": {
+    "placeholders": { "city": { "type": "String" } }
+  },
+  "profileLevelLine": "Level: {level}",
+  "@profileLevelLine": {
+    "placeholders": { "level": { "type": "String" } }
+  },
+  "profileEnterName": "Enter your name",
+  "profileNotSignedIn": "Not signed in",
+  "skillBeginner": "Beginner",
+  "skillIntermediate": "Intermediate",
+  "skillAdvanced": "Advanced",
+  "skillPro": "Pro",
+  "profileHistory": "History",
+  "profileOpenHistory": "Open activity history",
+  "logout": "Log out",
+
+  "gamesTitle": "Upcoming games",
+  "gamesEmptyTitle": "No games yet",
+  "gamesEmptySubtitle": "Create a game and call players to the court.",
+  "gamesCreate": "Create game",
+  "gamesJoin": "Join game",
+  "gamesFull": "Game is full",
+
+  "courtsSectionTitle": "Places to play",
+  "courtsTitle": "Courts",
+  "courtsNotFound": "No courts found",
+  "courtsFilterAll": "All",
+  "courtsFilterIndoor": "Indoor",
+  "courtsFilterOutdoor": "Outdoor",
+  "courtsFilterFree": "Free",
+  "courtsLoadError": "Failed to load courts",
+  "courtsOpenHours": "Opening hours",
+  "courtsWhatsappError": "Could not open WhatsApp"
+}

@@ -4,6 +4,8 @@ import 'package:basketvibe/core/styles/app_border_radius.dart';
 import 'package:basketvibe/core/styles/app_spacing.dart';
 import 'package:basketvibe/core/styles/app_text_styles.dart';
 import 'package:basketvibe/features/profile/domain/entities/profile_entity.dart';
+import 'package:basketvibe/core/l10n/app_localizations.dart';
+import 'package:basketvibe/core/l10n/skill_level_l10n.dart';
 
 class ProfileInfoCard extends StatelessWidget {
   const ProfileInfoCard({
@@ -18,6 +20,7 @@ class ProfileInfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context);
 
     return Container(
       padding: AppSpacing.cardPadding,
@@ -36,7 +39,7 @@ class ProfileInfoCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'City: ${profile.city}',
+                  l10n.profileCityLine(profile.city),
                   style: AppTextStyles.bodyMD.copyWith(
                     color: isDark
                         ? AppColors.darkTextSecondary
@@ -45,7 +48,7 @@ class ProfileInfoCard extends StatelessWidget {
                 ),
                 AppSpacing.gapXS,
                 Text(
-                  'Level: ${profile.skillLevel}',
+                  l10n.profileLevelLine(l10n.skillLevelLabel(profile.skillLevel)),
                   style: AppTextStyles.bodyMD.copyWith(
                     color: isDark
                         ? AppColors.darkTextSecondary
@@ -54,7 +57,7 @@ class ProfileInfoCard extends StatelessWidget {
                 ),
                 AppSpacing.gapXS,
                 Text(
-                  'Games played: ${profile.gamesPlayed}',
+                  l10n.profileGamesPlayed(profile.gamesPlayed),
                   style: AppTextStyles.bodyMD.copyWith(
                     color: isDark
                         ? AppColors.darkTextSecondary
@@ -66,7 +69,7 @@ class ProfileInfoCard extends StatelessWidget {
           ),
           if (onEdit != null)
             IconButton(
-              tooltip: 'Edit profile',
+              tooltip: l10n.profileEdit,
               onPressed: onEdit,
               icon: Icon(
                 Icons.edit_rounded,

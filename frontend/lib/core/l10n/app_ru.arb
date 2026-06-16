@@ -1,0 +1,58 @@
+{
+  "@@locale": "ru",
+
+  "settingsTitle": "Настройки",
+  "darkTheme": "Тёмная тема",
+  "language": "Язык",
+  "languageEnglish": "English",
+  "languageRussian": "Русский",
+
+  "cancel": "Отмена",
+  "save": "Сохранить",
+  "retry": "Попробовать снова",
+  "login": "Войти",
+
+  "loginRequiredTitle": "Требуется вход",
+  "loginRequiredMessage": "Войдите в аккаунт, чтобы продолжить.",
+  "createGameLoginMessage": "Войдите, чтобы создать игру.",
+  "joinGameLoginMessage": "Войдите, чтобы присоединиться.",
+
+  "authLockTitle": "Войдите в аккаунт",
+  "authLockProfileMessage": "Войдите, чтобы видеть профиль и историю игр.",
+
+  "profileMyProfile": "Мой профиль",
+  "profileEdit": "Редактировать профиль",
+  "profileName": "Имя",
+  "profileCity": "Город",
+  "profileSkillLevel": "Уровень",
+  "profileGamesPlayed": "Сыграно игр: {count}",
+  "profileCityLine": "Город: {city}",
+  "profileLevelLine": "Уровень: {level}",
+  "profileEnterName": "Введите имя",
+  "profileNotSignedIn": "Вы не вошли",
+  "skillBeginner": "Новичок",
+  "skillIntermediate": "Средний",
+  "skillAdvanced": "Продвинутый",
+  "skillPro": "Профи",
+  "profileHistory": "История",
+  "profileOpenHistory": "Открыть историю активности",
+  "logout": "Выйти",
+
+  "gamesTitle": "Предстоящие игры",
+  "gamesEmptyTitle": "Пока нет игр",
+  "gamesEmptySubtitle": "Создайте игру и позовите игроков на площадку.",
+  "gamesCreate": "Создать игру",
+  "gamesJoin": "Присоединиться",
+  "gamesFull": "Мест нет",
+
+  "courtsSectionTitle": "Площадки для игры",
+  "courtsTitle": "Площадки",
+  "courtsNotFound": "Площадки не найдены",
+  "courtsFilterAll": "Все",
+  "courtsFilterIndoor": "Зал",
+  "courtsFilterOutdoor": "Улица",
+  "courtsFilterFree": "Бесплатно",
+  "courtsLoadError": "Не удалось загрузить площадки",
+  "courtsOpenHours": "Время работы",
+  "courtsWhatsappError": "Не удалось открыть WhatsApp"
+}

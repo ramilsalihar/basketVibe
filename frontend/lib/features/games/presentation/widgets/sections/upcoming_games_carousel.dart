@@ -5,6 +5,7 @@ import 'package:basketvibe/core/styles/app_text_styles.dart';
 import 'package:basketvibe/core/styles/app_colors.dart';
 import 'package:basketvibe/features/games/domain/entities/game_entity.dart';
 import 'package:basketvibe/features/games/presentation/widgets/cards/upcoming_game_card.dart';
+import 'package:basketvibe/core/l10n/app_localizations.dart';
 
 class UpcomingGamesCarousel extends StatelessWidget {
   const UpcomingGamesCarousel({
@@ -28,7 +29,7 @@ class UpcomingGamesCarousel extends StatelessWidget {
         Padding(
           padding: AppSpacing.pagePadding,
           child: Text(
-            'Предстоящие игры',
+            AppLocalizations.of(context).gamesTitle,
             style: AppTextStyles.h2.copyWith(
               color: isDark
                   ? AppColors.darkTextPrimary

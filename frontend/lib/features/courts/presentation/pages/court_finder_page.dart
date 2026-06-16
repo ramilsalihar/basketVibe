@@ -12,6 +12,7 @@ import 'package:basketvibe/features/courts/data/models/sport_type_model.dart';
 import 'package:basketvibe/features/courts/data/map_service.dart';
 import 'package:basketvibe/features/courts/presentation/cubit/courts_cubit.dart';
 import 'package:basketvibe/features/courts/presentation/cubit/courts_state.dart';
+import 'package:basketvibe/core/l10n/app_localizations.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -138,6 +139,7 @@ class _CourtFinderPageState extends State<CourtFinderPage> {
     bool isDark,
     CourtsState state,
   ) {
+    final l10n = AppLocalizations.of(context);
     final loading = state.status == CourtsStatus.loading ||
         state.status == CourtsStatus.initial;
 
@@ -198,6 +200,7 @@ class _CourtFinderPageState extends State<CourtFinderPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                AppSpacing.gapLG,
                 // Sport category tabs
                 if (state.sportTypes.isNotEmpty)
                   SizedBox(
@@ -206,7 +209,7 @@ class _CourtFinderPageState extends State<CourtFinderPage> {
                       scrollDirection: Axis.horizontal,
                       children: [
                         _FilterChip(
-                          label: 'Все',
+                          label: l10n.courtsFilterAll,
                           isSelected: _sportFilter == null,
                           onSelected: () => setState(() => _sportFilter = null),
                         ),
@@ -228,21 +231,21 @@ class _CourtFinderPageState extends State<CourtFinderPage> {
                 Row(
                   children: [
                     _FilterChip(
-                      label: 'Зал',
+                      label: l10n.courtsFilterIndoor,
                       isSelected: _typeFilter == 'indoor',
                       onSelected: () => setState(() => _typeFilter =
                           _typeFilter == 'indoor' ? null : 'indoor'),
                     ),
                     const SizedBox(width: 8),
                     _FilterChip(
-                      label: 'Улица',
+                      label: l10n.courtsFilterOutdoor,
                       isSelected: _typeFilter == 'outdoor',
                       onSelected: () => setState(() => _typeFilter =
                           _typeFilter == 'outdoor' ? null : 'outdoor'),
                     ),
                     const SizedBox(width: 8),
                     _FilterChip(
-                      label: 'Бесплатно',
+                      label: l10n.courtsFilterFree,
                       isSelected: _freeOnly,
                       onSelected: () => setState(() => _freeOnly = !_freeOnly),
                     ),
@@ -250,7 +253,7 @@ class _CourtFinderPageState extends State<CourtFinderPage> {
                 ),
                 AppSpacing.gapXL,
                 Text(
-                  'Площадки',
+                  l10n.courtsTitle,
                   style: AppTextStyles.h2.copyWith(
                     color: isDark
                         ? AppColors.darkTextPrimary
@@ -277,7 +280,7 @@ class _CourtFinderPageState extends State<CourtFinderPage> {
                       final filtered = _applyFilters(state.courts);
                       final child = filtered.isEmpty
                           ? Text(
-                              'Площадки не найдены',
+                              l10n.courtsNotFound,
                               key: const ValueKey('empty'),
                               style: AppTextStyles.bodyMD.copyWith(
                                 color: isDark
@@ -413,7 +416,9 @@ class _SingleCourtOverview extends StatelessWidget {
     final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!ok && context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Не удалось открыть WhatsApp')),
+        SnackBar(
+          content: Text(AppLocalizations.of(context).courtsWhatsappError),
+        ),
       );
     }
   }
@@ -480,7 +485,7 @@ class _SingleCourtOverview extends StatelessWidget {
           Row(
             children: [
               Text(
-                'Время работы',
+                AppLocalizations.of(context).courtsOpenHours,
                 style: AppTextStyles.bodyMD.copyWith(
                   color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
                 ),

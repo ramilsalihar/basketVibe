@@ -4,23 +4,27 @@ import 'package:basketvibe/core/constants/route_constants.dart';
 import 'package:basketvibe/core/styles/app_colors.dart';
 import 'package:basketvibe/core/styles/app_spacing.dart';
 import 'package:basketvibe/core/styles/app_text_styles.dart';
+import 'package:basketvibe/core/l10n/app_localizations.dart';
 
 /// Shown to guests when they try to reach a feature that requires an
 /// account. The button sends them to the login page.
 class AuthLockView extends StatelessWidget {
   const AuthLockView({
     super.key,
-    this.title = 'Войдите в аккаунт',
-    this.message =
-        'Эта возможность доступна только зарегистрированным игрокам.',
+    this.title,
+    this.message,
   });
 
-  final String title;
-  final String message;
+  /// Defaults to the localized generic lock copy when null.
+  final String? title;
+  final String? message;
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context);
+    final title = this.title ?? l10n.authLockTitle;
+    final message = this.message ?? l10n.loginRequiredMessage;
 
     return Center(
       child: Padding(
@@ -65,7 +69,7 @@ class AuthLockView extends StatelessWidget {
             FilledButton.icon(
               onPressed: () => context.go(RouteConstants.login),
               icon: const Icon(Icons.login_rounded, size: 20),
-              label: const Text('Войти'),
+              label: Text(l10n.login),
             ),
           ],
         ),

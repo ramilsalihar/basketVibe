@@ -5,6 +5,7 @@ import 'package:basketvibe/core/styles/app_spacing.dart';
 import 'package:basketvibe/core/styles/app_text_styles.dart';
 import 'package:basketvibe/features/games/domain/entities/game_entity.dart';
 import 'package:basketvibe/features/games/presentation/widgets/cards/upcoming_game_card.dart';
+import 'package:basketvibe/core/l10n/app_localizations.dart';
 
 /// Vertical list of upcoming games using the same card design as home carousel.
 class UpcomingGamesListSection extends StatelessWidget {
@@ -25,7 +26,7 @@ class UpcomingGamesListSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Предстоящие игры',
+          AppLocalizations.of(context).gamesTitle,
           style: AppTextStyles.h2.copyWith(
             color:
                 isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
@@ -34,7 +35,7 @@ class UpcomingGamesListSection extends StatelessWidget {
         AppSpacing.gapMD,
         if (games.isEmpty)
           Text(
-            'Пока нет предстоящих игр. Создайте первую!',
+            AppLocalizations.of(context).gamesEmptySubtitle,
             style: AppTextStyles.bodyMD.copyWith(
               color: isDark
                   ? AppColors.darkTextSecondary

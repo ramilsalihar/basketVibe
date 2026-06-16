@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:basketvibe/core/l10n/app_localizations.dart';
 import 'package:basketvibe/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:basketvibe/core/styles/app_colors.dart';
 import 'package:basketvibe/core/styles/app_spacing.dart';
@@ -117,7 +118,7 @@ class _ProfileContentView extends StatelessWidget {
                     ),
                     AppSpacing.gapXS,
                     Text(
-                      'My profile',
+                      AppLocalizations.of(context).profileMyProfile,
                       style: AppTextStyles.bodySM.copyWith(
                         color: isDark
                             ? AppColors.darkTextSecondary
@@ -128,7 +129,7 @@ class _ProfileContentView extends StatelessWidget {
                 ),
               ),
               IconButton(
-                tooltip: 'Settings',
+                tooltip: AppLocalizations.of(context).settingsTitle,
                 onPressed: () {
                   Navigator.of(context).push(
                     MaterialPageRoute<void>(
@@ -157,18 +158,18 @@ class _ProfileContentView extends StatelessWidget {
                 ),
               );
             },
-            decoration: const InputDecoration(
-              labelText: 'History',
-              hintText: 'Open activity history',
-              suffixIcon: Icon(Icons.chevron_right_rounded),
-              prefixIcon: Icon(Icons.history_rounded),
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context).profileHistory,
+              hintText: AppLocalizations.of(context).profileOpenHistory,
+              suffixIcon: const Icon(Icons.chevron_right_rounded),
+              prefixIcon: const Icon(Icons.history_rounded),
             ),
           ),
           AppSpacing.gapXL,
           OutlinedButton.icon(
             onPressed: () => context.read<AuthCubit>().logout(),
             icon: const Icon(Icons.logout_rounded, size: 20),
-            label: const Text('Выйти'),
+            label: Text(AppLocalizations.of(context).logout),
             style: OutlinedButton.styleFrom(
               foregroundColor: AppColors.error,
               side: const BorderSide(color: AppColors.error),

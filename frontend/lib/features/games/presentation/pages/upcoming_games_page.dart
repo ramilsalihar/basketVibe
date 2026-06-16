@@ -14,6 +14,7 @@ import 'package:basketvibe/features/games/presentation/cubit/game_cubit.dart';
 import 'package:basketvibe/features/games/presentation/cubit/game_state.dart';
 import 'package:basketvibe/features/games/presentation/pages/game_overview_page.dart';
 import 'package:basketvibe/features/games/presentation/widgets/sections/upcoming_games_list_section.dart';
+import 'package:basketvibe/core/l10n/app_localizations.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 /// Routes to create-game for signed-in users, otherwise pops a login dialog.
@@ -22,7 +23,7 @@ void _onCreateGame(BuildContext context) {
   if (!authed) {
     showLoginRequiredDialog(
       context,
-      message: 'Войдите, чтобы создать игру.',
+      message: AppLocalizations.of(context).createGameLoginMessage,
     );
     return;
   }
@@ -153,7 +154,7 @@ class _GamesEmptyView extends StatelessWidget {
           ),
           AppSpacing.gapLG,
           Text(
-            'Пока нет игр',
+            AppLocalizations.of(context).gamesEmptyTitle,
             textAlign: TextAlign.center,
             style: AppTextStyles.h2.copyWith(
               color: isDark
@@ -163,7 +164,7 @@ class _GamesEmptyView extends StatelessWidget {
           ),
           AppSpacing.gapSM,
           Text(
-            'Создайте игру и позовите игроков на площадку.',
+            AppLocalizations.of(context).gamesEmptySubtitle,
             textAlign: TextAlign.center,
             style: AppTextStyles.bodyMD.copyWith(
               color: isDark
@@ -175,7 +176,7 @@ class _GamesEmptyView extends StatelessWidget {
           FilledButton.icon(
             onPressed: onCreateGame,
             icon: const Icon(Icons.add_rounded, size: 20),
-            label: const Text('Создать игру'),
+            label: Text(AppLocalizations.of(context).gamesCreate),
           ),
         ],
       ),
@@ -209,7 +210,7 @@ class _GamesErrorView extends StatelessWidget {
         AppSpacing.gapMD,
         OutlinedButton(
           onPressed: onRetry,
-          child: const Text('Попробовать снова'),
+          child: Text(AppLocalizations.of(context).retry),
         ),
       ],
     );

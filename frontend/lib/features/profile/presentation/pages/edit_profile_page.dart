@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:basketvibe/core/styles/app_spacing.dart';
 import 'package:basketvibe/features/profile/domain/entities/profile_entity.dart';
 import 'package:basketvibe/features/profile/presentation/cubit/profile_cubit.dart';
+import 'package:basketvibe/core/l10n/app_localizations.dart';
+import 'package:basketvibe/core/l10n/skill_level_l10n.dart';
 
 /// Form for editing the current user's profile details.
 ///
@@ -58,8 +60,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Edit profile')),
+      appBar: AppBar(title: Text(l10n.profileEdit)),
       body: SingleChildScrollView(
         padding: AppSpacing.pagePadding,
         child: Form(
@@ -70,36 +73,36 @@ class _EditProfilePageState extends State<EditProfilePage> {
               TextFormField(
                 controller: _nameController,
                 textCapitalization: TextCapitalization.words,
-                decoration: const InputDecoration(
-                  labelText: 'Name',
-                  prefixIcon: Icon(Icons.person_outline_rounded),
+                decoration: InputDecoration(
+                  labelText: l10n.profileName,
+                  prefixIcon: const Icon(Icons.person_outline_rounded),
                 ),
                 validator: (value) =>
                     (value == null || value.trim().isEmpty)
-                        ? 'Enter your name'
+                        ? l10n.profileEnterName
                         : null,
               ),
               AppSpacing.gapMD,
               TextFormField(
                 controller: _cityController,
                 textCapitalization: TextCapitalization.words,
-                decoration: const InputDecoration(
-                  labelText: 'City',
-                  prefixIcon: Icon(Icons.location_city_rounded),
+                decoration: InputDecoration(
+                  labelText: l10n.profileCity,
+                  prefixIcon: const Icon(Icons.location_city_rounded),
                 ),
               ),
               AppSpacing.gapMD,
               DropdownButtonFormField<String>(
                 initialValue: _skillLevel,
-                decoration: const InputDecoration(
-                  labelText: 'Skill level',
-                  prefixIcon: Icon(Icons.sports_basketball_rounded),
+                decoration: InputDecoration(
+                  labelText: l10n.profileSkillLevel,
+                  prefixIcon: const Icon(Icons.sports_basketball_rounded),
                 ),
                 items: EditProfilePage.skillLevels
                     .map(
                       (level) => DropdownMenuItem(
                         value: level,
-                        child: Text(level),
+                        child: Text(l10n.skillLevelLabel(level)),
                       ),
                     )
                     .toList(),
@@ -111,7 +114,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               FilledButton.icon(
                 onPressed: _save,
                 icon: const Icon(Icons.check_rounded, size: 20),
-                label: const Text('Save'),
+                label: Text(l10n.save),
               ),
             ],
           ),

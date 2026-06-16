@@ -14,6 +14,7 @@ import 'package:basketvibe/features/games/presentation/pages/upcoming_games_page
 import 'package:basketvibe/features/home/presentation/pages/home_feed_page.dart';
 import 'package:basketvibe/features/home/presentation/widgets/navigation/bottom_nav_bar.dart';
 import 'package:basketvibe/features/profile/presentation/pages/profile_page.dart';
+import 'package:basketvibe/core/l10n/app_localizations.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class LoggedInHomeView extends StatefulWidget {
@@ -84,9 +85,8 @@ class _LoggedInHomeViewState extends State<LoggedInHomeView> {
           BlocBuilder<AuthCubit, AuthState>(
             builder: (context, state) {
               if (state is! AuthAuthenticated) {
-                return const AuthLockView(
-                  message:
-                      'Войдите, чтобы видеть профиль и историю игр.',
+                return AuthLockView(
+                  message: AppLocalizations.of(context).authLockProfileMessage,
                 );
               }
               return ProfilePage(
@@ -110,8 +110,9 @@ class _LoggedInHomeViewState extends State<LoggedInHomeView> {
                     MaterialPageRoute<void>(
                       builder: (_) => Scaffold(
                         appBar: AppBar(),
-                        body: const AuthLockView(
-                          message: 'Войдите, чтобы создать игру.',
+                        body: AuthLockView(
+                          message:
+                              AppLocalizations.of(context).createGameLoginMessage,
                         ),
                       ),
                     ),

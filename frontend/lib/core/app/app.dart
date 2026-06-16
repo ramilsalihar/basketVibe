@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:basketvibe/core/app/app_bloc_observer.dart';
+import 'package:basketvibe/core/app/locale_cubit.dart';
 import 'package:basketvibe/core/network/injection.dart';
 import 'package:basketvibe/core/app/theme_cubit.dart';
 import 'package:basketvibe/core/local_storage/local_storage_service.dart';
 import 'package:basketvibe/core/router/app_router.dart';
 import 'package:basketvibe/core/styles/app_theme.dart';
 import 'package:basketvibe/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:basketvibe/core/l10n/app_localizations.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -21,19 +23,31 @@ class App extends StatelessWidget {
           create: (_) =>
               ThemeCubit(getIt<LocalStorageService>())..loadThemeMode(),
         ),
+        BlocProvider<LocaleCubit>(
+          create: (_) =>
+              LocaleCubit(getIt<LocalStorageService>())..loadLocale(),
+        ),
         BlocProvider<AuthCubit>(
           create: (_) => getIt<AuthCubit>(),
         ),
       ],
       child: BlocBuilder<ThemeCubit, ThemeMode>(
         builder: (context, themeMode) {
-          return MaterialApp.router(
-            title: 'LineUp',
-            debugShowCheckedModeBanner: false,
-            theme: AppTheme.light,
-            darkTheme: AppTheme.dark,
-            themeMode: themeMode,
-            routerConfig: AppRouter.router,
+          return BlocBuilder<LocaleCubit, Locale>(
+            builder: (context, locale) {
+              return MaterialApp.router(
+                title: 'LineUp',
+                debugShowCheckedModeBanner: false,
+                theme: AppTheme.light,
+                darkTheme: AppTheme.dark,
+                themeMode: themeMode,
+                locale: locale,
+                localizationsDelegates:
+                    AppLocalizations.localizationsDelegates,
+                supportedLocales: AppLocalizations.supportedLocales,
+                routerConfig: AppRouter.router,
+              );
+            },
           );
         },
       ),

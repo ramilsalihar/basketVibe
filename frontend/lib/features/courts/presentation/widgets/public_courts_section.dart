@@ -8,6 +8,7 @@ import 'package:basketvibe/core/styles/app_text_styles.dart';
 import 'package:basketvibe/features/courts/data/models/court_model.dart';
 import 'package:basketvibe/features/courts/presentation/cubit/courts_cubit.dart';
 import 'package:basketvibe/features/courts/presentation/cubit/courts_state.dart';
+import 'package:basketvibe/core/l10n/app_localizations.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 /// Horizontally scrolling "public places to play" section, driven by the
@@ -53,7 +54,7 @@ class PublicCourtsSection extends StatelessWidget {
         Padding(
           padding: AppSpacing.pagePadding,
           child: Text(
-            'Площадки для игры',
+            AppLocalizations.of(context).courtsSectionTitle,
             style: AppTextStyles.h2.copyWith(
               color: isDark
                   ? AppColors.darkTextPrimary
@@ -68,7 +69,7 @@ class PublicCourtsSection extends StatelessWidget {
               return Padding(
                 padding: AppSpacing.pagePadding,
                 child: Text(
-                  'Не удалось загрузить площадки',
+                  AppLocalizations.of(context).courtsLoadError,
                   style: AppTextStyles.bodyMD.copyWith(
                     color: isDark
                         ? AppColors.darkTextSecondary
