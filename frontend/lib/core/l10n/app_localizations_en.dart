@@ -159,4 +159,95 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get courtsWhatsappError => 'Could not open WhatsApp';
+
+  @override
+  String get done => 'Done';
+
+  @override
+  String get createGameTitle => 'Host a game';
+
+  @override
+  String get createGameTitleLabel => 'Title *';
+
+  @override
+  String get createGameTitleHint => 'e.g. Evening Run, 3x3 Tournament';
+
+  @override
+  String get createGameTitleError => 'Enter a title';
+
+  @override
+  String get createGameDescription => 'Description';
+
+  @override
+  String get createGameDescriptionHint =>
+      'e.g. 3x3, intermediate, bring dark tee';
+
+  @override
+  String get createGameCourtLabel => 'Court *';
+
+  @override
+  String get createGameLoadingCourts => 'Loading courts…';
+
+  @override
+  String get createGameChooseCourt => 'Choose a court';
+
+  @override
+  String get createGameLocationLabel => 'Location *';
+
+  @override
+  String get createGameLocationHint => 'Paste a map link or address';
+
+  @override
+  String get createGameLocationError => 'Enter a location';
+
+  @override
+  String get createGameDate => 'Date *';
+
+  @override
+  String get createGameTime => 'Time *';
+
+  @override
+  String get createGameMaxPlayers => 'Max players *';
+
+  @override
+  String get createGameMaxPlayersError => 'Enter number of players';
+
+  @override
+  String get createGameMaxPlayersRange => 'Between 2 and 20';
+
+  @override
+  String get createGamePayment => 'Payment';
+
+  @override
+  String get paymentOnline => 'Online';
+
+  @override
+  String get paymentCash => 'Cash';
+
+  @override
+  String get paymentFree => 'Free';
+
+  @override
+  String get inDevelopment => 'In development';
+
+  @override
+  String get createGameAmount => 'Amount to bring';
+
+  @override
+  String get createGameAmountHint => 'e.g. 500';
+
+  @override
+  String get createGameSubmit => 'Host game';
+
+  @override
+  String get createGameSelectDateTime => 'Select date and time';
+
+  @override
+  String get createGameInvalidAmount => 'Enter a valid amount';
+
+  @override
+  String get createGameSuccess => 'Run created successfully!';
+
+  @override
+  String get createGameYou => 'You';
 }

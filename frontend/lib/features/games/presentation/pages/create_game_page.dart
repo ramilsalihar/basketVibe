@@ -7,9 +7,8 @@ import 'package:basketvibe/core/styles/app_colors.dart';
 import 'package:basketvibe/core/styles/app_spacing.dart';
 import 'package:basketvibe/core/styles/app_text_styles.dart';
 import 'package:basketvibe/core/styles/app_border_radius.dart';
+import 'package:basketvibe/core/l10n/app_localizations.dart';
 import 'package:basketvibe/core/network/injection.dart';
-import 'package:basketvibe/features/courts/data/datasources/court_remote_datasource.dart';
-import 'package:basketvibe/features/courts/data/models/court_model.dart';
 import 'package:basketvibe/features/games/domain/entities/game_entity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:basketvibe/features/games/presentation/cubit/game_cubit.dart';
@@ -29,44 +28,20 @@ class _CreateGamePageState extends State<CreateGamePage> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _locationController = TextEditingController();
   final _maxPlayersController = TextEditingController(text: '10');
   final _cashAmountController = TextEditingController();
 
-  List<CourtModel> _courts = [];
-  bool _courtsLoading = true;
-  CourtModel? _selectedCourt;
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
   _PaymentOption _paymentOption = _PaymentOption.free;
   int _maxPlayers = 10;
 
   @override
-  void initState() {
-    super.initState();
-    _loadCourts();
-  }
-
-  Future<void> _loadCourts() async {
-    try {
-      final courts = await getIt<CourtRemoteDataSource>().getCourts();
-      if (!mounted) return;
-      setState(() {
-        _courts = courts;
-        _courtsLoading = false;
-      });
-    } on Exception {
-      if (!mounted) return;
-      setState(() => _courtsLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Не удалось загрузить площадки')),
-      );
-    }
-  }
-
-  @override
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
+    _locationController.dispose();
     _maxPlayersController.dispose();
     _cashAmountController.dispose();
     super.dispose();
@@ -103,18 +78,12 @@ class _CreateGamePageState extends State<CreateGamePage> {
   }
 
   void _submitForm(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     if (!_formKey.currentState!.validate()) return;
-
-    if (_selectedCourt == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Выберите площадку')),
-      );
-      return;
-    }
 
     if (_selectedDate == null || _selectedTime == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Выберите дату и время')),
+        SnackBar(content: Text(l10n.createGameSelectDateTime)),
       );
       return;
     }
@@ -124,7 +93,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
       final amount = double.tryParse(_cashAmountController.text.trim());
       if (amount == null || amount < 0) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Введите корректную сумму')),
+          SnackBar(content: Text(l10n.createGameInvalidAmount)),
         );
         return;
       }
@@ -134,12 +103,12 @@ class _CreateGamePageState extends State<CreateGamePage> {
     final currentUser = getIt<FirebaseAuth>().currentUser;
     if (currentUser == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Войдите, чтобы создать игру')),
+        SnackBar(content: Text(l10n.createGameLoginMessage)),
       );
       return;
     }
     final hostId = currentUser.uid;
-    final hostName = currentUser.displayName ?? 'Вы';
+    final hostName = currentUser.displayName ?? l10n.createGameYou;
 
     final startTime = DateTime(
       _selectedDate!.year,
@@ -149,12 +118,13 @@ class _CreateGamePageState extends State<CreateGamePage> {
       _selectedTime!.minute,
     );
 
+    final location = _locationController.text.trim();
     final game = GameEntity(
       id: '',
-      courtId: _selectedCourt!.id,
-      courtName: _selectedCourt!.name,
-      city: _selectedCourt!.city,
-      address: _selectedCourt!.address,
+      courtId: '',
+      courtName: location,
+      city: '',
+      address: location,
       hostId: hostId,
       hostName: hostName,
       startTime: startTime,
@@ -179,13 +149,14 @@ class _CreateGamePageState extends State<CreateGamePage> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context);
 
     return BlocListener<GameCubit, GameState>(
       listener: (context, state) {
         if (state is GameCreated) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('Ран создан успешно!'),
+              content: Text(l10n.createGameSuccess),
               backgroundColor: AppColors.success,
             ),
           );
@@ -202,7 +173,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
       child: Scaffold(
         backgroundColor: isDark ? AppColors.darkBg : AppColors.lightBg,
         appBar: AppBar(
-          title: const Text('Host a game'),
+          title: Text(l10n.createGameTitle),
           leading: IconButton(
             icon: const Icon(Icons.close),
             onPressed: () => context.pop(),
@@ -224,8 +195,8 @@ class _CreateGamePageState extends State<CreateGamePage> {
                     TextFormField(
                       controller: _titleController,
                       decoration: InputDecoration(
-                        labelText: 'Title *',
-                        hintText: 'e.g. Evening Run, 3x3 Tournament',
+                        labelText: l10n.createGameTitleLabel,
+                        hintText: l10n.createGameTitleHint,
                         border: OutlineInputBorder(
                           borderRadius: AppRadius.brMD,
                         ),
@@ -233,7 +204,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
                       style: AppTextStyles.bodyMD,
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return 'Enter a title';
+                          return l10n.createGameTitleError;
                         }
                         return null;
                       },
@@ -243,8 +214,8 @@ class _CreateGamePageState extends State<CreateGamePage> {
                     TextFormField(
                       controller: _descriptionController,
                       decoration: InputDecoration(
-                        labelText: 'Description',
-                        hintText: 'e.g. 3x3, intermediate, bring dark tee',
+                        labelText: l10n.createGameDescription,
+                        hintText: l10n.createGameDescriptionHint,
                         border: OutlineInputBorder(
                           borderRadius: AppRadius.brMD,
                         ),
@@ -253,30 +224,23 @@ class _CreateGamePageState extends State<CreateGamePage> {
                       maxLines: 3,
                     ),
                     AppSpacing.gapMD,
-                    // Court dropdown
-                    DropdownButtonFormField<CourtModel>(
-                      value: _selectedCourt,
+                    // Location — paste a map link or address
+                    TextFormField(
+                      controller: _locationController,
                       decoration: InputDecoration(
-                        labelText: 'Court *',
+                        labelText: l10n.createGameLocationLabel,
+                        hintText: l10n.createGameLocationHint,
+                        prefixIcon: const Icon(Icons.location_on_outlined),
                         border: OutlineInputBorder(
                           borderRadius: AppRadius.brMD,
                         ),
                       ),
-                      hint: Text(
-                        _courtsLoading ? 'Loading courts…' : 'Choose a court',
-                      ),
-                      items: _courts
-                          .map(
-                            (c) => DropdownMenuItem(
-                              value: c,
-                              child: Text(c.name),
-                            ),
-                          )
-                          .toList(),
-                      onChanged: (value) =>
-                          setState(() => _selectedCourt = value),
+                      keyboardType: TextInputType.url,
+                      style: AppTextStyles.bodyMD,
                       validator: (value) {
-                        if (value == null) return 'Choose a court';
+                        if (value == null || value.trim().isEmpty) {
+                          return l10n.createGameLocationError;
+                        }
                         return null;
                       },
                     ),
@@ -308,7 +272,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
                                   Expanded(
                                     child: Text(
                                       _selectedDate == null
-                                          ? 'Date *'
+                                          ? l10n.createGameDate
                                           : DateFormat('dd.MM.yyyy')
                                               .format(_selectedDate!),
                                       style: AppTextStyles.bodyMD.copyWith(
@@ -352,7 +316,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
                                   Expanded(
                                     child: Text(
                                       _selectedTime == null
-                                          ? 'Time *'
+                                          ? l10n.createGameTime
                                           : _selectedTime!.format(context),
                                       style: AppTextStyles.bodyMD.copyWith(
                                         color: _selectedTime == null
@@ -377,7 +341,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
                     TextFormField(
                       controller: _maxPlayersController,
                       decoration: InputDecoration(
-                        labelText: 'Max players *',
+                        labelText: l10n.createGameMaxPlayers,
                         hintText: '10',
                         border: OutlineInputBorder(
                           borderRadius: AppRadius.brMD,
@@ -387,11 +351,11 @@ class _CreateGamePageState extends State<CreateGamePage> {
                       style: AppTextStyles.bodyMD,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Enter number of players';
+                          return l10n.createGameMaxPlayersError;
                         }
                         final players = int.tryParse(value);
                         if (players == null || players < 2 || players > 20) {
-                          return 'Between 2 and 20';
+                          return l10n.createGameMaxPlayersRange;
                         }
                         _maxPlayers = players;
                         return null;
@@ -400,7 +364,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
                     AppSpacing.gapMD,
                     // Payment options
                     Text(
-                      'Payment',
+                      l10n.createGamePayment,
                       style: AppTextStyles.labelMD.copyWith(
                         color: isDark
                             ? AppColors.darkTextPrimary
@@ -412,10 +376,10 @@ class _CreateGamePageState extends State<CreateGamePage> {
                       return RadioListTile<_PaymentOption>(
                         title: Text(
                           option == _PaymentOption.online
-                              ? 'Online'
+                              ? l10n.paymentOnline
                               : option == _PaymentOption.cash
-                                  ? 'Cash'
-                                  : 'Free',
+                                  ? l10n.paymentCash
+                                  : l10n.paymentFree,
                         ),
                         value: option,
                         groupValue: _paymentOption,
@@ -429,7 +393,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
                       Padding(
                         padding: const EdgeInsets.only(left: 16),
                         child: Text(
-                          'In development',
+                          l10n.inDevelopment,
                           style: AppTextStyles.bodySM.copyWith(
                             color: isDark
                                 ? AppColors.darkTextSecondary
@@ -446,8 +410,8 @@ class _CreateGamePageState extends State<CreateGamePage> {
                         child: TextFormField(
                           controller: _cashAmountController,
                           decoration: InputDecoration(
-                            labelText: 'Amount to bring',
-                            hintText: 'e.g. 500',
+                            labelText: l10n.createGameAmount,
+                            hintText: l10n.createGameAmountHint,
                             border: OutlineInputBorder(
                               borderRadius: AppRadius.brMD,
                             ),
@@ -481,7 +445,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
                               ),
                             )
                           : Text(
-                              'Host game',
+                              l10n.createGameSubmit,
                               style: AppTextStyles.buttonLG.copyWith(
                                 color: Colors.white,
                               ),
@@ -538,11 +502,11 @@ class _DatePickerSheetState extends State<_DatePickerSheet> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 CupertinoButton(
-                  child: const Text('Cancel'),
+                  child: Text(AppLocalizations.of(context).cancel),
                   onPressed: () => Navigator.of(context).pop(),
                 ),
                 CupertinoButton(
-                  child: const Text('Done'),
+                  child: Text(AppLocalizations.of(context).done),
                   onPressed: () {
                     widget.onDone(_picked);
                     Navigator.of(context).pop();
@@ -602,11 +566,11 @@ class _TimePickerSheetState extends State<_TimePickerSheet> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 CupertinoButton(
-                  child: const Text('Cancel'),
+                  child: Text(AppLocalizations.of(context).cancel),
                   onPressed: () => Navigator.of(context).pop(),
                 ),
                 CupertinoButton(
-                  child: const Text('Done'),
+                  child: Text(AppLocalizations.of(context).done),
                   onPressed: () {
                     widget.onDone(
                         TimeOfDay(hour: _picked.hour, minute: _picked.minute));

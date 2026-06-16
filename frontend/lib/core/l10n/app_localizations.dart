@@ -385,6 +385,186 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not open WhatsApp'**
   String get courtsWhatsappError;
+
+  /// No description provided for @done.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get done;
+
+  /// No description provided for @createGameTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Host a game'**
+  String get createGameTitle;
+
+  /// No description provided for @createGameTitleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Title *'**
+  String get createGameTitleLabel;
+
+  /// No description provided for @createGameTitleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Evening Run, 3x3 Tournament'**
+  String get createGameTitleHint;
+
+  /// No description provided for @createGameTitleError.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a title'**
+  String get createGameTitleError;
+
+  /// No description provided for @createGameDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get createGameDescription;
+
+  /// No description provided for @createGameDescriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 3x3, intermediate, bring dark tee'**
+  String get createGameDescriptionHint;
+
+  /// No description provided for @createGameCourtLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Court *'**
+  String get createGameCourtLabel;
+
+  /// No description provided for @createGameLoadingCourts.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading courts…'**
+  String get createGameLoadingCourts;
+
+  /// No description provided for @createGameChooseCourt.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a court'**
+  String get createGameChooseCourt;
+
+  /// No description provided for @createGameLocationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Location *'**
+  String get createGameLocationLabel;
+
+  /// No description provided for @createGameLocationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste a map link or address'**
+  String get createGameLocationHint;
+
+  /// No description provided for @createGameLocationError.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a location'**
+  String get createGameLocationError;
+
+  /// No description provided for @createGameDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date *'**
+  String get createGameDate;
+
+  /// No description provided for @createGameTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Time *'**
+  String get createGameTime;
+
+  /// No description provided for @createGameMaxPlayers.
+  ///
+  /// In en, this message translates to:
+  /// **'Max players *'**
+  String get createGameMaxPlayers;
+
+  /// No description provided for @createGameMaxPlayersError.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter number of players'**
+  String get createGameMaxPlayersError;
+
+  /// No description provided for @createGameMaxPlayersRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Between 2 and 20'**
+  String get createGameMaxPlayersRange;
+
+  /// No description provided for @createGamePayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment'**
+  String get createGamePayment;
+
+  /// No description provided for @paymentOnline.
+  ///
+  /// In en, this message translates to:
+  /// **'Online'**
+  String get paymentOnline;
+
+  /// No description provided for @paymentCash.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash'**
+  String get paymentCash;
+
+  /// No description provided for @paymentFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get paymentFree;
+
+  /// No description provided for @inDevelopment.
+  ///
+  /// In en, this message translates to:
+  /// **'In development'**
+  String get inDevelopment;
+
+  /// No description provided for @createGameAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount to bring'**
+  String get createGameAmount;
+
+  /// No description provided for @createGameAmountHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 500'**
+  String get createGameAmountHint;
+
+  /// No description provided for @createGameSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Host game'**
+  String get createGameSubmit;
+
+  /// No description provided for @createGameSelectDateTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Select date and time'**
+  String get createGameSelectDateTime;
+
+  /// No description provided for @createGameInvalidAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid amount'**
+  String get createGameInvalidAmount;
+
+  /// No description provided for @createGameSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Run created successfully!'**
+  String get createGameSuccess;
+
+  /// No description provided for @createGameYou.
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get createGameYou;
 }
 
 class _AppLocalizationsDelegate

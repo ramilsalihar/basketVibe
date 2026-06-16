@@ -159,4 +159,95 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get courtsWhatsappError => 'Не удалось открыть WhatsApp';
+
+  @override
+  String get done => 'Готово';
+
+  @override
+  String get createGameTitle => 'Создать игру';
+
+  @override
+  String get createGameTitleLabel => 'Название *';
+
+  @override
+  String get createGameTitleHint => 'напр. Вечерний ран, Турнир 3x3';
+
+  @override
+  String get createGameTitleError => 'Введите название';
+
+  @override
+  String get createGameDescription => 'Описание';
+
+  @override
+  String get createGameDescriptionHint =>
+      'напр. 3x3, средний уровень, тёмная форма';
+
+  @override
+  String get createGameCourtLabel => 'Площадка *';
+
+  @override
+  String get createGameLoadingCourts => 'Загрузка площадок…';
+
+  @override
+  String get createGameChooseCourt => 'Выберите площадку';
+
+  @override
+  String get createGameLocationLabel => 'Локация *';
+
+  @override
+  String get createGameLocationHint => 'Вставьте ссылку на карту или адрес';
+
+  @override
+  String get createGameLocationError => 'Укажите локацию';
+
+  @override
+  String get createGameDate => 'Дата *';
+
+  @override
+  String get createGameTime => 'Время *';
+
+  @override
+  String get createGameMaxPlayers => 'Макс. игроков *';
+
+  @override
+  String get createGameMaxPlayersError => 'Введите число игроков';
+
+  @override
+  String get createGameMaxPlayersRange => 'От 2 до 20';
+
+  @override
+  String get createGamePayment => 'Оплата';
+
+  @override
+  String get paymentOnline => 'Онлайн';
+
+  @override
+  String get paymentCash => 'Наличные';
+
+  @override
+  String get paymentFree => 'Бесплатно';
+
+  @override
+  String get inDevelopment => 'В разработке';
+
+  @override
+  String get createGameAmount => 'Сумма с собой';
+
+  @override
+  String get createGameAmountHint => 'напр. 500';
+
+  @override
+  String get createGameSubmit => 'Создать игру';
+
+  @override
+  String get createGameSelectDateTime => 'Выберите дату и время';
+
+  @override
+  String get createGameInvalidAmount => 'Введите корректную сумму';
+
+  @override
+  String get createGameSuccess => 'Ран создан успешно!';
+
+  @override
+  String get createGameYou => 'Вы';
 }
