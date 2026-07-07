@@ -4,6 +4,7 @@ import 'package:basketvibe/core/styles/app_spacing.dart';
 import 'package:basketvibe/features/profile/domain/entities/profile_entity.dart';
 import 'package:basketvibe/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:basketvibe/core/l10n/app_localizations.dart';
+import 'package:basketvibe/core/l10n/city_l10n.dart';
 import 'package:basketvibe/core/l10n/skill_level_l10n.dart';
 
 /// Form for editing the current user's profile details.
@@ -25,18 +26,29 @@ class _EditProfilePageState extends State<EditProfilePage> {
   late final TextEditingController _nameController;
   late final TextEditingController _cityController;
   late String _skillLevel;
+  String _initialCity = '';
 
   @override
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.profile.displayName);
-    _cityController = TextEditingController(
-      text: widget.profile.city == '—' ? '' : widget.profile.city,
-    );
+    _cityController = TextEditingController();
     _skillLevel =
         EditProfilePage.skillLevels.contains(widget.profile.skillLevel)
             ? widget.profile.skillLevel
             : EditProfilePage.skillLevels.first;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_cityController.text.isEmpty) {
+      final localizedCity = AppLocalizations.of(context).localizedCity(
+        widget.profile.city == '—' ? '' : widget.profile.city,
+      );
+      _cityController.text = localizedCity;
+      _initialCity = localizedCity;
+    }
   }
 
   @override

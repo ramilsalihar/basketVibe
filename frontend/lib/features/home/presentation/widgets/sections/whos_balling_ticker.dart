@@ -2,19 +2,24 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:basketvibe/core/styles/app_colors.dart';
 import 'package:basketvibe/core/styles/app_text_styles.dart';
+import 'package:basketvibe/core/l10n/app_localizations.dart';
 
-/// FOMO ticker: "12 players just checked into Vostok-5..."
 class WhosBallingTicker extends StatefulWidget {
   const WhosBallingTicker({
     super.key,
-    this.messages = const [
-      '12 игроков зачекинились на Восток-5... 3 места на 5v5 в Бишкек Арена в 19:00',
-      'Новый ран в 18:30 на Спартак — 4/10 мест',
-      'Восток-5 сейчас горячая точка — 8 человек на площадке',
-    ],
+    this.messages = const [],
   });
 
   final List<String> messages;
+
+  static List<String> defaultMessages(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return [
+      l10n.tickerMessage1,
+      l10n.tickerMessage2,
+      l10n.tickerMessage3,
+    ];
+  }
 
   @override
   State<WhosBallingTicker> createState() => _WhosBallingTickerState();
@@ -46,6 +51,9 @@ class _WhosBallingTickerState extends State<WhosBallingTicker> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final messages = widget.messages.isEmpty
+        ? WhosBallingTicker.defaultMessages(context)
+        : widget.messages;
 
     return Container(
       height: 40,
@@ -67,7 +75,7 @@ class _WhosBallingTickerState extends State<WhosBallingTicker> {
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              widget.messages.isEmpty ? '' : widget.messages[_index],
+              messages.isEmpty ? '' : messages[_index],
               style: AppTextStyles.bodySM.copyWith(
                 color: isDark
                     ? AppColors.darkTextPrimary

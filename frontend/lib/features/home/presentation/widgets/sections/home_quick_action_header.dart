@@ -3,20 +3,23 @@ import 'package:basketvibe/core/styles/app_colors.dart';
 import 'package:basketvibe/core/styles/app_spacing.dart';
 import 'package:basketvibe/core/styles/app_text_styles.dart';
 import 'package:basketvibe/core/styles/app_border_radius.dart';
+import 'package:basketvibe/core/l10n/app_localizations.dart';
 
 class HomeQuickActionHeader extends StatelessWidget {
   const HomeQuickActionHeader({
     super.key,
-    this.locationName = 'Бишкек, Кыргызстан',
+    this.locationName,
     this.notificationCount = 0,
   });
 
-  final String locationName;
+  final String? locationName;
   final int notificationCount;
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final localizations = AppLocalizations.of(context);
+    final displayLocation = locationName ?? localizations.homeLocation;
 
     return Padding(
       padding: AppSpacing.pagePadding,
@@ -48,7 +51,7 @@ class HomeQuickActionHeader extends StatelessWidget {
                     const SizedBox(width: 8),
                     Flexible(
                       child: Text(
-                        locationName,
+                        displayLocation,
                         style: AppTextStyles.labelMD.copyWith(
                           color: isDark
                               ? AppColors.darkTextPrimary

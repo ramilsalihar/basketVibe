@@ -3,6 +3,7 @@ import 'package:basketvibe/core/styles/app_border_radius.dart';
 import 'package:basketvibe/core/styles/app_colors.dart';
 import 'package:basketvibe/core/styles/app_spacing.dart';
 import 'package:basketvibe/core/styles/app_text_styles.dart';
+import 'package:basketvibe/core/l10n/app_localizations.dart';
 
 class UpcomingGameCard extends StatelessWidget {
   const UpcomingGameCard({
@@ -25,6 +26,7 @@ class UpcomingGameCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context);
 
     return Container(
       width: width,
@@ -93,32 +95,32 @@ class UpcomingGameCard extends StatelessWidget {
                     color: AppColors.primary,
                   ),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Flexible(
-                      child: Text(
-                        'Мест: $spots',
-                        style: AppTextStyles.labelSM.copyWith(
-                          color: isDark
-                              ? AppColors.darkTextSecondary
-                              : AppColors.lightTextSecondary,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Присоединиться',
-                      style: AppTextStyles.labelSM.copyWith(
-                        color: AppColors.primary,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
+                 Row(
+                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                   children: [
+                     Flexible(
+                       child: Text(
+                         l10n.gamesSpots(spots),
+                         style: AppTextStyles.labelSM.copyWith(
+                           color: isDark
+                               ? AppColors.darkTextSecondary
+                               : AppColors.lightTextSecondary,
+                         ),
+                         maxLines: 1,
+                         overflow: TextOverflow.ellipsis,
+                       ),
+                     ),
+                     const SizedBox(width: 8),
+                     Text(
+                       l10n.gamesJoin,
+                       style: AppTextStyles.labelSM.copyWith(
+                         color: AppColors.primary,
+                       ),
+                       maxLines: 1,
+                       overflow: TextOverflow.ellipsis,
+                     ),
+                   ],
+                 ),
               ],
             ),
           ),
