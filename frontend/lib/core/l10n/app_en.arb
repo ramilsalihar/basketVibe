@@ -101,5 +101,11 @@
   "createGameSelectDateTime": "Select date and time",
   "createGameInvalidAmount": "Enter a valid amount",
   "createGameSuccess": "Run created successfully!",
-  "createGameYou": "You"
+  "createGameYou": "You",
+  "homeLocation": "Bishkek, Kyrgyzstan",
+  "tickerMessage1": "12 players just checked into Vostok-5... 3 spots for 5v5 at Bishkek Arena at 19:00",
+  "tickerMessage2": "New run at 18:30 at Spartak — 4/10 spots",
+  "tickerMessage3": "Vostok-5 is hot right now — 8 people on the court",
+  "gamesSpots": "Spots: {spots}",
+  "gamesJoin": "Join"
 }

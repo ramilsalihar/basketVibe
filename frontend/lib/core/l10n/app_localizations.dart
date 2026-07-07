@@ -317,7 +317,7 @@ abstract class AppLocalizations {
   /// No description provided for @gamesJoin.
   ///
   /// In en, this message translates to:
-  /// **'Join game'**
+  /// **'Join'**
   String get gamesJoin;
 
   /// No description provided for @gamesFull.
@@ -607,6 +607,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You'**
   String get createGameYou;
+
+  /// No description provided for @homeLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Bishkek, Kyrgyzstan'**
+  String get homeLocation;
+
+  /// No description provided for @tickerMessage1.
+  ///
+  /// In en, this message translates to:
+  /// **'12 players just checked into Vostok-5... 3 spots for 5v5 at Bishkek Arena at 19:00'**
+  String get tickerMessage1;
+
+  /// No description provided for @tickerMessage2.
+  ///
+  /// In en, this message translates to:
+  /// **'New run at 18:30 at Spartak — 4/10 spots'**
+  String get tickerMessage2;
+
+  /// No description provided for @tickerMessage3.
+  ///
+  /// In en, this message translates to:
+  /// **'Vostok-5 is hot right now — 8 people on the court'**
+  String get tickerMessage3;
+
+  /// No description provided for @gamesSpots.
+  ///
+  /// In en, this message translates to:
+  /// **'Spots: {spots}'**
+  String gamesSpots(Object spots);
 }
 
 class _AppLocalizationsDelegate

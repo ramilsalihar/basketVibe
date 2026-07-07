@@ -271,4 +271,23 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get createGameYou => 'Вы';
+
+  @override
+  String get homeLocation => 'Бишкек, Кыргызстан';
+
+  @override
+  String get tickerMessage1 =>
+      '12 игроков зачекинились на Восток-5... 3 места на 5x5 в Бишкек Арена в 19:00';
+
+  @override
+  String get tickerMessage2 => 'Новый ран в 18:30 на Спартак — 4/10 мест';
+
+  @override
+  String get tickerMessage3 =>
+      'Восток-5 сейчас горячая точка — 8 человек на площадке';
+
+  @override
+  String gamesSpots(Object spots) {
+    return 'Мест: $spots';
+  }
 }

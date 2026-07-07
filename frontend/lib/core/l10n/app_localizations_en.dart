@@ -125,7 +125,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gamesCreate => 'Create game';
 
   @override
-  String get gamesJoin => 'Join game';
+  String get gamesJoin => 'Join';
 
   @override
   String get gamesFull => 'Game is full';
@@ -271,4 +271,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get createGameYou => 'You';
+
+  @override
+  String get homeLocation => 'Bishkek, Kyrgyzstan';
+
+  @override
+  String get tickerMessage1 =>
+      '12 players just checked into Vostok-5... 3 spots for 5v5 at Bishkek Arena at 19:00';
+
+  @override
+  String get tickerMessage2 => 'New run at 18:30 at Spartak — 4/10 spots';
+
+  @override
+  String get tickerMessage3 =>
+      'Vostok-5 is hot right now — 8 people on the court';
+
+  @override
+  String gamesSpots(Object spots) {
+    return 'Spots: $spots';
+  }
 }
