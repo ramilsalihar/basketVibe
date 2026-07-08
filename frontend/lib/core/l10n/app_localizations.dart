@@ -290,6 +290,24 @@ abstract class AppLocalizations {
   /// **'Log out'**
   String get logout;
 
+  /// No description provided for @deleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account'**
+  String get deleteAccount;
+
+  /// No description provided for @deleteAccountConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account?'**
+  String get deleteAccountConfirm;
+
+  /// No description provided for @deleteAccountConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will permanently delete your account and all your games. This cannot be undone.'**
+  String get deleteAccountConfirmMessage;
+
   /// No description provided for @gamesTitle.
   ///
   /// In en, this message translates to:
@@ -637,6 +655,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Spots: {spots}'**
   String gamesSpots(Object spots);
+
+  /// No description provided for @gamesLeave.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave game'**
+  String get gamesLeave;
 }
 
 class _AppLocalizationsDelegate

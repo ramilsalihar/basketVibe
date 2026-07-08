@@ -40,6 +40,11 @@ class ValidationFailure extends Failure {
   const ValidationFailure([super.message = 'Validation failed']);
 }
 
+/// Permission denied failures (e.g., not the host)
+class ForbiddenFailure extends Failure {
+  const ForbiddenFailure([super.message = 'Forbidden']);
+}
+
 /// Permission failures (e.g., location, camera)
 class PermissionFailure extends Failure {
   const PermissionFailure([super.message = 'Permission denied']);
@@ -53,6 +58,7 @@ extension FailureMessage on Failure {
     AuthFailure(:final message) => message.isNotEmpty ? message : 'Authentication failed. Please try again.',
     NotFoundFailure(:final message) => message.isNotEmpty ? message : 'Resource not found.',
     ValidationFailure(:final message) => message.isNotEmpty ? message : 'Please check your input and try again.',
+    ForbiddenFailure(:final message) => message.isNotEmpty ? message : 'You are not allowed to do this.',
     PermissionFailure(:final message) => message.isNotEmpty ? message : 'Permission denied. Please enable in settings.',
     CacheFailure(:final message) => message.isNotEmpty ? message : 'Storage error occurred.',
   };

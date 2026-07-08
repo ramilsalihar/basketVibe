@@ -47,6 +47,10 @@
   "profileOpenHistory": "Open activity history",
   "logout": "Log out",
 
+  "deleteAccount": "Delete account",
+  "deleteAccountConfirm": "Delete account?",
+  "deleteAccountConfirmMessage": "This will permanently delete your account and all your games. This cannot be undone.",
+
   "gamesTitle": "Upcoming games",
   "gamesEmptyTitle": "No games yet",
   "gamesEmptySubtitle": "Create a game and call players to the court.",
@@ -107,5 +111,6 @@
   "tickerMessage2": "New run at 18:30 at Spartak — 4/10 spots",
   "tickerMessage3": "Vostok-5 is hot right now — 8 people on the court",
   "gamesSpots": "Spots: {spots}",
-  "gamesJoin": "Join"
+  "gamesJoin": "Join",
+  "gamesLeave": "Leave game"
 }

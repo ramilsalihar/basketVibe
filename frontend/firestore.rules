@@ -25,12 +25,12 @@ service cloud.firestore {
                       // Host can edit the game freely.
                       resource.data.hostId == request.auth.uid
                       // Any player can join/leave: may only touch
-                      // playerIds (+ derived status), only adding or
-                      // removing their own uid, within capacity.
+                      // playerIds, players (+ derived status), only adding
+                      // or removing their own uid, within capacity.
                       || (
                         request.resource.data.diff(resource.data)
                           .affectedKeys()
-                          .hasOnly(['playerIds', 'status'])
+                          .hasOnly(['playerIds', 'status', 'players'])
                         && request.resource.data.playerIds.size()
                              <= resource.data.maxPlayers
                         && (

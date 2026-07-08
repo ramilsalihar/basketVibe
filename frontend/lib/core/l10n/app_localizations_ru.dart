@@ -112,6 +112,16 @@ class AppLocalizationsRu extends AppLocalizations {
   String get logout => 'Выйти';
 
   @override
+  String get deleteAccount => 'Удалить аккаунт';
+
+  @override
+  String get deleteAccountConfirm => 'Удалить аккаунт?';
+
+  @override
+  String get deleteAccountConfirmMessage =>
+      'Это навсегда удалит ваш аккаунт и все ваши игры. Действие необратимо.';
+
+  @override
   String get gamesTitle => 'Предстоящие игры';
 
   @override
@@ -290,4 +300,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String gamesSpots(Object spots) {
     return 'Мест: $spots';
   }
+
+  @override
+  String get gamesLeave => 'Выйти из игры';
 }

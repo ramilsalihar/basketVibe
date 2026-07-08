@@ -50,4 +50,17 @@ class AuthRemoteDataSource {
   }
 
   Future<void> signOut() => _auth.signOut();
+
+  /// Re-authenticates the current user with a fresh Google ID token (to
+  /// satisfy Firebase's recent-login requirement) and then permanently
+  /// deletes the Firebase Auth user.
+  Future<void> deleteAccount(String idToken) async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      throw Exception('No authenticated user to delete');
+    }
+    final credential = GoogleAuthProvider.credential(idToken: idToken);
+    await user.reauthenticateWithCredential(credential);
+    await user.delete();
+  }
 }

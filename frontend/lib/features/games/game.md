@@ -208,10 +208,10 @@ Response `200`: paginated list of `GameEntity`
 
 ## TODO
 
-- [ ] Create `GameRemoteDataSource` (`data/datasources/remote/game_remote_datasource.dart`)
-- [ ] Replace `GameRepositoryImpl` mock with remote datasource calls
-- [ ] Add pagination support to `GameLoaded` state
-- [ ] Add `GameCubit.loadMyGames()` method
-- [ ] Add `GameCubit.cancelGame()` method
-- [ ] Add `GameCubit.getPlayers()` method
-- [ ] Wire `GameRemoteDataSource` into `injection.dart`
+- [x] Create `GameRemoteDataSource` (`data/datasources/game_remote_datasource.dart`)
+- [x] Replace `GameRepositoryImpl` mock with remote datasource calls
+- [x] Add pagination support to `GameLoaded` state
+- [x] Add `GameCubit.loadMyGames()` method
+- [x] Add `GameCubit.cancelGame()` method
+- [x] Add `GameCubit.getPlayers()` method
+- [x] Wire `GameRemoteDataSource` into `injection.dart`
