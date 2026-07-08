@@ -50,19 +50,22 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAHqczK-cSHi7ycE3iCL4QvewgHfo5Vn7A',
-    appId: '1:75943924299:android:afc27ac7d764efc042f3ce',
-    messagingSenderId: '75943924299',
-    projectId: 'basketvibe-f2391',
-    storageBucket: 'basketvibe-f2391.firebasestorage.app',
+    apiKey: 'AIzaSyB3iIrV7fe4aAvyLKETCyB7fwRrhmc_dTY',
+    appId: '1:309064225610:android:97a5822cff9cc5c679e7b3',
+    messagingSenderId: '309064225610',
+    projectId: 'line-up-cefa8',
+    databaseURL: 'https://line-up-cefa8-default-rtdb.firebaseio.com',
+    storageBucket: 'line-up-cefa8.firebasestorage.app',
   );
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDcNC9wt6QUBIF-mugpNyoAsTI-PuzTDBQ',
-    appId: '1:75943924299:ios:cc4ccb612c512efc42f3ce',
-    messagingSenderId: '75943924299',
-    projectId: 'basketvibe-f2391',
-    storageBucket: 'basketvibe-f2391.firebasestorage.app',
-    iosClientId: '75943924299-9tvk6f9cs2355oi2g19be71i9iomfvn4.apps.googleusercontent.com',
+    apiKey: 'AIzaSyDqGRPQDrWmIVwIXKieEHV5MmPKNcmpQaY',
+    appId: '1:309064225610:ios:e2cd5bca814eda0c79e7b3',
+    messagingSenderId: '309064225610',
+    projectId: 'line-up-cefa8',
+    databaseURL: 'https://line-up-cefa8-default-rtdb.firebaseio.com',
+    storageBucket: 'line-up-cefa8.firebasestorage.app',
+    androidClientId: '309064225610-knffttue2iu8v4qurorq0qfsebtmhatp.apps.googleusercontent.com',
+    iosClientId: '309064225610-g7j7ue350eau1ikmlmi81kijgrooobio.apps.googleusercontent.com',
     iosBundleId: 'com.example.basketvibe',
   );
 }

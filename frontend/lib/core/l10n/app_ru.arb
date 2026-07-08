@@ -38,6 +38,10 @@
   "profileOpenHistory": "Открыть историю активности",
   "logout": "Выйти",
 
+  "deleteAccount": "Удалить аккаунт",
+  "deleteAccountConfirm": "Удалить аккаунт?",
+  "deleteAccountConfirmMessage": "Это навсегда удалит ваш аккаунт и все ваши игры. Действие необратимо.",
+
   "gamesTitle": "Предстоящие игры",
   "gamesEmptyTitle": "Пока нет игр",
   "gamesEmptySubtitle": "Создайте игру и позовите игроков на площадку.",
@@ -98,5 +102,6 @@
   "tickerMessage2": "Новый ран в 18:30 на Спартак — 4/10 мест",
   "tickerMessage3": "Восток-5 сейчас горячая точка — 8 человек на площадке",
   "gamesSpots": "Мест: {spots}",
-  "gamesJoin": "Присоединиться"
+  "gamesJoin": "Присоединиться",
+  "gamesLeave": "Выйти из игры"
 }

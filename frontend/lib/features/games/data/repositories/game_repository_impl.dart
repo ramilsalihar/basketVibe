@@ -2,6 +2,7 @@ import 'package:basketvibe/core/errors/exceptions.dart';
 import 'package:basketvibe/core/errors/failures.dart';
 import 'package:basketvibe/features/games/data/datasources/game_remote_datasource.dart';
 import 'package:basketvibe/features/games/domain/entities/game_entity.dart';
+import 'package:basketvibe/features/games/domain/entities/game_player_entity.dart';
 import 'package:basketvibe/features/games/domain/repositories/game_repository.dart';
 import 'package:dartz/dartz.dart';
 
@@ -24,6 +25,36 @@ class GameRepositoryImpl implements GameRepository {
       _remoteDataSource.watchMyGames(uid);
 
   @override
+  Future<Either<Failure,
+      ({List<GameEntity> games, bool hasMore, DateTime? nextCursor})>>
+      getActiveGamesPage({
+    GameStatus? status,
+    String? city,
+    GameLevel? level,
+    DateTime? date,
+    DateTime? startAfter,
+    int pageSize = 20,
+  }) =>
+      _run(
+        () => _remoteDataSource.getActiveGamesPage(
+          status: status,
+          city: city,
+          level: level,
+          date: date,
+          startAfter: startAfter,
+          pageSize: pageSize,
+        ),
+      );
+
+  @override
+  Future<Either<Failure, List<GameEntity>>> getMyGames(
+    String uid, {
+    String? role,
+    String? status,
+  }) =>
+      _run(() => _remoteDataSource.getMyGames(uid, role: role, status: status));
+
+  @override
   Future<Either<Failure, GameEntity>> createGame(GameEntity game) =>
       _run(() => _remoteDataSource.createGame(game));
 
@@ -42,6 +73,17 @@ class GameRepositoryImpl implements GameRepository {
       _run(() => _remoteDataSource.leaveGame(gameId, playerId));
 
   @override
+  Future<Either<Failure, GameEntity>> cancelGame(
+    String gameId,
+    String requestingUid,
+  ) =>
+      _run(() => _remoteDataSource.cancelGame(gameId, requestingUid));
+
+  @override
+  Future<Either<Failure, List<GamePlayer>>> getPlayers(String gameId) =>
+      _run(() => _remoteDataSource.getPlayers(gameId));
+
+  @override
   Future<Either<Failure, GameEntity>> getGameById(String gameId) =>
       _run(() => _remoteDataSource.getGameById(gameId));
 
@@ -52,6 +94,8 @@ class GameRepositoryImpl implements GameRepository {
       return Left(NotFoundFailure(e.message));
     } on ValidationException catch (e) {
       return Left(ValidationFailure(e.message));
+    } on ForbiddenException catch (e) {
+      return Left(ForbiddenFailure(e.message));
     } on Exception catch (e) {
       return Left(ServerFailure(e.toString()));
     }

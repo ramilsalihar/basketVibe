@@ -93,7 +93,13 @@ Future<void> configureDependencies() async {
   // Cubits / Blocs
   getIt.registerFactory<ProfileCubit>(() => ProfileCubit(getIt(), getIt()));
   getIt.registerFactory<AuthCubit>(
-    () => AuthCubit(getIt(), getIt(), getIt(), getIt()),
+    () => AuthCubit(
+      getIt(),
+      getIt(),
+      getIt(),
+      getIt(),
+      getIt(),
+    ),
   );
   getIt.registerFactory<GameCubit>(() => GameCubit(getIt()));
   getIt.registerFactory<CheckOnboardingStatusUseCase>(

@@ -60,6 +60,7 @@ class _UpcomingGamesView extends StatelessWidget {
       duration: const Duration(hours: 2),
       maxPlayers: 10,
       currentPlayers: 0,
+      playerIds: const [],
       visibility: GameVisibility.public,
       level: GameLevel.balanced,
       status: GameStatus.open,

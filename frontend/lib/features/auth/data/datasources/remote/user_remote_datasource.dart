@@ -46,6 +46,9 @@ class UserRemoteDataSource {
     return snapshot.data();
   }
 
+  /// Deletes the user's `users/{uid}` document (on account deletion).
+  Future<void> deleteUser(String uid) => _users.doc(uid).delete();
+
   /// Username defaults to the email local part; user can edit it in profile.
   String _defaultUsername(User user) {
     final email = user.email;

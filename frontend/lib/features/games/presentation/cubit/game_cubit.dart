@@ -14,6 +14,14 @@ class GameCubit extends Cubit<GameState> {
   // The cubit can be closed (page disposed) while a Firestore call is
   // still in flight — every emit after an await must check isClosed.
 
+  // Accumulators for paginated active-game loading.
+  List<GameEntity> _activeGames = const [];
+  DateTime? _activeCursor;
+
+  // Latest games from the active stream, kept so action-success states
+  // can render the list without flickering to empty.
+  List<GameEntity> _games = const [];
+
   /// Realtime stream of open public upcoming games. New games created by
   /// anyone appear automatically.
   void watchActiveGames() {
@@ -21,7 +29,10 @@ class GameCubit extends Cubit<GameState> {
     _subscription?.cancel();
     _subscription = _repository.watchActiveGames().listen(
       (games) {
-        if (!isClosed) emit(GameLoaded(games: games));
+        if (!isClosed) {
+          _games = games;
+          emit(GameLoaded(games: games));
+        }
       },
       onError: (Object e) {
         if (!isClosed) emit(GameError(e.toString()));
@@ -35,7 +46,10 @@ class GameCubit extends Cubit<GameState> {
     _subscription?.cancel();
     _subscription = _repository.watchMyGames(uid).listen(
       (games) {
-        if (!isClosed) emit(GameLoaded(games: games));
+        if (!isClosed) {
+          _games = games;
+          emit(GameLoaded(games: games));
+        }
       },
       onError: (Object e) {
         if (!isClosed) emit(GameError(e.toString()));
@@ -50,7 +64,77 @@ class GameCubit extends Cubit<GameState> {
     if (isClosed) return;
     result.fold(
       (failure) => emit(GameError(failure.message)),
-      (games) => emit(GameLoaded(games: games)),
+      (games) {
+        _games = games;
+        emit(GameLoaded(games: games));
+      },
+    );
+  }
+
+  /// Paginated, one-shot load of active games that mirrors
+  /// `GET /games/?status=&city=&level=&date=&page=&page_size=`.
+  ///
+  /// Pass [loadMore] to append the next page (using the last page's
+  /// `nextCursor`). The first call resets the accumulated list.
+  Future<void> loadActiveGamesPage({
+    GameStatus? status,
+    String? city,
+    GameLevel? level,
+    DateTime? date,
+    int pageSize = 20,
+    bool loadMore = false,
+  }) async {
+    if (!loadMore) {
+      emit(const GameLoading());
+      _activeGames = const [];
+      _activeCursor = null;
+    }
+    final result = await _repository.getActiveGamesPage(
+      status: status,
+      city: city,
+      level: level,
+      date: date,
+      startAfter: _activeCursor,
+      pageSize: pageSize,
+    );
+    if (isClosed) return;
+    result.fold(
+      (failure) => emit(GameError(failure.message)),
+      (page) {
+        _activeGames = [..._activeGames, ...page.games];
+        _activeCursor = page.nextCursor;
+        _games = _activeGames;
+        emit(
+          GameLoaded(
+            games: _activeGames,
+            hasMore: page.hasMore,
+            nextCursor: page.nextCursor,
+          ),
+        );
+      },
+    );
+  }
+
+  /// One-shot "My Games" load with optional role/status filters, mirroring
+  /// `GET /games/my/?role=&status=`.
+  Future<void> loadMyGames(
+    String uid, {
+    String? role,
+    String? status,
+  }) async {
+    emit(const GameLoading());
+    final result = await _repository.getMyGames(
+      uid,
+      role: role,
+      status: status,
+    );
+    if (isClosed) return;
+    result.fold(
+      (failure) => emit(GameError(failure.message)),
+      (games) {
+        _games = games;
+        emit(GameLoaded(games: games));
+      },
     );
   }
 
@@ -71,7 +155,10 @@ class GameCubit extends Cubit<GameState> {
     if (isClosed) return;
     result.fold(
       (failure) => emit(GameError(failure.message)),
-      (_) {},
+      (_) => emit(GameActionSuccess(
+        message: 'You joined the game',
+        games: _games,
+      )),
     );
   }
 
@@ -81,7 +168,32 @@ class GameCubit extends Cubit<GameState> {
     if (isClosed) return;
     result.fold(
       (failure) => emit(GameError(failure.message)),
-      (_) {},
+      (_) => emit(GameActionSuccess(
+        message: 'You left the game',
+        games: _games,
+      )),
+    );
+  }
+
+  /// Host-only: cancel a game (status = cancelled).
+  Future<void> cancelGame(String gameId, String hostId) async {
+    emit(const GameLoading());
+    final result = await _repository.cancelGame(gameId, hostId);
+    if (isClosed) return;
+    result.fold(
+      (failure) => emit(GameError(failure.message)),
+      (game) => emit(GameCancelled(game: game)),
+    );
+  }
+
+  /// Load the players of a game with their profiles.
+  Future<void> getPlayers(String gameId) async {
+    emit(const GameLoading());
+    final result = await _repository.getPlayers(gameId);
+    if (isClosed) return;
+    result.fold(
+      (failure) => emit(GameError(failure.message)),
+      (players) => emit(GamePlayersLoaded(players: players)),
     );
   }
 

@@ -36,6 +36,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
         city: city,
         skillLevel: skillLevel,
       );
+      await _remoteDataSource.updateGamesHostName(userId, displayName);
       return const Right(unit);
     } on Exception {
       return const Left(ServerFailure('Failed to update profile'));

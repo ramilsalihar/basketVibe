@@ -36,3 +36,8 @@ class ValidationException extends AppException {
 class NotFoundException extends AppException {
   const NotFoundException([super.message = 'Resource not found']);
 }
+
+/// Permission denied (e.g. not the host) exceptions
+class ForbiddenException extends AppException {
+  const ForbiddenException([super.message = 'Forbidden']);
+}

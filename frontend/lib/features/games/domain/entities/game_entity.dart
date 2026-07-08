@@ -17,6 +17,7 @@ class GameEntity extends Equatable {
     required this.duration,
     required this.maxPlayers,
     required this.currentPlayers,
+    required this.playerIds,
     required this.visibility,
     required this.level,
     required this.status,
@@ -47,6 +48,9 @@ class GameEntity extends Equatable {
   /// Capacity and current participants.
   final int maxPlayers;
   final int currentPlayers;
+
+  /// Firestore `playerIds` array — mirrors the joined players list.
+  final List<String> playerIds;
 
   /// Who can discover / join this lobby.
   final GameVisibility visibility;
@@ -96,6 +100,7 @@ class GameEntity extends Equatable {
     Duration? duration,
     int? maxPlayers,
     int? currentPlayers,
+    List<String>? playerIds,
     GameVisibility? visibility,
     GameLevel? level,
     GameStatus? status,
@@ -117,6 +122,7 @@ class GameEntity extends Equatable {
       duration: duration ?? this.duration,
       maxPlayers: maxPlayers ?? this.maxPlayers,
       currentPlayers: currentPlayers ?? this.currentPlayers,
+      playerIds: playerIds ?? this.playerIds,
       visibility: visibility ?? this.visibility,
       level: level ?? this.level,
       status: status ?? this.status,
@@ -141,6 +147,7 @@ class GameEntity extends Equatable {
         duration,
         maxPlayers,
         currentPlayers,
+        playerIds,
         visibility,
         level,
         status,

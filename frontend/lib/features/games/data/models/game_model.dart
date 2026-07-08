@@ -27,6 +27,7 @@ class GameModel {
       duration: Duration(minutes: data['durationMinutes'] as int),
       maxPlayers: data['maxPlayers'] as int,
       currentPlayers: playerIds.length,
+      playerIds: playerIds,
       visibility: GameVisibility.values.byName(data['visibility'] as String),
       level: GameLevel.values.byName(data['level'] as String),
       status: GameStatus.values.byName(data['status'] as String),
@@ -38,10 +39,7 @@ class GameModel {
     );
   }
 
-  static Map<String, dynamic> toFirestore(
-    GameEntity game, {
-    required List<String> playerIds,
-  }) {
+  static Map<String, dynamic> toFirestore(GameEntity game) {
     return {
       'courtId': game.courtId,
       'courtName': game.courtName,
@@ -52,7 +50,7 @@ class GameModel {
       'startTime': Timestamp.fromDate(game.startTime),
       'durationMinutes': game.duration.inMinutes,
       'maxPlayers': game.maxPlayers,
-      'playerIds': playerIds,
+      'playerIds': game.playerIds,
       'visibility': game.visibility.name,
       'level': game.level.name,
       'status': game.status.name,

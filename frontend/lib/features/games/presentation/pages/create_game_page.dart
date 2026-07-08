@@ -11,6 +11,7 @@ import 'package:basketvibe/core/l10n/app_localizations.dart';
 import 'package:basketvibe/core/network/injection.dart';
 import 'package:basketvibe/core/utils/snackbars/app_snackbar.dart';
 import 'package:basketvibe/features/games/domain/entities/game_entity.dart';
+import 'package:basketvibe/features/auth/data/datasources/remote/user_remote_datasource.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:basketvibe/features/games/presentation/cubit/game_cubit.dart';
 import 'package:basketvibe/features/games/presentation/cubit/game_state.dart';
@@ -79,7 +80,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
     );
   }
 
-  void _submitForm(BuildContext context) {
+  Future<void> _submitForm(BuildContext context) async {
     final l10n = AppLocalizations.of(context);
     if (!_formKey.currentState!.validate()) return;
 
@@ -104,7 +105,12 @@ class _CreateGamePageState extends State<CreateGamePage> {
       return;
     }
     final hostId = currentUser.uid;
-    final hostName = currentUser.displayName ?? l10n.createGameYou;
+    // Use the profile name from the `users` collection, not the Firebase
+    // Auth displayName — the latter can be stale after a profile edit.
+    final userDoc = await getIt<UserRemoteDataSource>().getUser(hostId);
+    final hostName = (userDoc?['displayName'] as String?) ??
+        currentUser.displayName ??
+        l10n.createGameYou;
 
     final startTime = DateTime(
       _selectedDate!.year,
@@ -127,6 +133,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
       duration: const Duration(hours: 2),
       maxPlayers: _maxPlayers,
       currentPlayers: 1,
+      playerIds: [hostId],
       visibility: _visibility,
       level: GameLevel.balanced,
       status: GameStatus.open,
